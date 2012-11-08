@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="RoundRobinMasterSocket">
+
+
+	<engine name="stackengine1" class="stackengine">
+
+		<component name="clientfilereader0" class="filereader">
+			<parameter name="filename" value="alice.txt"/>
+			<parameter name="blocksize" value="512"/>
+			<parameter name="delay" value="500000"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+		
+	
+		<component name="clientfilewriter0" class="filewriter">
+			<parameter name="filename" value="alice_out.txt"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+	
+		<component name="rrmacclient0" class="roundrobinmacclient">
+			<parameter name="payloadlength" value="512"/>
+			<parameter name="sourceaddress" value="f009e090e90e"/>
+			<parameter name="masteraddress" value="00f0f0f0f0f0"/>
+			<parameter name="correlationlevel" value="0.8"/>
+			<parameter name="passowndataabove" value="false"/>
+			<parameter name="ignorecrc" value="false"/>
+			<parameter name="decodeowntransmission" value="true"/>
+			<parameter name="simpleframing" value="true"/>
+			<port name="topoutputport" class="io"/>
+			<port name="topinputport" class="io"/>
+			<port name="bottomoutputport" class="io"/>
+			<port name="bottominputport" class="io"/>
+    	</component>
+
+	</engine>
+	
+	<engine name="pnengine3" class="pnengine">
+		
+		<component name="clientsocketin0" class="udpsocketrx">
+			<parameter name="port" value="5171"/>
+			<parameter name="buffersize" value="100000"/>
+			<parameter name="outputType" value="uint8_t"/>
+			<port name="output1" class="output"/>
+		</component>
+	
+	</engine>
+	
+	<engine name="pnengine4" class="pnengine">
+		
+		<component name="clientsocketout0" class="udpsockettx">
+			<parameter name="port" value="5181"/>
+			<port name="input1" class="input"/>
+		</component>
+		
+	</engine>
+
+	<link source="clientfilereader0.bottomport1" sink="rrmacclient0.topinputport" />
+	<link source="clientfilewriter0.bottomport1" sink="rrmacclient0.topoutputport" />
+	<link source="rrmacclient0.bottomoutputport" sink="clientsocketout0.input1" />
+	<link source="clientsocketin0.output1" sink="rrmacclient0.bottominputport" />
+	
+</softwareradio>

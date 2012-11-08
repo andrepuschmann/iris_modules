@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="USRP Transmitter">
+
+    <engine name="pnengine1" class="pnengine">
+ 
+        <component name="usrpuhdrx1" class="usrpuhdrx">
+			<parameter name="address" value="192.168.10.2"/>
+			<parameter name="rate" value="2000000"/>
+			<parameter name="frequency" value="5000030000"/>
+			<parameter name="gain" value="40"/>
+			<parameter name="outputblocksize" value="4096"/>
+			<port name="output1" class="output"/>
+    	</component>
+<!--       
+        <component name="filerawwriter1" class="filerawwriter">
+			<parameter name="filename" value="capture.bin"/>
+			<port name="input1" class="input"/>
+      	</component>
+
+	<component name="filerawreader1" class="filerawreader">
+	            <parameter name="fileName" value="capture.bin"/>
+	            <parameter name="blockSize" value="16384"/>
+	            <parameter name="dataType" value="complex<float>"/>
+	            <port name="output1" class="output"/>
+        </component>
+--> 
+  
+        <component name="fullcyclobwdemodulator1" class="fullcyclobwdemodulator">
+		<parameter name="debug" value="false"/>	
+		<parameter name="numunits" value="8"/>
+		<parameter name="detectthreshold" value="0.85"/>
+		<port name="input1" class="input"/>
+		<port name="output1" class="output"/>
+        </component>
+
+      <component name="udptx1" class="udpsockettx">
+		  <parameter name="address" value="127.0.0.1"/>
+		  <parameter name="port" value="1234"/>
+		  <port name="input1" class="input"/>
+	</component>
+     
+    </engine>
+<!--
+	<link source="usrpuhdrx1.output1" sink="filerawwriter1.input1" />
+ -->
+	<link source="usrpuhdrx1.output1" sink="fullcyclobwdemodulator1.input1" />
+	<link source="fullcyclobwdemodulator1.output1" sink="udptx1.input1" />
+ 
+	
+</softwareradio>

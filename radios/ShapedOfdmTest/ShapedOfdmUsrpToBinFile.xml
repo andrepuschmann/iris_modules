@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+    <component name="usrprx1" class="usrprx">
+      <parameter name="debug" value="false"/>
+      <parameter name="firmware" value="usrp_firmware.ihx"/>
+      <parameter name="FPGA" value="usrp_fpga.rbf"/>
+      <parameter name="decim" value="16"/>
+      <parameter name="channel" value="0"/>
+      <parameter name="centre_freq" value="2410000000"/>
+      <parameter name="centre_freq2" value="0"/>
+      <parameter name="antenna" value="RX"/>
+      <parameter name="automatic_side_selection" value="true"/>
+      <parameter name="automatic_board_selection" value="true"/>
+      <parameter name="useBothSides" value="false"/>
+      <parameter name="usrp_gain" value="40"/>
+      <parameter name="scaling_factor" value="1.0"/>
+      <parameter name="numoutputsamples" value="16384"/>
+      <parameter name="rx_on" value="true"/>
+      <port name="output1" class="output"/>
+    </component>
+
+		<component name="filerawwriter1" class="filerawwriter">
+			<port name="input1" class="input"/>
+		</component>
+
+	</engine>
+
+	<link source="usrprx1.output1" sink="filerawwriter1.input1" />
+
+</softwareradio>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+		<component name="usrprx1" class="usrprx">
+			<parameter name="debug" value="false"/>
+			<parameter name="firmware" value="usrp_firmware.ihx"/>
+			<parameter name="fpga" value="usrp_fpga.rbf"/>
+			<parameter name="decim" value="128"/>
+			<parameter name="centre_freq" value="2490000000"/>
+			<parameter name="automatic_side_selection" value="true"/>
+			<parameter name="automatic_board_selection" value="true"/>
+			<parameter name="usrp_gain" value="40"/>
+			<parameter name="scaling_factor" value="1"/>
+			<parameter name="numOutputSamples" value="16384"/>
+			<port name="output1" class="output"/>
+    		</component>
+
+		<component name="simpleofdmdemod1" class="simpleofdmdemod">
+			<parameter name="debug" value="false"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+
+		<component name="filerawwriter1" class="filerawwriter">
+			<parameter name="filename" value="out.txt"/>
+			<port name="input1" class="input"/>
+		</component>
+
+	</engine>
+
+	<link source="usrprx1.output1" sink="simpleofdmdemod1.input1" />
+	<link source="simpleofdmdemod1.output1" sink="filerawwriter1.input1" />
+
+</softwareradio>

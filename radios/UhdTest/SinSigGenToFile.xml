@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+		<component name="sinsiggen1" class="sinsiggen">
+			<parameter name="outputblocksize" value="1024"/>
+			<parameter name="sampsperperiod" value="128"/>
+			<parameter name="amplitude" value="1"/>
+			<port name="output1" class="output"/>
+		</component>
+
+		<component name="filerawwriter1" class="filerawwriter">
+			<parameter name="filename" value="out.bin"/>
+			<port name="input1" class="input"/>
+		</component>
+
+	</engine>
+
+	<link source="sinsiggen1.output1" sink="filerawwriter1.input1" />
+
+</softwareradio>

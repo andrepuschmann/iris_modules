@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+		<component name="filerawreader1" class="filerawreader">
+			<parameter name="filename" value="glory.mp3"/>
+			<parameter name="blocksize" value="1400"/>
+			<parameter name="datatype" value="uint8_t"/>
+			<port name="output1" class="output"/>
+		</component>
+
+		<component name="simpleofdmmod1" class="simpleofdmmod">
+			<parameter name="debug" value="false"/>
+			<parameter name="bitsperdatasymbol" value="2"/>
+			<parameter name="numfftbins" value="512"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="signalscaler1" class="signalscaler">
+		    <parameter name="maximum" value="0.75"/>
+		    <port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="usrpuhdtx1" class="usrpuhdtx">
+			<parameter name="args" value=""/>
+			<parameter name="rate" value="500000"/>
+			<parameter name="frequency" value="2489700000"/>
+			<parameter name="gain" value="-20"/>
+			<parameter name="streaming" value="true"/>
+			<parameter name="fixlooffset" value="5000000"/>
+
+			<port name="input1" class="input"/>
+		</component>
+
+	</engine>
+
+	<link source="filerawreader1.output1" sink="simpleofdmmod1.input1" />
+	<link source="simpleofdmmod1.output1" sink="signalscaler1.input1" /> 
+	<link source="signalscaler1.output1" sink="usrpuhdtx1.input1" />
+
+</softwareradio>

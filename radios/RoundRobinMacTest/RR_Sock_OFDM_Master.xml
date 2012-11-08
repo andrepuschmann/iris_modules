@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="RoundRobinMasterSocket">
+
+	<engine name="stackengine1" class="stackengine">
+
+		<component name="rrmacmaster1" class="roundrobinmacmaster">
+			<parameter name="payloadlength" value="512"/>
+			<parameter name="timer" value="500"/>
+			<parameter name="sourceaddress" value="00f0f0f0f0f0"/>
+			<parameter name="targetaddress0" value="f009e090e90e"/>
+			<parameter name="targetaddress1" value="88888811cccc"/>
+			<parameter name="targetaddress2" value="333333555555"/>
+			<parameter name="correlationlevel" value="0.8"/>
+			<parameter name="ignorecrc" value="true"/>
+			<parameter name="decodeowntransmission" value="true"/>
+			<parameter name="numclients" value="1"/>
+			<parameter name="delaybetweentx" value="0"/>
+			<parameter name="simpleframing" value="true"/>
+			<port name="topport1" class="io"/>
+			<port name="bottominputport" class="io"/>
+			<port name="bottomoutputport" class="io"/>
+    	</component>
+	</engine>
+	
+	<engine name="pnengine1" class="pnengine">
+		
+		<component name="mastersocketindemod" class="simpleofdmdemod">
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+	
+		<component name="mastersocketin" class="udpsocketrx">
+			<parameter name="port" value="9127"/>
+			<parameter name="buffersize" value="100000"/>
+			<parameter name="outputType" value="std::complex<float>"/>
+			<port name="output1" class="output"/>
+		</component>
+	
+	</engine>
+	
+	<engine name="pnengine2" class="pnengine">
+		
+		<component name="mastersocketoutmod" class="simpleofdmmod">
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="mastersocketout" class="udpsockettx">
+			<parameter name="port" value="9126"/>
+			<port name="input1" class="input"/>
+		</component>
+		
+	</engine>
+
+	<link source="rrmacmaster1.bottomoutputport" sink="mastersocketoutmod.input1" />
+	<link source="mastersocketoutmod.output1" sink="mastersocketout.input1" />
+	<link source="mastersocketin.output1" sink="mastersocketindemod.input1" />
+	<link source="mastersocketindemod.output1" sink="rrmacmaster1.bottominputport" />
+</softwareradio>

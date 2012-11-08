@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="USRP Transmitter">
+
+    <engine name="pnengine1" class="pnengine">
+ 
+        <component name="usrprx1" class="usrprx">
+		<parameter name="debug" value="true"/>
+		<parameter name="firmware" value="usrp_firmware.ihx"/>
+		<parameter name="FPGA" value="usrp_fpga.rbf"/>
+		<parameter name="decim" value="32"/>
+		<parameter name="channel" value="0"/>
+		<parameter name="centre_freq" value="2350000000"/>
+		<parameter name="centre_freq2" value="0"/>
+		<parameter name="antenna" value="RX"/>
+		<parameter name="automatic_side_selection" value="true"/>
+		<parameter name="automatic_board_selection" value="true"/>
+		<parameter name="useBothSides" value="false"/>
+		<parameter name="usrp_gain" value="20"/>
+		<parameter name="scaling_factor" value="1.0"/>
+		<parameter name="numoutputsamples" value="16384"/>
+		<parameter name="verbose" value="true"/>
+		<parameter name="flipiq" value="true"/>
+		<parameter name="rx_on" value="true"/>
+		<port name="output1" class="output"/>
+        </component>
+<!--       
+        <component name="filerawwriter1" class="filerawwriter">
+			<parameter name="filename" value="capture.bin"/>
+			<port name="input1" class="input"/>
+      	</component>
+
+	<component name="filerawreader1" class="filerawreader">
+	            <parameter name="fileName" value="capture.bin"/>
+	            <parameter name="blockSize" value="16384"/>
+	            <parameter name="dataType" value="complex<float>"/>
+	            <port name="output1" class="output"/>
+        </component>
+--> 
+  
+        <component name="fullcyclobwdemodulator1" class="fullcyclobwdemodulator">
+		<parameter name="debug" value="false"/>	
+		<parameter name="numunits" value="8"/>
+		<parameter name="detectthreshold" value="0.85"/>
+		<port name="input1" class="input"/>
+		<port name="output1" class="output"/>
+        </component>
+
+      <component name="udptx1" class="udpsockettx">
+		  <parameter name="address" value="127.0.0.1"/>
+		  <parameter name="port" value="1234"/>
+		  <port name="input1" class="input"/>
+	</component>
+     
+    </engine>
+<!--
+	<link source="usrprx1.output1" sink="filerawwriter1.input1" />
+ -->
+	<link source="usrprx1.output1" sink="fullcyclobwdemodulator1.input1" />
+	<link source="fullcyclobwdemodulator1.output1" sink="udptx1.input1" />
+ 
+	
+</softwareradio>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+    <component name="usrprx1" class="usrprx">
+      <parameter name="debug" value="false"/>
+      <parameter name="firmware" value="usrp_firmware.ihx"/>
+      <parameter name="FPGA" value="usrp_fpga.rbf"/>
+      <parameter name="decim" value="128"/>
+      <parameter name="centre_freq" value="2390000000"/>
+      <parameter name="automatic_side_selection" value="true"/>
+      <parameter name="automatic_board_selection" value="true"/>
+      <parameter name="usrp_gain" value="40"/>
+      <parameter name="scaling_factor" value="1.0"/>
+      <parameter name="numoutputsamples" value="16384"/>
+      <port name="output1" class="output"/>
+    </component>
+
+    <component name="shapedofdmdemod1" class="shapedofdmdemod">
+      <parameter name="debug" value="false"/>
+      <parameter name="shapingExtLen" value="10"/>
+      <port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+
+    <component name="udptx1" class="udpsockettx">
+      <parameter name="address" value="127.0.0.1"/>
+      <parameter name="port" value="2222"/>
+      <port name="input1" class="input"/>
+    </component>
+
+	</engine>
+
+	<link source="usrprx1.output1" sink="shapedofdmdemod1.input1" />
+	<link source="shapedofdmdemod1.output1" sink="udptx1.input1" />
+
+  </softwareradio>

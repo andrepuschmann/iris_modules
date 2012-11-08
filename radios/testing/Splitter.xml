@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+		<component name="src1" class="source">
+			<port name="output1" class="output"/>
+		</component>
+
+        <component name="splitter1" class="splitter">
+            <parameter name="x_numOutputs" value="2"/>
+            <port name="input1" class="input"/>
+            <port name="output1" class="output"/>
+            <port name="output2" class="output"/>
+        </component>
+    </engine>
+
+    <engine name="pnengine2" class="pnengine">
+		<component name="snk1" class="sink">
+			<port name="input1" class="input"/>
+		</component>
+    </engine>
+
+    <engine name="pnengine3" class="pnengine">
+        <component name="snk2" class="sink">
+            <port name="input1" class="input"/>
+        </component>
+    </engine>
+	
+	<link source="src1.output1" sink="splitter1.input1" />
+	<link source="splitter1.output1" sink="snk1.input1" />
+    <link source="splitter1.output2" sink="snk2.input1" />
+	
+	
+</softwareradio>

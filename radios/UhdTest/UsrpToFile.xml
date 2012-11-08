@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+		<component name="usrpuhdrx1" class="usrpuhdrx">
+			<parameter name="args" value=""/>
+			<parameter name="rate" value="1000000"/>
+			<parameter name="frequency" value="2400030000"/>
+			<parameter name="gain" value="0"/>
+			<parameter name="outputblocksize" value="16384"/>
+			<port name="output1" class="output"/>
+    	</component>
+
+		<component name="filerawwriter1" class="filerawwriter">
+			<parameter name="filename" value="out.bin"/>
+			<port name="input1" class="input"/>
+		</component>
+
+	</engine>
+
+	<link source="usrpuhdrx1.output1" sink="filerawwriter1.input1" />
+
+</softwareradio>

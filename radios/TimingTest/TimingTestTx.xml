@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="TimingTestRadio">
+
+	<engine name="stackengine1" class="stackengine">
+
+		<component name="timingtest1" class="timingtest">
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+    	</component>
+	</engine>
+	
+	<engine name="pnengine1" class="pnengine">
+		
+		<component name="simpleofdmmod1" class="simpleofdmmod">
+			<parameter name="debug" value="false"/>
+			<parameter name="numfftbins" value="512"/>
+			<parameter name="bitsperdatasymbol" value="1"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="usrpuhdtx1" class="usrpuhdtx">
+			<parameter name="args" value="addr=192.168.10.2"/>
+			<parameter name="rate" value="800000"/>
+			<parameter name="frequency" value="5000000000"/>
+			<parameter name="gain" value="1"/>
+			<parameter name="streaming" value="false"/>
+			<port name="input1" class="input"/>
+		</component>
+		
+	</engine>
+
+	<link source="timingtest1.bottomport1" sink="simpleofdmmod1.input1" />
+	<link source="simpleofdmmod1.output1" sink="usrpuhdtx1.input1" />
+</softwareradio>

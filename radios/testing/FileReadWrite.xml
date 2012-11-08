@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+    <engine name="pnengine1" class="pnengine">
+        <component name="filerawreader1" class="filerawreader">
+            <parameter name="fileName" value="Splitter.xml"/>
+            <parameter name="blockSize" value="1024"/>
+            <parameter name="dataType" value="uint8_t"/>
+            <port name="output1" class="output"/>
+        </component>
+    </engine>
+
+    <engine name="pnengine2" class="pnengine">
+        <component name="filerawwriter1" class="filerawwriter">
+            <parameter name="fileName" value="out.txt"/>
+            <port name="input1" class="input"/>
+        </component>
+    </engine>
+	
+	<link source="filerawreader1.output1" sink="filerawwriter1.input1" />
+	
+</softwareradio>

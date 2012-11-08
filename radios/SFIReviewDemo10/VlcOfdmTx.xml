@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+    <engine name="pnengine1" class="pnengine">
+    
+        <component name="udprx1" class="udpsocketrx">
+            <parameter name="port" value="1234"/>
+            <parameter name="buffersize" value="1316"/>
+            <parameter name="outputtype" value="uint8_t"/>
+            <port name="output1" class="output"/>
+        </component>
+
+    </engine>
+      
+    <engine name="pnengine2" class="pnengine">
+
+        <component name="fullcyclobwmodulator1" class="fullcyclobwmodulator">
+        	<parameter name="debug" value="false"/>	
+	            <parameter name="randomize" value="true"/>
+	            <parameter name="numunits" value="8"/>
+		    <parameter name="maxunits" value="11"/>
+		    <parameter name="minunits" value="7"/>
+	            <port name="input1" class="input"/>
+	            <port name="output1" class="output"/>
+        </component>
+        
+        <component name="signalscaler1" class="signalscaler">
+		    <parameter name="maximum" value="0.9"/>
+		    <port name="input1" class="input"/>
+		    <port name="output1" class="output"/>
+        </component>
+        
+        <component name="usrpuhdtx1" class="usrpuhdtx">
+			<parameter name="address" value="192.168.10.2"/>
+			<parameter name="rate" value="1800000"/>
+			<parameter name="frequency" value="5000000000"/>
+			<parameter name="gain" value="10"/>
+			<parameter name="streaming" value="false"/>
+			<port name="input1" class="input"/>
+		</component>
+        
+    </engine>
+	
+	<link source="udprx1.output1" sink="fullcyclobwmodulator1.input1" />
+	<link source="fullcyclobwmodulator1.output1" sink="signalscaler1.input1" />
+	<link source="signalscaler1.output1" sink="usrpuhdtx1.input1" />
+	
+</softwareradio>

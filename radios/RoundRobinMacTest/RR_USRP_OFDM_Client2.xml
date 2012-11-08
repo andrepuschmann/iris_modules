@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="RoundRobinOFDMClient2">
+
+
+	<engine name="stackengine20" class="stackengine">
+
+		<component name="clientfilereader2" class="filereader">
+			<parameter name="filename" value="war.txt"/>
+			<parameter name="blocksize" value="512"/>
+			<parameter name="delay" value="5000000"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+		
+	
+		<component name="clientfilewriter2" class="filewriter">
+			<parameter name="filename" value="war_out.txt"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+	
+		<component name="rrmacclient2" class="roundrobinmacclient">
+			<parameter name="payloadlength" value="512"/>
+			<parameter name="sourceaddress" value="88888811cccc"/>
+			<parameter name="masteraddress" value="00f0f0f0f0f0"/>
+			<parameter name="correlationlevel" value="0.8"/>
+			<parameter name="passowndataabove" value="false"/>
+			<parameter name="ignorecrc" value="true"/>
+			<parameter name="decodeowntransmission" value="false"/>
+			<parameter name="simpleframing" value="true"/>
+			<port name="topoutputport" class="io"/>
+			<port name="topinputport" class="io"/>
+			<port name="bottomoutputport" class="io"/>
+			<port name="bottominputport" class="io"/>
+    	</component>
+
+	</engine>
+	
+	<engine name="pnengine20" class="pnengine">
+		
+		<component name="clientindemod2" class="simpleofdmdemod">
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+
+    <component name="clientusrprx2" class="usrprx">
+      <parameter name="debug" value="false"/>
+      <parameter name="firmware" value="usrp_firmware.ihx"/>
+      <parameter name="fpga" value="usrp_fpga.rbf"/>
+      <parameter name="decim" value="128"/>
+      <parameter name="centre_freq" value="2410000000"/>
+      <parameter name="automatic_side_selection" value="true"/>
+      <parameter name="automatic_board_selection" value="true"/>
+      <parameter name="usrp_gain" value="40"/>
+      <parameter name="scaling_factor" value="1"/>
+      <parameter name="numOutputSamples" value="16384"/>
+      <parameter name="antenna" value="TXRX"/>
+      <port name="output1" class="output"/>
+    </component>
+	
+	</engine>
+	
+	<engine name="pnengine21" class="pnengine">
+		
+		<component name = "clientoutmod2" class="simpleofdmmod">
+			<parameter name="numfftbins" value="512"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+
+		<component name="clientoutscaler2" class="signalscaler">
+			<parameter name="maximum" value="5000"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="clientusrptx2" class="usrptx">
+		  <parameter name="debug" value="false"/>
+		  <parameter name="firmware" value="usrp_firmware.ihx"/>
+		  <parameter name="fpga" value="usrp_fpga.rbf"/>
+		  <parameter name="interp" value="128"/>
+		  <parameter name="gain" value="1"/>
+		  <parameter name="centre_freq" value="2410000000"/>
+		  <parameter name="automatic_side_selection" value="true"/>
+		  <parameter name="autotxrx" value="true"/>
+		  <parameter name="packetmode" value="true"/>
+		  <port name="input1" class="input"/>
+		</component>
+		
+	</engine>
+
+	<link source="clientfilereader2.bottomport1" sink="rrmacclient2.topinputport" />
+	<link source="clientfilewriter2.bottomport1" sink="rrmacclient2.topoutputport" />
+	<link source="rrmacclient2.bottomoutputport" sink="clientoutmod2.input1" />
+	<link source="clientoutmod2.output1" sink="clientoutscaler2.input1" />
+	<link source="clientoutscaler2.output1" sink="clientusrptx2.input1" />
+	<link source="clientusrprx2.output1" sink="clientindemod2.input1" />
+	<link source="clientindemod2.output1" sink="rrmacclient2.bottominputport" />
+	
+</softwareradio>

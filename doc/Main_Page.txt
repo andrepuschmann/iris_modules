@@ -1,0 +1,23 @@
+/** @mainpage Iris 2.0 Modules
+*
+* @authors Paul Sutton
+*
+* @section intro Introduction
+* This package contains the components and controller which may be used to create radios with the Iris 2.0 software radio
+* framework.
+*
+* Example modules are available for reference:
+* 
+* - Example PN Component
+* -# components/gpp/PN/Example/ExampleComponent.h
+*
+* - Example Controller
+* -# controllers/Example/ExampleController.h
+*
+*
+* For more support, please refer to our wiki pages <A HREF="https://ntrg020.cs.tcd.ie/irisv2/wiki"> here </A>.
+*
+* Details on our support mailing list can be found <A HREF="https://lists.scss.tcd.ie/mailman/listinfo/iris2"> here </A>.
+*
+*
+*/

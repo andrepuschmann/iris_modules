@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<!-- Note:  StackComponents cannot accept complex<float> inputs, so any input to a SharedMedium component (arriving over sockets via this xml
+ -			or otherwise) should not be modulated.
+ -->
+
+<softwareradio name="SharedMediumTest">
+
+	<engine name="stackengine1" class="stackengine">
+		<component name="sharedmedium1" class="sharedmedium">
+			<parameter name="collisionwindow" value="10"/>
+			<parameter name="connections" value="3"/>
+			<parameter name="debug" value="true"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomoutput1" class="io"/>
+			<port name="bottomoutput2" class="io"/>
+			<port name="bottomoutput3" class="io"/>
+			<port name="bottominput1" class="io"/>
+			<port name="bottominput2" class="io"/>
+			<port name="bottominput3" class="io"/>
+		</component>
+	</engine>
+		
+	<engine name="pnengineout1" class="pnengine">
+	
+		<component name="udpout1" class="udpsockettx">
+			<parameter name="port" value="5170"/>
+			<port name="input1" class="input"/>
+		</component>
+	</engine>
+	
+	<engine name="pnengineout2" class="pnengine">
+
+		<component name="udpout2" class="udpsockettx">
+			<parameter name="port" value="5171"/>
+			<port name="input1" class="input"/>
+		</component>
+	</engine>
+
+	<engine name="pnengineout3" class="pnengine">
+	
+		<component name="udpout3" class="udpsockettx">
+			<parameter name="port" value="5172"/>
+			<port name="input1" class="input"/>
+		</component>
+	</engine>
+
+	<engine name="pnenginein1" class="pnengine">
+		<component name="udpin1" class="udpsocketrx">
+			<parameter name="port" value="5180"/>
+			<parameter name="buffersize" value="10000"/>
+			<parameter name="outputtype" value="uint8_t"/>
+			<port name="output1" class="output"/>
+		</component>
+	</engine>
+
+	<engine name="pnenginein2" class="pnengine">
+		<component name="udpin2" class="udpsocketrx">
+			<parameter name="port" value="5181"/>
+			<parameter name="buffersize" value="10000"/>
+			<parameter name="outputtype" value="uint8_t"/>
+			<port name="output1" class="output"/>
+		</component>
+	</engine>
+
+	<engine name="pnenginein3" class="pnengine">
+		<component name="udpin3" class="udpsocketrx">
+			<parameter name="port" value="5182"/>
+			<parameter name="buffersize" value="10000"/>
+			<parameter name="outputtype" value="uint8_t"/>
+			<port name="output1" class="output"/>
+		</component>
+	</engine>
+	
+	<link source="sharedmedium1.bottomoutput1" sink="udpout1.input1" />
+	<link source="sharedmedium1.bottomoutput2" sink="udpout2.input1" />
+	<link source="sharedmedium1.bottomoutput3" sink="udpout3.input1" />
+	
+	<link source="udpin1.output1" sink="sharedmedium1.bottominput1" />
+	<link source="udpin2.output1" sink="sharedmedium1.bottominput2" />
+	<link source="udpin3.output1" sink="sharedmedium1.bottominput3" />
+	
+</softwareradio>

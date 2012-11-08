@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="RoundRobinMasterSocket">
+
+
+	<engine name="stackengine1" class="stackengine">
+
+		<component name="clientfilereader1" class="filereader">
+			<parameter name="filename" value="alice.txt"/>
+			<parameter name="blocksize" value="512"/>
+			<parameter name="delay" value="5000000"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+		
+	
+		<component name="clientfilewriter1" class="filewriter">
+			<parameter name="filename" value="alice_out.txt"/>
+			<port name="topport1" class="io"/>
+			<port name="bottomport1" class="io"/>
+		</component>
+	
+		<component name="rrmacclient1" class="roundrobinmacclient">
+			<parameter name="payloadlength" value="512"/>
+			<parameter name="sourceaddress" value="f009e090e90e"/>
+			<parameter name="masteraddress" value="00f0f0f0f0f0"/>
+			<parameter name="correlationlevel" value="0.8"/>
+			<parameter name="passowndataabove" value="true"/>
+			<parameter name="ignorecrc" value="true"/>
+			<parameter name="decodeowntransmission" value="true"/>
+			<parameter name="simpleframing" value="true"/>
+			<port name="topoutputport" class="io"/>
+			<port name="topinputport" class="io"/>
+			<port name="bottomoutputport" class="io"/>
+			<port name="bottominputport" class="io"/>
+    	</component>
+
+	</engine>
+	
+	<engine name="pnengine3" class="pnengine">
+		
+		<component name="clientsocketindemod" class="simpleofdmdemod">
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="clientsocketin" class="udpsocketrx">
+			<parameter name="port" value="9126"/>
+			<parameter name="buffersize" value="100000"/>
+			<parameter name="outputType" value="std::complex<float>"/>
+			<port name="output1" class="output"/>
+		</component>
+	
+	</engine>
+	
+	<engine name="pnengine4" class="pnengine">
+		
+		<component name = "clientsocketoutmod" class="simpleofdmmod">
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+		
+		<component name="clientsocketout" class="udpsockettx">
+			<parameter name="port" value="9127"/>
+			<port name="input1" class="input"/>
+		</component>
+		
+	</engine>
+
+	<link source="clientfilereader1.bottomport1" sink="rrmacclient1.topinputport" />
+	<link source="clientfilewriter1.bottomport1" sink="rrmacclient1.topoutputport" />
+	<link source="rrmacclient1.bottomoutputport" sink="clientsocketoutmod.input1" />
+	<link source="clientsocketoutmod.output1" sink="clientsocketout.input1" />
+	<link source="clientsocketin.output1" sink="clientsocketindemod.input1" />
+	<link source="clientsocketindemod.output1" sink="rrmacclient1.bottominputport" />
+	
+</softwareradio>

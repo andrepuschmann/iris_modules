@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+	<engine name="pnengine1" class="pnengine">
+
+    <component name="udprx1" class="udpsocketrx">
+      <parameter name="port" value="1234"/>
+      <parameter name="buffersize" value="1316"/>
+      <parameter name="outputtype" value="uint8_t"/>
+      <port name="output1" class="output"/>
+    </component>
+
+		<component name="shapedofdmmod1" class="shapedofdmmod">
+			<parameter name="debug" value="false"/>
+      <parameter name="shapingExtLen" value="10"/>
+      <parameter name="numfftbins" value="1024"/>
+			<port name="input1" class="input"/>
+			<port name="output1" class="output"/>
+		</component>
+
+    <component name="signalscaler1" class="signalscaler">
+      <parameter name="maximum" value="700"/>
+      <port name="input1" class="input"/>
+      <port name="output1" class="output"/>
+    </component>
+
+    <component name="usrptx1" class="usrptx">
+      <parameter name="debug" value="true"/>
+      <parameter name="firmware" value="usrp_firmware.ihx"/>
+      <parameter name="FPGA" value="usrp_fpga.rbf"/>
+      <parameter name="interp" value="64"/>
+      <parameter name="centre_freq" value="2390000000"/>
+      <parameter name="which_board" value="0"/>
+      <parameter name="automatic_side_selection" value="true"/>
+      <parameter name="automatic_board_selection" value="true"/>
+      <parameter name="gain" value="1.0"/>
+      <port name="input1" class="input"/>
+    </component>
+
+    
+	</engine>
+
+	<link source="udprx1.output1" sink="shapedofdmmod1.input1" />
+	<link source="shapedofdmmod1.output1" sink="signalscaler1.input1" />
+  <link source="signalscaler1.output1" sink="usrptx1.input1" />
+
+</softwareradio>
