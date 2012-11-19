@@ -1,24 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
-
 /**
- * \file FileUtility.h
+ * @file FileUtility.h
+ * @version 1.0
  *
- * 	This class provides static functions for reading and writing signal data to files.
+ * @section COPYRIGHT
  *
- *  Created on: April-2008
- *  Created by: suttonp
- *  $Revision: 1525 $
- *  $LastChangedDate: 2012-07-20 10:40:43 +0100 (Fri, 20 Jul 2012) $
- *  $LastChangedBy: suttonp $
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Class providing static functions for reading/writing data to/from files.
  */
 
 #ifndef FILEUTILITY_H

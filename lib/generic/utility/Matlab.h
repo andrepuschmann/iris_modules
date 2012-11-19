@@ -1,23 +1,34 @@
-/*
- * This file is part of Iris 2.
- *
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin.
- * All rights reserved.
- *
- */
-
 /**
- * \file Matlab.h
+ * @file Matlab.h
+ * @version 1.0
  *
- * 	This Class wraps the matlab engine - mainly used in the matlab component
+ * @section COPYRIGHT
  *
- *  Created on: May-2007
- *  Created by: hlahlou & suttonp
- *  $Revision: 865 $
- *  $LastChangedDate: 2010-03-17 10:33:49 +0000 (Wed, 17 Mar 2010) $
- *  $LastChangedBy: suttonp $
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * This Class wraps the Matlab engine - mainly used in the matlab component.
  */
 
 #ifndef MATLAB_H_

@@ -1,42 +1,42 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
-
-
-/** @file tml_stochastics.c 
- * This file implements the function regarding random numbers and stochastic
+/**
+ * @file tml_stochastics.c
+ * @version 1.0
+ *
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Implementation of the functions for random numbers and stochastic
  * computations.
- * It uses the Ziggurat method to generate random variables of normal and exponential
- * distributions [1].
- * 
- * @todo Dont use global static variables for number generator state
- * 
- * [1] Marsaglia, G. and Tsang, W.W., The Ziggurat Method for Generating 
- * Random Variables," Journal of Statistical Software, (2000), 5(8). 
- * Available online at http://www.jstatsoft.org/v05/i08/.
  */
-
-/*
-Authors:
-- Jorg Lotze
-- Hicham Lahlou
-*/
 
 #define TML_W32DLL
 
 #include <math.h>
 #include <stdlib.h>
 #include "tml.h"
-
-
-/* ------------------------- Random Number Generator by Ziggurat Method */
-/* doesnt work properly - so we use another method below */
 
 /* this function is taken from http://c-faq.com/lib/gaussian.html */
 /* FIXXX ME: probably a better version around - but it works well */
