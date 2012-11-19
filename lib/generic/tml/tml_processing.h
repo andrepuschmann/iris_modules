@@ -1,14 +1,14 @@
 /**
- * @file tml_processing.h
- * @version 1.0
+ * \file tml_processing.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * The signal processing operations for the Trinity Math Library.
  */
@@ -127,18 +127,18 @@
 
 
 /*------------------------------ Signal Processing Function Implementation ------------------------ */
-/** @defgroup Signal Processing Operations
- * @{
+/** \defgroup Signal Processing Operations
+ * \{
  */
 
 /*----------Convolution----------*/
 
  /**Performs finite, linear convolution of
 * two sequences.
-* @param h, x Pointers to the arrays to be convolved.
-* @param hLen Number of samples in the array h[n].
-* @param xLen Number of samples in the array x[n].
-* @param y Pointer to the array which stores the result of the
+* \param h, x Pointers to the arrays to be convolved.
+* \param hLen Number of samples in the array h[n].
+* \param xLen Number of samples in the array x[n].
+* \param y Pointer to the array which stores the result of the
 * convolution.
 */
 TMLAPI(void, tml_sr_Conv, (const float *x, int xLen, const float *h, int hLen,
@@ -150,9 +150,9 @@ SCplx *y))
 
 /**Initialize the coefficients and structure
 * of a single-rate Low Level FIR filter
-* @param taps Pointer to the array which specifies the filter coefficients.
-* @param tapsLen The number of taps in the taps[n] array.
-* @param tapStPtr Pointer to the TMLFirTapState structure.
+* \param taps Pointer to the array which specifies the filter coefficients.
+* \param tapsLen The number of taps in the taps[n] array.
+* \param tapStPtr Pointer to the TMLFirTapState structure.
 */
 TMLAPI(void, tml_sc_FirlInit,(SCplx *taps, int tapsLen, TMLFirTapState *tapStPtr))
 TMLAPI(void, tml_sr_FirlInit,(float *taps, int tapsLen, TMLFirTapState *tapStPtr))
@@ -161,19 +161,19 @@ TMLAPI(void, tml_sr_FirlInit,(float *taps, int tapsLen, TMLFirTapState *tapStPtr
 * The delay line is associated with a particular set of taps. Multiple delay
 * lines for a given set of taps can be initialized by calling this function
 * multiple times, but there should be only one call for each delay line.
-* @param dlyl Pointer to the array which specifies the initial values for
+* \param dlyl Pointer to the array which specifies the initial values for
 * the delay line for the TML_?_FirlInitDlyl() function.
-* @param dlylStPtr Pointer to the TMLFirDlylState structure.
-* @param tapStPtr Pointer to the TMLFirTapState structure.
+* \param dlylStPtr Pointer to the TMLFirDlylState structure.
+* \param tapStPtr Pointer to the TMLFirTapState structure.
 */
 TMLAPI(void, tml_sc_FirlInitDlyl,(const TMLFirTapState *tapStPtr, SCplx *dlyl, TMLFirDlyState *dlyStPtr))
 TMLAPI(void, tml_sr_FirlInitDlyl,(const TMLFirTapState *tapStPtr, float *dlyl, TMLFirDlyState *dlyStPtr))
 
 /**Sets the tap coefficients for a low-level FIR filter
-* @param inDlyl Pointer to the array holding copies of the delay line
+* \param inDlyl Pointer to the array holding copies of the delay line
 * values for the tml_?_FirlSetDlyl() function.
-* @param tapStPtr Pointer to the TMLFirTapState structure.
-* @param dlylStPtr Pointer to the TMLFirDlylState structure.
+* \param tapStPtr Pointer to the TMLFirTapState structure.
+* \param dlylStPtr Pointer to the TMLFirDlylState structure.
 */
 TMLAPI(void, tml_sc_FirlSetDlyl, (const TMLFirTapState *tapStPtr, SCplx *inDlyl,
 TMLFirDlyState *dlylStPtr))
@@ -181,32 +181,32 @@ TMLAPI(void, tml_sr_FirlSetDlyl, (const TMLFirTapState *tapStPtr, float *inDlyl,
 TMLFirDlyState *dlylStPtr))
 
 /**Sets the tap coefficients for a low-level FIR filter
-* @param inTaps Pointer to the array holding copies of the tap
+* \param inTaps Pointer to the array holding copies of the tap
 * coefficients.
-* @param tapStPtr Pointer to the TMLFirTapState structure.
+* \param tapStPtr Pointer to the TMLFirTapState structure.
 */
 TMLAPI(void, tml_sc_FirlSetTaps, (SCplx *inTaps, TMLFirTapState *tapStPtr))
 TMLAPI(void, tml_sr_FirlSetTaps, (float *inTaps, TMLFirTapState *tapStPtr))
 
 
 /** Filters one sample through a low-level FIR filter.
-* @param tapStPtr Pointer to the TMLFirTapState structure.
-* @param dlylStPtr Pointer to the TMLFirDlylState structure.
-* @param samp Input sample to be filtered.
-* @return filter output.
+* \param tapStPtr Pointer to the TMLFirTapState structure.
+* \param dlylStPtr Pointer to the TMLFirDlylState structure.
+* \param samp Input sample to be filtered.
+* \return filter output.
 */
 TMLAPI(SCplx, tml_sc_Firl, (const TMLFirTapState *tapStPtr, TMLFirDlyState *dlyStPtr, const SCplx samp))
 TMLAPI(float, tml_sr_Firl, (const TMLFirTapState *tapStPtr, TMLFirDlyState *dlyStPtr, const float samp))
 
 /**Filters a block of samples through a low-level FIR filter
 *complex input, complex taps; single precision
-* @param tapStPtr Pointer to the TMLFirTapState structure.
-* @param dlylStPtr Pointer to the TMLFirDlylState structure.
-* @param inSamps Pointer to the array which stores the input samples to be
+* \param tapStPtr Pointer to the TMLFirTapState structure.
+* \param dlylStPtr Pointer to the TMLFirDlylState structure.
+* \param inSamps Pointer to the array which stores the input samples to be
 * filtered by the tml_?_vFirl() function.
-* @param outSamps Pointer to the array which stores the output samples
+* \param outSamps Pointer to the array which stores the output samples
 * filtered by the tml_?_vFirl() function.
-* @param numIters The number of samples to be filtered by 
+* \param numIters The number of samples to be filtered by
 * the tml_?_vFirl() function.
 */
 TMLAPI(void, tml_sc_vFirl, (const TMLFirTapState *tapStPtr,
@@ -224,30 +224,30 @@ SCplx *outSamps, int numIters))
 
 /**Initialize the coefficients, delay line,
 * and structure of a single-rate FIR filter
-* @param tapVals Pointer to the array containing the filter coefficient
+* \param tapVals Pointer to the array containing the filter coefficient
 * (taps) values.
-* @param tapsLen The number of values in the array containing the filter
+* \param tapsLen The number of values in the array containing the filter
 * coefficients (taps).
-* @param dlyVals Pointer to the array containing the delay line values.
-* @param statePtr Pointer to the TMLFirState structure.
+* \param dlyVals Pointer to the array containing the delay line values.
+* \param statePtr Pointer to the TMLFirState structure.
 */
 TMLAPI(void, tml_sr_FirInit, (const float *tapVals, int tapsLen,
 const float *dlyVals, TMLFirState *statePtr))
 
 /**Filters a single sample through an FIR filter
-* @param statePtr Pointer to the TMLFirState structure.
-* @param samp The input sample to be filtered by the tml_?_Fir()
+* \param statePtr Pointer to the TMLFirState structure.
+* \param samp The input sample to be filtered by the tml_?_Fir()
 * function.
 */
 TMLAPI(float, tml_sr_Fir, (TMLFirState *statePtr, float samp))
 
 /**Filters a block of samples through an FIR filter
-* @param statePtr Pointer to the TMLFirState structure.
-* @param inSamps Pointer to the array which stores the input samples to be
+* \param statePtr Pointer to the TMLFirState structure.
+* \param inSamps Pointer to the array which stores the input samples to be
 * filtered by the tml_?_vFir() function.
-* @param outSamps Pointer to the array which stores the output samples
+* \param outSamps Pointer to the array which stores the output samples
 * filtered by the tml_?_vFir() function.
-* @param numIters Parameter associated with the number of samples to be
+* \param numIters Parameter associated with the number of samples to be
 * filtered by the tml_?_vFir() function. For single-rate
 * filters, the numIters samples in the array inSamps[n]
 * are filtered and the resulting numIters samples are
@@ -258,12 +258,12 @@ TMLAPI(void, tml_scr_vFir, (TMLFirState *statePtr, const SCplx *inSamps,
 SCplx *outSamps, int numIters))
 
 /**Filters a block of samples through an FIR filter
-* @param statePtr Pointer to the TMLFirState structure.
-* @param inSamps Pointer to the array which stores the input samples to be
+* \param statePtr Pointer to the TMLFirState structure.
+* \param inSamps Pointer to the array which stores the input samples to be
 * filtered by the tml_?_vFir() function.
-* @param outSamps Pointer to the array which stores the output samples
+* \param outSamps Pointer to the array which stores the output samples
 * filtered by the tml_?_vFir() function.
-* @param numIters Parameter associated with the number of samples to be
+* \param numIters Parameter associated with the number of samples to be
 * filtered by the tml_?_vFir() function. For single-rate
 * filters, the numIters samples in the array inSamps[n]
 * are filtered and the resulting numIters samples are
@@ -276,33 +276,33 @@ float *outSamps, int numIters) )
 
 /** Computes taps for a bandpass FIR filter.
 * taps are normalized
-* @param rLowFreq Low cut-off frequency (0 < rLowFreq < rHighFreq).
-* @param rHighFreq High cut-off frequency (rLowFreq < rHighFreq < 0.5)
-* @param taps Pointer to the vector of taps to be computed.
-* @param tapsLen The number of taps in taps (tapsLen greater than or equal to 5).
-* @param winType Specifies the smoothing window type. Can be one of the following:
+* \param rLowFreq Low cut-off frequency (0 < rLowFreq < rHighFreq).
+* \param rHighFreq High cut-off frequency (rLowFreq < rHighFreq < 0.5)
+* \param taps Pointer to the vector of taps to be computed.
+* \param tapsLen The number of taps in taps (tapsLen greater than or equal to 5).
+* \param winType Specifies the smoothing window type. Can be one of the following:
 *	TML_WinRect no smoothing (rectangular window);
 *	TML_WinHamming smoothing by Hamming window;
-* @Return one of the following values:
+* \Return one of the following values:
 *	TML_StsOk if the taps have been computed successfully
 *	TML_fStsBadPointer if the pointer to the taps vector is null
 *	TML_fStsBadLen if the number of taps (tapsLen) is less than five
 *	TML_fStsBadFreq if the frequencies are not in the interval (0, 0.5)
 *	TML_fStsBadRel ifrLowFreq greater than or equal rHighFreq .
-* @todo define error handling TML_StsOk ...
+* \todo define error handling TML_StsOk ...
 */
 TMLAPI(int, tml_dr_FirBandpass, (double rLowFreq, double rHighFreq,
 double *taps, int tapsLen, TML_WindowType winType))
 
 /**Computes taps for a lowpass FIR filter.
 * taps are normalized
-* @param rfreq Cut-off frequency value (0 < rfreq < 0.5).
-* @param taps Pointer to the vector of taps to be computed.
-* @param tapsLen The number of taps in taps (tapsLen greater than or equal to 5).
-* @param winType Specifies the smoothing window type. Can be one of the following:
+* \param rfreq Cut-off frequency value (0 < rfreq < 0.5).
+* \param taps Pointer to the vector of taps to be computed.
+* \param tapsLen The number of taps in taps (tapsLen greater than or equal to 5).
+* \param winType Specifies the smoothing window type. Can be one of the following:
 * 	TML_WinRect no smoothing (rectangular window);
 * 	TML_WinHamming smoothing by Hamming window;
-* @Return one of the following values:
+* \Return one of the following values:
 * 	TML_StsOk if the taps have been computed successfully
 *	TML_fStsBadPointer if the pointer to the taps vector is null
 *	TML_fStsBadLen if the number of taps (tapsLen) is less than five
@@ -313,21 +313,21 @@ TML_WindowType winType))
 
 /**Frees dynamic memory associated
 * with the FIR filter.
-* @param statePtr Pointer to the TMLFirState structure. 
+* \param statePtr Pointer to the TMLFirState structure.
 */
 TMLAPI(void, tml_FirFree, (TMLFirState *statePtr))
 
 /**Multiplies a vector by a Hann windowing function.
-* @param vec Pointer to the vector to be multiplied by the chosen
+* \param vec Pointer to the vector to be multiplied by the chosen
 * windowing function.
-* @param N The number of samples in the input and output vectors.
+* \param N The number of samples in the input and output vectors.
 */
 TMLAPI(void, tml_sr_WinHann, (float *vec, int N))
 
 /**Multiplies a vector by a Hamming windowing function.
-* @param vec Pointer to the vector to be multiplied by the chosen
+* \param vec Pointer to the vector to be multiplied by the chosen
 * windowing function.
-* @param N The number of samples in the input and output vectors.
+* \param N The number of samples in the input and output vectors.
 */
 TMLAPI(void, tml_dr_WinHamming, (double *vec, int N))
 
@@ -340,33 +340,33 @@ TMLAPI(void, tml_dr_WinHamming, (double *vec, int N))
 /*============================ Resampling with filtering =================================*/
  
 /**Initializes resampling parameters structure.
-* @param sampSt The pointer to a TMLSampState structure which will
+* \param sampSt The pointer to a TMLSampState structure which will
 * contain the resampling parameters data.
-* @param factorRange The vector of predefined resampling factor quotients.
+* \param factorRange The vector of predefined resampling factor quotients.
 * Each value is equal to the quotient of the input vector length divided 
 * by the output vector length.
-* @param freq The vector of cut-off frequencies for the lowpass filters
-* @param nFactors The length of frequency and resampling factor vectors.
-* @param nTaps The number of filter taps.
-* @todo define error handling (to return TMLStatus instead of int)
+* \param freq The vector of cut-off frequencies for the lowpass filters
+* \param nFactors The length of frequency and resampling factor vectors.
+* \param nTaps The number of filter taps.
+* \todo define error handling (to return TMLStatus instead of int)
 */
 TMLAPI(int, tml_sr_SampInit, (TMLSampState* sampSt, float* factorRange,
 float* freq, int nFactors, int nTaps))
 
 /**Performs resampling of the input signal using the multi-rate FIR filter.
-* @param sampSt The pointer to TMLSampState structure which contains the
+* \param sampSt The pointer to TMLSampState structure which contains the
 * resampling parameters.
-* @param src The input signal vector.
-* @param srcLen Length of the input vector.
-* @param dst The output signal vector.
-* @param dstLen Length of the output vector.
+* \param src The input signal vector.
+* \param srcLen Length of the input vector.
+* \param dst The output signal vector.
+* \param dstLen Length of the output vector.
 */
 TMLAPI(int, tml_sr_Samp, (TMLSampState* sampSt,const float* src,
 int srcLen, float* dst, int dstLen))
 
 /**Frees work array memory which is pointed to
 * in the resampling data structure sampSt.
-* @param sampSt The pointer to a TMLSampState structure which contains the
+* \param sampSt The pointer to a TMLSampState structure which contains the
 * resampling parameters.
 */
 TMLAPI(void, tml_SampFree, (TMLSampState* sampSt))
@@ -375,19 +375,19 @@ TMLAPI(void, tml_SampFree, (TMLSampState* sampSt))
 
 /** Up-samples a signal, conceptually increasing its sampling rate by an
 * integer factor.
-* @param dst Pointer to the output array.
-* @param dstLen An output parameter: the number of samples in the dst
+* \param dst Pointer to the output array.
+* \param dstLen An output parameter: the number of samples in the dst
 * array. It is equal to the product (srcLen * factor).
-* @param factor The factor by which the signal is up-sampled. That is,
+* \param factor The factor by which the signal is up-sampled. That is,
 * factor -1 zeros are inserted after each sample of
 * src[n].
-* @param phase A parameter which determines where each sample from
+* \param phase A parameter which determines where each sample from
 * src[n] lies within each output block of factor
 * samples. The value of phase is required to be 0 =< phase < factor.
 * The value of this parameter can be used for the next up-sampling 
 * with the same factor and next src[n].
-* @param src Pointer to the input array (the signal to be up-sampled).
-* @param srcLen The number of samples in the src array.
+* \param src Pointer to the input array (the signal to be up-sampled).
+* \param srcLen The number of samples in the src array.
 */
 TMLAPI(void, tml_sr_UpSample,(const float *src, int srcLen, float *dst,
 int *dstLen, int factor, int *phase))
@@ -397,16 +397,16 @@ TMLAPI(void, tml_sc_UpSample,(const SCplx *src, int srcLen, SCplx *dst, int
 
 /**Down-samples a signal, conceptually decreasing its sampling rate by an
 * integer factor.
-* @param src Pointer to the input array holding the signal samples to
+* \param src Pointer to the input array holding the signal samples to
 * be down-sampled.
-* @param srcLen The number of samples in the input array src[n].
-* @param dst Pointer to the array that holds the output of the
+* \param srcLen The number of samples in the input array src[n].
+* \param dst Pointer to the array that holds the output of the
 * tml_?_DownSample() function.
-* @param dstLen The number of samples in the dst array.
-* @param factor The factor by which the signal is down-sampled. That is,
+* \param dstLen The number of samples in the dst array.
+* \param factor The factor by which the signal is down-sampled. That is,
 * factor - 1 samples are discarded from every block of
 * factor samples in src[n].
-* @param phase The input value of phase determines which of the
+* \param phase The input value of phase determines which of the
 * samples within each block is not discarded. It is required
 * to satisfy the condition 0 =< phase < factor.
 * The function adjusts the output phase if srcLen is not
@@ -423,7 +423,7 @@ int *dstLen, int factor, int *phase))
 
 
 
-/** @} */
+/** \} */
 
 #endif
 

@@ -1,14 +1,14 @@
 /**
- * @file FirFilter.h
- * @version 1.0
+ * \file FirFilter.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * FIR Filter classes.
  */
@@ -73,7 +73,7 @@ public:
 
     //! \brief Apply filter to given input sequence, writing output to output iterator.
     //! Make sure that output has enough capacity to hold input.size() values.
-    //! @return Iterator pointing to one past the end of the output sequence.
+    //! \return Iterator pointing to one past the end of the output sequence.
     template<class InIt, class OutIt>
     OutIt filter(InIt istart, InIt iend, OutIt ostart)
     {
@@ -132,7 +132,7 @@ public:
 
     //! \brief Apply filter to given input sequence, writing output to output iterator.
     //! Make sure that output has enough capacity to hold input.size() * factor values.
-    //! @return Iterator pointing to one past the end of the output sequence.
+    //! \return Iterator pointing to one past the end of the output sequence.
     template<class InIt, class OutIt>
     OutIt filter(InIt istart, InIt iend, OutIt ostart)
     {

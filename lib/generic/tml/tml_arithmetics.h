@@ -1,14 +1,14 @@
 /**
- * @file tml_arithmetics.h
- * @version 1.0
+ * \file tml_arithmetics.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * The arithmetic operations for the Trinity Math Library.
  */
@@ -38,13 +38,13 @@
 #include <math.h>
 
 
-/** @defgroup scalar Scalar Arithmetics
+/** \defgroup scalar Scalar Arithmetics
  *  These functions do simple arithmetics on scalar complex numbers.
- * @{
+ * \{
  */
 
 /** Adds two single precision floating point complex numbers
- * @return The summation result
+ * \return The summation result
  */
 TMLAPI(SCplx, tml_sc_Add, (const SCplx a, const SCplx b))
 /*
@@ -56,7 +56,7 @@ TMLAPI(SCplx, tml_sc_Add, (const SCplx a, const SCplx b))
 
 
 /** Adds two double precision floating point complex numbers
- * @return The summation result
+ * \return The summation result
  */
 TMLAPI(DCplx, tml_dc_Add, (const DCplx a, const DCplx b))
 /*
@@ -121,8 +121,8 @@ TMLAPI(SCplx  , tml_sc_Div, (const SCplx a, const SCplx b))
 */
 
 /** Converts a double precision complex to a single precision complex
- * @param a double complex float 
- * @return the single precision complex float 
+ * \param a double complex float
+ * \return the single precision complex float
  * */
 TMLAPI(SCplx, tml_dc2sc, (const DCplx a))
 /*
@@ -137,9 +137,9 @@ TMLAPI(SCplx, tml_dc2sc, (const DCplx a))
 
 
 /** Test if two complex numbers are equal
-@param a First complex number 
-@param b Second complex number
-@return TRUE if the two numbers are equal
+\param a First complex number
+\param b Second complex number
+\return TRUE if the two numbers are equal
 */
 TMLAPI(int, tml_sc_Equal, (const SCplx a, const SCplx b))
 /*
@@ -194,7 +194,7 @@ TMLAPI(DCplx  , tml_dc_Mpy, (const DCplx a, const DCplx b))
 
 
 /** Computes the angle value of a single precision complex float.
- *  @return The result, between -pi and pi. Might be 0.0 if an error occured,
+ *  \return The result, between -pi and pi. Might be 0.0 if an error occured,
  *  see atan2() in math.h for a description.
 */
  TMLAPI(float  , tml_sc_Phase, (const SCplx a))
@@ -205,7 +205,7 @@ TMLAPI(DCplx  , tml_dc_Mpy, (const DCplx a, const DCplx b))
 */
 
 /** Computes the angle value of a double precision complex float.
- *  @return The result, between -pi and pi. Might be 0.0 if an error occured,
+ *  \return The result, between -pi and pi. Might be 0.0 if an error occured,
  *  see atan2() in math.h for a description.
 */
 TMLAPI(double  , tml_dc_Phase, (const DCplx a))
@@ -275,7 +275,7 @@ TMLAPI(DCplx  , tml_dc_Set, (const double re, const double im))
 */
 
 /** Subtracts two single precision floating point complex numbers
-*   @return The result of the subtraction
+*   \return The result of the subtraction
 */
 TMLAPI(SCplx  , tml_sc_Sub, (const SCplx a, const SCplx b))
 /*
@@ -296,7 +296,7 @@ TMLAPI(DCplx , tml_dc_Sub, (const DCplx a, const DCplx b))
 */
 
 
-/** @} */
+/** \} */
 
 
 #endif /*TML_ARITHMETICS_H_*/

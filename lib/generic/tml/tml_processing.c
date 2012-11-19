@@ -1,14 +1,14 @@
 /**
- * @file tml_processing.c
- * @version 1.0
+ * \file tml_processing.c
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * Implementation of the signal processing operations for the
  * Trinity Math Library.
@@ -368,7 +368,7 @@ SCplx *outSamps, int numIters))
 /*----------Normal FIR filtering----------*/
 
 /**
-@todo all high level filter initialization function are not working - need to be properly tested
+\todo all high level filter initialization function are not working - need to be properly tested
 use low level initialization funcction instead
 */
 TMLIMP(void, tml_sr_FirInit, (const float *tapVals, int tapsLen,
@@ -405,7 +405,7 @@ TMLIMP(float, tml_sr_Fir, (TMLFirState *statePtr, float samp))
 	return ret;
 }
 /**
-@todo not tested - use low level FIR instead
+\todo not tested - use low level FIR instead
 */
 TMLIMP(void, tml_scr_vFir, (TMLFirState *statePtr, const SCplx *inSamps,
 SCplx *outSamps, int numIters))

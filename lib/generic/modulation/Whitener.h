@@ -1,14 +1,14 @@
 /**
- * @file Whitener.h
- * @version 1.0
+ * \file Whitener.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * A data whitener class which uses a scrambling code to whiten data.
  */

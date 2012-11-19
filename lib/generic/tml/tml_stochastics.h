@@ -1,14 +1,14 @@
 /**
- * @file tml_stochastics.h
- * @version 1.0
+ * \file tml_stochastics.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * The functions for random numbers and stochastic computations.
  */
@@ -73,11 +73,11 @@
 
 /** Initializes the random number generator for gaussian distributed 
  * random numbers.
- * @param seed A seed for the pseudo random numbers, can be any number.
+ * \param seed A seed for the pseudo random numbers, can be any number.
  *             The same number will produce the some series of values.
- * @param mean The mean of the distribution.
- * @param stdDev The standard deviation of the distribution.
- * @param statePtr Pointer to the internal state which should be used 
+ * \param mean The mean of the distribution.
+ * \param stdDev The standard deviation of the distribution.
+ * \param statePtr Pointer to the internal state which should be used
  * with any subsequent call to generate random numbers.
  */ 
 TMLAPI(void, tml_sr_RandGausInit, (unsigned long seed, float mean, float stdDev,
@@ -90,7 +90,7 @@ TMLAPI(void, tml_dc_RandGausInit, (unsigned long seed, double mean, double stdDe
     TML_dc_RandGausState *statePtr))
 
 /** Generates Gaussian distributed random numbers.
- * @param statePtr Pointer to the state previously initialized with the appropriate
+ * \param statePtr Pointer to the state previously initialized with the appropriate
  * RandGausInit function.
  */
 TMLAPI(float, tml_sr_RandGaus, (TML_sr_RandGausState *statePtr))
@@ -100,10 +100,10 @@ TMLAPI(DCplx, tml_dc_RandGaus, (TML_dc_RandGausState *statePtr))
 
 /** Generates Gaussian distributed vectors (all elements are drawn from 
  * a Gaussian distribution).
- * @param statePtr Pointer to the state previously initialized with the appropriate
+ * \param statePtr Pointer to the state previously initialized with the appropriate
  * RandGausInit function.
- * @param samps Pointer to the vector where the data should be stored.
- * @param sampsLen Length of the output vector.
+ * \param samps Pointer to the vector where the data should be stored.
+ * \param sampsLen Length of the output vector.
  */
 TMLAPI(void, tml_sr_vRandGaus, (TML_sr_RandGausState *statePtr, float *samps, int sampsLen))
 TMLAPI(void, tml_sc_vRandGaus, (TML_sc_RandGausState *statePtr, SCplx *samps, int sampsLen))
