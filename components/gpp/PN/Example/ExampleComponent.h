@@ -62,34 +62,34 @@ public:
 	 * about the component.	Register all parameters and events.
 	 * \param name the name given to this component in the radio config
 	 */
-    ExampleComponent(std::string name);
+  ExampleComponent(std::string name);
 
-    /*!
+  /*!
 	 * Given the data-types associated with each input port, provide
 	 * the data-types which will be produced on each output port.
 	 * \param inputTypes the map of input port names and data-type identifiers
 	 * \return map of output port names and data-type identifiers
 	 */
-    virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
 
-    /*!
+  /*!
 	 * Register the input and output ports of this component
 	 * by declaring them as input or output, naming them and
 	 * providing a list of valid data types.
 	 */
-    virtual void registerPorts();
+  virtual void registerPorts();
 
-    /*!
+  /*!
 	 * Do any initialization required by this component.
 	 */
-    virtual void initialize();
+  virtual void initialize();
 
-    /*!
+  /*!
 	 * This is where the work of this component gets done.
 	 * Typically components will take DataSets from their input
 	 * ports, process them and write DataSets to their output ports.
 	 */
-    virtual void process();
+  virtual void process();
 };
 
 } /* namespace iris */

@@ -45,16 +45,16 @@ class FileWriterComponent: public StackComponent
 {
 private:
 	//Exposed parameters
-    std::string x_fileName;
+  std::string x_fileName;
 	bool x_fromBelow;
 
-    std::ofstream hOutFile;
+  std::ofstream hOutFile;
 	void writeBlock(boost::shared_ptr<StackDataSet> toWrite);
 
 public:
-    FileWriterComponent(std::string name);
-    virtual void initialize();
-    virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  FileWriterComponent(std::string name);
+  virtual void initialize();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 };
 

@@ -48,19 +48,19 @@
 template <class T>
 struct __swap_bytes
 {
-    explicit __swap_bytes(const T& x )
-    {
-        union {T x; unsigned char byte[sizeof(T)]; } in, out;
-        in.x = x;
-        for (size_t i = 0; i < sizeof(T); ++i)
-            out.byte[sizeof(T)-1-i] = in.byte[i];
-        output = out.x;
-    }
+  explicit __swap_bytes(const T& x )
+  {
+    union {T x; unsigned char byte[sizeof(T)]; } in, out;
+    in.x = x;
+    for (size_t i = 0; i < sizeof(T); ++i)
+      out.byte[sizeof(T)-1-i] = in.byte[i];
+    output = out.x;
+  }
 
-    operator T() { return output; }
-    //operator const T() { return output; }
+  operator T() { return output; }
+  //operator const T() { return output; }
 private:
-    T output;
+  T output;
 };
 
 
@@ -70,19 +70,19 @@ private:
 template<>
 struct __swap_bytes<boost::uint8_t>
 {
-    explicit __swap_bytes(const boost::uint8_t& x) : output(x) {}
-    operator boost::uint8_t() { return output;}
+  explicit __swap_bytes(const boost::uint8_t& x) : output(x) {}
+  operator boost::uint8_t() { return output;}
 private:
-    const boost::uint8_t& output;
+  const boost::uint8_t& output;
 };
 
 template<>
 struct __swap_bytes<boost::int8_t>
 {
-    explicit __swap_bytes(const boost::int8_t& x) : output(x) {}
-    operator boost::int8_t() { return output;}
+  explicit __swap_bytes(const boost::int8_t& x) : output(x) {}
+  operator boost::int8_t() { return output;}
 private:
-    const boost::int8_t& output;
+  const boost::int8_t& output;
 };
 
 // for all signed/unsigned integer type, specialise and use the macro (more efficient)
@@ -148,13 +148,13 @@ struct __swap_bytes<float>
 {
   explicit __swap_bytes(const float& x)
   {
-      union {
-          float f;
-          boost::uint32_t i;
-      } tmp;
-      tmp.f = x;
-      tmp.i = _swapbytes32(tmp.i);
-      output = tmp.f;
+    union {
+      float f;
+      boost::uint32_t i;
+    } tmp;
+    tmp.f = x;
+    tmp.i = _swapbytes32(tmp.i);
+    output = tmp.f;
   }
   operator float() {return output;}
 private:
@@ -166,13 +166,13 @@ struct __swap_bytes<double>
 {
   explicit __swap_bytes(const double& x)
   {
-      union {
-          double f;
-          boost::uint64_t i;
-      } tmp;
-      tmp.f = x;
-      tmp.i = _swapbytes64(tmp.i);
-      output = tmp.f;
+    union {
+      double f;
+      boost::uint64_t i;
+    } tmp;
+    tmp.f = x;
+    tmp.i = _swapbytes64(tmp.i);
+    output = tmp.f;
   }
   operator double() {return output;}
 private:
@@ -184,15 +184,15 @@ struct __swap_bytes<long double>
 {
   explicit __swap_bytes(const long double& x)
   {
-      union {
-          long double f;
-          boost::uint64_t i[2];
-      } tmp;
-      tmp.f = x;
-      tmp.i[0] = _swapbytes64(tmp.i[0]);
-      tmp.i[1] = _swapbytes64(tmp.i[1]);
-      std::swap(tmp.i[0], tmp.i[1]);
-      output = tmp.f;
+    union {
+      long double f;
+      boost::uint64_t i[2];
+    } tmp;
+    tmp.f = x;
+    tmp.i[0] = _swapbytes64(tmp.i[0]);
+    tmp.i[1] = _swapbytes64(tmp.i[1]);
+    std::swap(tmp.i[0], tmp.i[1]);
+    output = tmp.f;
   }
   operator long double() {return output;}
 private:
@@ -204,11 +204,11 @@ private:
 template <class T>
 struct __swap_bytes<std::complex<T> >
 {
-    explicit __swap_bytes(const std::complex<T>& x) :
-        output(std::complex<T>(__swap_bytes<T>(real(x)), __swap_bytes<T>(imag(x)))) {}
-    operator std::complex<T>() {return output;}
+  explicit __swap_bytes(const std::complex<T>& x) :
+    output(std::complex<T>(__swap_bytes<T>(real(x)), __swap_bytes<T>(imag(x)))) {}
+  operator std::complex<T>() {return output;}
 private:
-    std::complex<T> output;
+  std::complex<T> output;
 };
 
 // now all the user interface functions
@@ -218,7 +218,7 @@ private:
 template <typename T>
 inline T swap_bytes(T x)
 {
-    return __swap_bytes<T>(x);
+  return __swap_bytes<T>(x);
 }
 
 
@@ -227,9 +227,9 @@ template <typename T>
 inline T big2sys(T x)
 {
 #ifdef BOOST_BIG_ENDIAN
-    return x;
+  return x;
 #else
-    return swap_bytes(x);
+  return swap_bytes(x);
 #endif
 }
 
@@ -238,9 +238,9 @@ template <typename T>
 inline T sys2big(T x)
 {
 #ifdef BOOST_BIG_ENDIAN
-    return x;
+  return x;
 #else
-    return swap_bytes(x);
+  return swap_bytes(x);
 #endif
 }
 
@@ -249,9 +249,9 @@ template <typename T>
 inline T lit2sys(T x)
 {
 #ifdef BOOST_BIG_ENDIAN
-    return swap_bytes(x);
+  return swap_bytes(x);
 #else
-    return x;
+  return x;
 #endif
 }
 
@@ -260,9 +260,9 @@ template <typename T>
 inline T sys2lit(T x)
 {
 #ifdef BOOST_BIG_ENDIAN
-    return swap_bytes(x);;
+  return swap_bytes(x);;
 #else
-    return x;
+  return x;
 #endif
 }
 

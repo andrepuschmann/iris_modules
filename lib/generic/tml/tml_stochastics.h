@@ -39,30 +39,30 @@
 
 
    typedef struct TML_sr_RandGausState {
-      float        mean,stDev;            /* Mean and standard deviation values */
-      /*float        extraValue;  */          /* Value computed early               */
-      /*int          useExtra;    */          /* Flag to use extra value            */
-      /*unsigned int seed2,carry; */          /* Variables of the algorithm         */
-      /*unsigned int seed1[3];    */          /* Variables of the algorithm         */
-      /*int          quickSeed;*/
+    float    mean,stDev;      /* Mean and standard deviation values */
+    /*float    extraValue;  */      /* Value computed early         */
+    /*int      useExtra;  */      /* Flag to use extra value      */
+    /*unsigned int seed2,carry; */      /* Variables of the algorithm     */
+    /*unsigned int seed1[3];  */      /* Variables of the algorithm     */
+    /*int      quickSeed;*/
    } TML_sr_RandGausState;
 
    typedef struct TML_dr_RandGausState {
-      double       mean,stDev;
-      /*double       extraValue;
-      int          useExtra;
-      unsigned int seed2,carry;
-      unsigned int seed1[3];
-      int          quickSeed;*/
+    double     mean,stDev;
+    /*double     extraValue;
+    int      useExtra;
+    unsigned int seed2,carry;
+    unsigned int seed1[3];
+    int      quickSeed;*/
    } TML_dr_RandGausState;
 
 /*   typedef struct TMLRandGausState {
-      int          useExtra;
-      unsigned int seed2,carry;
-      unsigned int seed1[3];
-      short        mean,stDev;
-      short        extraValue;
-      int          quickSeed;
+    int      useExtra;
+    unsigned int seed2,carry;
+    unsigned int seed1[3];
+    short    mean,stDev;
+    short    extraValue;
+    int      quickSeed;
    } NSPWRandGausState;
 */
    typedef struct TML_sr_RandGausState TML_sc_RandGausState;
@@ -74,20 +74,20 @@
 /** Initializes the random number generator for gaussian distributed 
  * random numbers.
  * \param seed A seed for the pseudo random numbers, can be any number.
- *             The same number will produce the some series of values.
+ *       The same number will produce the some series of values.
  * \param mean The mean of the distribution.
  * \param stdDev The standard deviation of the distribution.
  * \param statePtr Pointer to the internal state which should be used
  * with any subsequent call to generate random numbers.
  */ 
 TMLAPI(void, tml_sr_RandGausInit, (unsigned long seed, float mean, float stdDev,
-    TML_sr_RandGausState *statePtr))
+  TML_sr_RandGausState *statePtr))
 TMLAPI(void, tml_sc_RandGausInit, (unsigned long seed, float mean, float stdDev,
-    TML_sc_RandGausState *statePtr))
+  TML_sc_RandGausState *statePtr))
 TMLAPI(void, tml_dr_RandGausInit, (unsigned long seed, double mean, double stdDev,
-    TML_dr_RandGausState *statePtr))
+  TML_dr_RandGausState *statePtr))
 TMLAPI(void, tml_dc_RandGausInit, (unsigned long seed, double mean, double stdDev,
-    TML_dc_RandGausState *statePtr))
+  TML_dc_RandGausState *statePtr))
 
 /** Generates Gaussian distributed random numbers.
  * \param statePtr Pointer to the state previously initialized with the appropriate

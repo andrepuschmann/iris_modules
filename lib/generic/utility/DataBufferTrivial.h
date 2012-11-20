@@ -57,121 +57,121 @@ class DataBufferTrivial : public ReadBuffer<T>, public WriteBuffer<T>
 {
 public:
 
-    /*!
-    *   \brief Constructor
-    */
-    explicit DataBufferTrivial(std::size_t buffer_size = 3) throw (InvalidDataTypeException)
-        :buffer_(buffer_size) ,
-        isReadLocked_(false),
-        isWriteLocked_(false),
-        readIndex_(0),
-        writeIndex_(0),
-        notEmpty_(false),
-        notFull_(true)
+  /*!
+  *   \brief Constructor
+  */
+  explicit DataBufferTrivial(std::size_t buffer_size = 3) throw (InvalidDataTypeException)
+    :buffer_(buffer_size) ,
+    isReadLocked_(false),
+    isWriteLocked_(false),
+    readIndex_(0),
+    writeIndex_(0),
+    notEmpty_(false),
+    notFull_(true)
+  {
+    //Set the type identifier for this buffer
+    typeIdentifier = TypeInfo<T>::identifier;
+    if( typeIdentifier == -1)
+      throw InvalidDataTypeException("Data type not supported");
+  };
+
+  virtual ~DataBufferTrivial(){};
+
+  //! Get the identifier for the data type of this buffer
+  virtual int getTypeIdentifier() const   {  return typeIdentifier; }
+
+  //! Is there any data in this buffer?
+  virtual bool hasData() const { return is_not_empty(); }
+
+  // empty implementation - not needed for tests
+  virtual void setLinkDescription(LinkDescription) {};
+  virtual LinkDescription getLinkDescription() const { return LinkDescription(); }
+
+  /*!
+  *   \brief Get the next DataSet to read
+  *
+  *   \param setPtr   A DataSet pointer which will be set by the buffer
+  */
+  virtual void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException)
+  {
+    if(isReadLocked_)
+      throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
+    isReadLocked_ = true;
+    setPtr = &buffer_[readIndex_];
+  };
+
+  /*!
+  *   \brief Get the next DataSet to be written
+  *
+  *   \param setPtr   A DataSet pointer which will be set by the buffer
+  *   \param size   The number of elements required in the DataSet
+  */
+  virtual void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException)
+  {
+    if(isWriteLocked_)
+      throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
+    isWriteLocked_ = true;
+    if(buffer_[writeIndex_].data.size() != size)
+      buffer_[writeIndex_].data.resize(size);
+    setPtr = &buffer_[writeIndex_];
+  };
+
+  /*!
+  *   \brief Release a read DataSet
+  *
+  *   \param setPtr   A pointer to the DataSet to be released
+  */
+  virtual void releaseReadData(DataSet<T>*& setPtr)
+  {
+    if(++readIndex_ == buffer_.size())
     {
-        //Set the type identifier for this buffer
-        typeIdentifier = TypeInfo<T>::identifier;
-        if( typeIdentifier == -1)
-            throw InvalidDataTypeException("Data type not supported");
-    };
+      buffer_.resize(readIndex_+1);
+    }
+    if(readIndex_ == writeIndex_)
+      notEmpty_ = false;
+    notFull_ = true;
+    isReadLocked_ = false;
+    setPtr = NULL;
+  };
 
-    virtual ~DataBufferTrivial(){};
-
-    //! Get the identifier for the data type of this buffer
-    virtual int getTypeIdentifier() const   {  return typeIdentifier; }
-
-    //! Is there any data in this buffer?
-    virtual bool hasData() const { return is_not_empty(); }
-
-    // empty implementation - not needed for tests
-    virtual void setLinkDescription(LinkDescription) {};
-    virtual LinkDescription getLinkDescription() const { return LinkDescription(); }
-
-    /*!
-    *   \brief Get the next DataSet to read
-    *
-    *   \param setPtr   A DataSet pointer which will be set by the buffer
-    */
-    virtual void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException)
+  /*!
+  *   \brief Release a write DataSet
+  *
+  *   \param setPtr   A pointer to the DataSet to be released
+  */
+  virtual void releaseWriteData(DataSet<T>*& setPtr)
+  {
+    if(++writeIndex_ == buffer_.size())
     {
-        if(isReadLocked_)
-            throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
-        isReadLocked_ = true;
-        setPtr = &buffer_[readIndex_];
-    };
+      buffer_.resize(writeIndex_+1);
+    }
+    if(readIndex_ == writeIndex_)
+      notFull_ = false;
+    notEmpty_ = true;
+    isWriteLocked_ = false;
+    setPtr = NULL;
+  };
 
-    /*!
-    *   \brief Get the next DataSet to be written
-    *
-    *   \param setPtr   A DataSet pointer which will be set by the buffer
-    *   \param size     The number of elements required in the DataSet
-    */
-    virtual void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException)
-    {
-        if(isWriteLocked_)
-            throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
-        isWriteLocked_ = true;
-        if(buffer_[writeIndex_].data.size() != size)
-            buffer_[writeIndex_].data.resize(size);
-        setPtr = &buffer_[writeIndex_];
-    };
-
-    /*!
-    *   \brief Release a read DataSet
-    *
-    *   \param setPtr   A pointer to the DataSet to be released
-    */
-    virtual void releaseReadData(DataSet<T>*& setPtr)
-    {
-        if(++readIndex_ == buffer_.size())
-        {
-            buffer_.resize(readIndex_+1);
-        }
-        if(readIndex_ == writeIndex_)
-            notEmpty_ = false;
-        notFull_ = true;
-        isReadLocked_ = false;
-        setPtr = NULL;
-    };
-
-    /*!
-    *   \brief Release a write DataSet
-    *
-    *   \param setPtr   A pointer to the DataSet to be released
-    */
-    virtual void releaseWriteData(DataSet<T>*& setPtr)
-    {
-        if(++writeIndex_ == buffer_.size())
-        {
-            buffer_.resize(writeIndex_+1);
-        }
-        if(readIndex_ == writeIndex_)
-            notFull_ = false;
-        notEmpty_ = true;
-        isWriteLocked_ = false;
-        setPtr = NULL;
-    };
-
-    std::vector< DataSet<T> > getBuffer() { return buffer_; }
+  std::vector< DataSet<T> > getBuffer() { return buffer_; }
 
 private:
-    //! The data type of this buffer
-    int typeIdentifier;
+  //! The data type of this buffer
+  int typeIdentifier;
 
-    //! The vector of DataSets
-    std::vector< DataSet<T> > buffer_;
+  //! The vector of DataSets
+  std::vector< DataSet<T> > buffer_;
 
-    bool isReadLocked_;
-    bool isWriteLocked_;
+  bool isReadLocked_;
+  bool isWriteLocked_;
 
-    std::size_t readIndex_;
-    std::size_t writeIndex_;
+  std::size_t readIndex_;
+  std::size_t writeIndex_;
 
-    bool notEmpty_;
-    bool notFull_;
+  bool notEmpty_;
+  bool notFull_;
 
-    bool is_not_empty() const { return notEmpty_; }
-    bool is_not_full() const { return notFull_; }
+  bool is_not_empty() const { return notEmpty_; }
+  bool is_not_full() const { return notFull_; }
 
 };
 

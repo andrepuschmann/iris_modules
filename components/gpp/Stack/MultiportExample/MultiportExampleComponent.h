@@ -46,10 +46,10 @@ private:
 	uint32_t x_example;
 
 public:
-    MultiportExampleComponent(std::string name);
-    virtual void registerPorts(); //We're overriding this to specify multiple ports
-    virtual void initialize();
-    virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  MultiportExampleComponent(std::string name);
+  virtual void registerPorts(); //We're overriding this to specify multiple ports
+  virtual void initialize();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 };
 

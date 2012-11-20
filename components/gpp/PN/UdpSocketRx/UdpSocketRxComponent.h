@@ -51,68 +51,68 @@ class UdpSocketRxComponent: public PNComponent
 {
 private:
 	//! The port to receive from
-    unsigned short port_x;
-    //! The size of the buffer used to receive datagrams
-    unsigned int bufferSize_x;
-    //! The data type of output data
-    std::string outputType_x;
+  unsigned short port_x;
+  //! The size of the buffer used to receive datagrams
+  unsigned int bufferSize_x;
+  //! The data type of output data
+  std::string outputType_x;
 
-    int outputTypeId_;
-    boost::asio::io_service ioService_;
-    boost::asio::ip::udp::socket* socket_;
-    char* buffer_;
+  int outputTypeId_;
+  boost::asio::io_service ioService_;
+  boost::asio::ip::udp::socket* socket_;
+  char* buffer_;
 	  bool bStopping_;
 
-    template<typename T> void writeOutput();
+  template<typename T> void writeOutput();
 public:
 	/*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
 	 * \param name the name given to this component in the radio config
 	 */
-    UdpSocketRxComponent(std::string name);
+  UdpSocketRxComponent(std::string name);
 
 	/*!
 	 * Destructor - clean up
 	 */
 	~UdpSocketRxComponent();
 
-    /*!
+  /*!
 	 * Given the data-types associated with each input port, provide
 	 * the data-types which will be produced on each output port.
 	 * \param inputTypes the map of input port names and data-type identifiers
 	 * \return map of output port names and data-type identifiers
 	 */
-    virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
 
-    /*!
+  /*!
   	 * Register the input and output ports of this component
   	 * by declaring them as input or output, naming them and
   	 * providing a list of valid data types.
   	 */
-    virtual void registerPorts();
+  virtual void registerPorts();
 
-    /*!
+  /*!
   	 * Do any initialization required by this component.
   	 */
-    virtual void initialize();
+  virtual void initialize();
 
-    /*!
+  /*!
   	 * Start this IO component
   	 */
-    virtual void start();
+  virtual void start();
 
-    /*!
+  /*!
 	 * This is where the work of this component gets done.
 	 * Typically components will take DataSets from their input
 	 * ports, process them and write DataSets to their output ports.
 	 */
-    virtual void process();
+  virtual void process();
 
-    /*!
+  /*!
   	 * Stop this IO component
   	 */
-    virtual void stop();
+  virtual void stop();
 };
 
 } /* namespace iris */

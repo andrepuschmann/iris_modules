@@ -44,37 +44,37 @@ namespace iris
 class FileReaderComponent: public StackComponent
 {
   private:
-    //Exposed parameters
-    uint32_t blockSize_x;
-    std::string fileName_x;
-    bool sendBelow_x;
-    bool enabled_x;
-    uint32_t delay_x;
-    uint32_t intermittentPauseLength_x;
-    int packets_x;
+  //Exposed parameters
+  uint32_t blockSize_x;
+  std::string fileName_x;
+  bool sendBelow_x;
+  bool enabled_x;
+  uint32_t delay_x;
+  uint32_t intermittentPauseLength_x;
+  int packets_x;
 
-    int count_;
+  int count_;
 
-    //\todo Remove these filthy hacks
-    uint32_t counter_;
+  //\todo Remove these filthy hacks
+  uint32_t counter_;
 
-    //! Handle for file reading thread
-    boost::scoped_ptr< boost::thread > thread_;
-    
-    //The file stream
-    std::ifstream hInFile_;
+  //! Handle for file reading thread
+  boost::scoped_ptr< boost::thread > thread_;
+  
+  //The file stream
+  std::ifstream hInFile_;
 
-    //Private function
-    void readBlock(boost::shared_ptr<StackDataSet> readDataBuffer);
-    void fileReadingLoop();
+  //Private function
+  void readBlock(boost::shared_ptr<StackDataSet> readDataBuffer);
+  void fileReadingLoop();
 
   public:
-    FileReaderComponent(std::string name);
-    virtual void initialize();
-    virtual void start();
-    virtual void stop();
-    virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
-    virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+  FileReaderComponent(std::string name);
+  virtual void initialize();
+  virtual void start();
+  virtual void stop();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 };
 
 } /* namespace iris */

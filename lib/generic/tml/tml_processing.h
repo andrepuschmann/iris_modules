@@ -71,58 +71,58 @@
 	
 	/*=== FIR high-level ======================================================*/
 
-    typedef struct
-        {
-        int num;             /* section number                  */
-        int len;             /* section taps length in use      */
-        int xId;             /* section input data index        */
-        int tId;             /* section taps index              */
-        } firSect;
+  typedef struct
+    {
+    int num;       /* section number          */
+    int len;       /* section taps length in use    */
+    int xId;       /* section input data index    */
+    int tId;       /* section taps index        */
+    } firSect;
 
-    typedef struct _TMLFirState
-        {
-        int   upFactor;      /* up                               */
-        int   upPhase;       /*  parameters                      */
-        int   downFactor;    /* down                             */
-        int   downPhase;     /*  parameters                      */
-        int   isMultiRate;   /* multi-rate mode flag             */
-        void* isInit;        /* init flag                        */
+  typedef struct _TMLFirState
+    {
+    int   upFactor;    /* up                 */
+    int   upPhase;     /*  parameters            */
+    int   downFactor;  /* down               */
+    int   downPhase;   /*  parameters            */
+    int   isMultiRate;   /* multi-rate mode flag       */
+    void* isInit;    /* init flag            */
 
-        int   tapsLen;       /* number of filter taps            */
-        int   tapsBlk;
-        void* taps;          /* taps pointer in use              */
+    int   tapsLen;     /* number of filter taps      */
+    int   tapsBlk;
+    void* taps;      /* taps pointer in use        */
 
-        int   dlylLen;       /* delay line length                */
-        int   inpLen;        /* input buffer length              */
-        int   useInp;        /* input buffer length used         */
-        void* dlyl;          /* extended dilter delay line       */
-        void* dlylLimit; /* delay line buffer end pointer    */
-        void* useDlyl; /* delay line pointer in use        */
+    int   dlylLen;     /* delay line length        */
+    int   inpLen;    /* input buffer length        */
+    int   useInp;    /* input buffer length used     */
+    void* dlyl;      /* extended dilter delay line     */
+    void* dlylLimit; /* delay line buffer end pointer  */
+    void* useDlyl; /* delay line pointer in use    */
 
-        firSect* sect;       /* FIR sections                     */
+    firSect* sect;     /* FIR sections           */
 
-        int   tapsFactor;    /* taps scale factor                */
-        int   utapsLen;      /* number of filter taps (user def) */
-        } TMLFirState;
+    int   tapsFactor;  /* taps scale factor        */
+    int   utapsLen;    /* number of filter taps (user def) */
+    } TMLFirState;
 
 	typedef enum
-        {
-        TML_WinRect,
-        TML_WinHamming,
-        TML_WinHann
-        } TML_WindowType;
+    {
+    TML_WinRect,
+    TML_WinHamming,
+    TML_WinHann
+    } TML_WindowType;
 
 	/*============================sampling======================*/
 	  typedef struct {
-      int    nFactors;
-      int    nTaps;
-      int    sLen;
-      int    dLen;
-      int    isSampInit;
-      float *factorRange;
-      float *freq;
-      void  *taps;
-      TMLFirState firState;
+    int  nFactors;
+    int  nTaps;
+    int  sLen;
+    int  dLen;
+    int  isSampInit;
+    float *factorRange;
+    float *freq;
+    void  *taps;
+    TMLFirState firState;
    } TMLSampState;
 
 

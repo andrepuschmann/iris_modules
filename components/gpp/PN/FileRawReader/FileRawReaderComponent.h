@@ -50,29 +50,29 @@ namespace iris
 class FileRawReaderComponent: public PNComponent
 {
 private:
-    //! size of blocks to read from file
-    int x_blockSize;
-    //! name of file to read
-    std::string x_fileName;
-    //! interpret the data as this data type
-    std::string x_dataType;
-    //! endianness of the data
-    std::string x_endian;
+  //! size of blocks to read from file
+  int x_blockSize;
+  //! name of file to read
+  std::string x_fileName;
+  //! interpret the data as this data type
+  std::string x_dataType;
+  //! endianness of the data
+  std::string x_endian;
 
 	//! the file stream
-    std::ifstream hInFile;
-    
+  std::ifstream hInFile;
+  
 	//! template function used to read the data
-    template<typename T> void readBlock();
+  template<typename T> void readBlock();
 
 
 public:
-    /*!
+  /*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
 	 * \param name the name given to this component in the radio config
 	 */
-    FileRawReaderComponent(std::string name);
+  FileRawReaderComponent(std::string name);
 
 	/*!
 	 * Given the data-types associated with each input port, provide
@@ -80,26 +80,26 @@ public:
 	 * \param inputTypes the map of input port names and data-type identifiers
 	 * \return map of output port names and data-type identifiers
 	 */
-    virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
 
-    /*!
+  /*!
 	 * Register the input and output ports of this component
 	 * by declaring them as input or output, naming them and
 	 * providing a list of valid data types.
 	 */
-    virtual void registerPorts();
+  virtual void registerPorts();
 
-    /*!
+  /*!
 	 * Do any initialization required by this component.
 	 */
-    virtual void initialize();
+  virtual void initialize();
 
-    /*!
+  /*!
 	 * This is where the work of this component gets done.
 	 * Typically components will take DataSets from their input
 	 * ports, process them and write DataSets to their output ports.
 	 */
-    virtual void process();
+  virtual void process();
 };
 
 }

@@ -42,7 +42,7 @@
 
 #define  TML_EPS   (1.0E-12)
 
-#define  TML_PI    (3.141592653589793115997963468544185161590576171875) /* double precision */     
+#define  TML_PI  (3.141592653589793115997963468544185161590576171875) /* double precision */   
 #define  TML_2PI   (6.28318530717958623199592693708837032318115234375)
 #define  TML_PI_2  (1.5707963267948965579989817342720925807952880859375)
 #define  TML_PI_4  (0.78539816339744827899949086713604629039764404296875)
@@ -100,8 +100,8 @@
 #define def_SCplx
 /** single precision floating point complex */
   typedef struct _SCplx {
-    float        re;
-    float        im;
+  float    re;
+  float    im;
   } SCplx;
 #endif
 
@@ -109,8 +109,8 @@
 #define def_DCplx
 /** double precision floating point complex */
   typedef struct _DCplx {
-    double        re;
-    double        im;
+  double    re;
+  double    im;
   } DCplx;
 #endif
 
@@ -118,8 +118,8 @@
 #define def_WCplx
 /** short integer complex */
   typedef struct _WCplx {
-    short         re;
-    short         im;
+  short     re;
+  short     im;
   } WCplx;
 #endif
 
@@ -127,8 +127,8 @@
 #define def_ICplx
 /** integer complex */
   typedef struct _ICplx {
-    int         re;
-    int         im;
+  int     re;
+  int     im;
   } ICplx;
 #endif
 
@@ -174,9 +174,9 @@ extern "C" {
 
 #if !defined(TMLAPI)
 #  if defined linux || defined __APPLE__
-#    define TMLAPI(type, name, arg) extern type name arg;
-#    define TMLIMP(type, name, arg) type name arg
-#    define TMLINL(type, name, arg) INLINE type name arg
+#  define TMLAPI(type, name, arg) extern type name arg;
+#  define TMLIMP(type, name, arg) type name arg
+#  define TMLINL(type, name, arg) INLINE type name arg
 #  endif
 #endif
 
@@ -191,9 +191,9 @@ extern "C" {
 #  define TMLINL(type,name,arg) INLINE type name arg
 # else
 #   if defined (_WIN32)
-#      define TMLAPI(type,name,arg) extern  __declspec(dllexport) type __STDCALL name arg;
-#      define TMLIMP(type,name,arg)  __declspec(dllexport) type __STDCALL name arg
-#      define TMLINL(type,name,arg) INLINE type name arg
+#    define TMLAPI(type,name,arg) extern  __declspec(dllexport) type __STDCALL name arg;
+#    define TMLIMP(type,name,arg)  __declspec(dllexport) type __STDCALL name arg
+#    define TMLINL(type,name,arg) INLINE type name arg
 #   endif
 # endif
 #endif
@@ -365,7 +365,7 @@ sizes.
   - \c TML_TruncZero  Truncate towards zero
   - \c TML_TruncNeg   Truncate towards negative numbers
   - \c TML_Unsigned   Indicates that the integers used are unsigned - can be used
-                   together with one of the other flags by logical or
+           together with one of the other flags by logical or
 */
 TMLAPI(void, tml_sr_vFloatToInt,(const float *src, void *dst, int len,int wordSize, int flags))
 TMLAPI(void, tml_dr_vFloatToInt,(const double *src, void *dst, int len,int wordSize, int flags))

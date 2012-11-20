@@ -57,8 +57,8 @@ class MatlabTemplateComponent: public TemplatePNComponent<MatlabTemplateComponen
 {
 protected:
 	//! Matlab script to be called
-    std::string x_scriptName;
-    //! Does this component output data?
+  std::string x_scriptName;
+  //! Does this component output data?
 	bool x_hasOutput;
 	//! Does this component pass data through?
 	bool x_passThrough;
@@ -80,19 +80,19 @@ public:
 	 * (can be a boost::mpl::vector of types, or of other
 	 * mpl vectors if multiple inputs are present)
 	 */
-    typedef IrisDataTypes supportedInputTypes;
+  typedef IrisDataTypes supportedInputTypes;
 
-    //! supported types at the output port
-    typedef IrisDataTypes supportedOutputTypes;
+  //! supported types at the output port
+  typedef IrisDataTypes supportedOutputTypes;
 
-    /*!
+  /*!
 	 * Constructor - call the constructor on TemplatePNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
 	 * \param name the name given to this component in the radio config
 	 */
-    MatlabTemplateComponent(std::string name);
+  MatlabTemplateComponent(std::string name);
 
-    /*!
+  /*!
 	 * Destructor - clean up.
 	 */
 	virtual ~MatlabTemplateComponent();
@@ -103,16 +103,16 @@ public:
 	 * \param inputTypes the map of input port names and data-type identifiers
 	 * \return map of output port names and data-type identifiers
 	 */
-    virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
 
-    /*!
+  /*!
 	 * Register the input and output ports of this component
 	 * by declaring them as input or output, naming them and
 	 * providing a list of valid data types.
 	 */
-    virtual void registerPorts();
+  virtual void registerPorts();
 
-    /*!
+  /*!
 	 * Creates a new instance of the implementation class,
 	 * with the correct template parameters.
 	 * Also copies all values of the parameters to the newly
@@ -120,11 +120,11 @@ public:
 	 * \param comp the component used to create the instance
 	 * \return the created component instance
 	 */
-    template <typename Tin, typename Tout>
-    static PNComponent* createInstance(const PNComponent* comp)
-    {
-        return new MatlabTemplateComponentImpl<Tin,Tout>(*comp);
-    }
+  template <typename Tin, typename Tout>
+  static PNComponent* createInstance(const PNComponent* comp)
+  {
+    return new MatlabTemplateComponentImpl<Tin,Tout>(*comp);
+  }
 
 };
 
@@ -138,12 +138,12 @@ class MatlabTemplateComponentImpl : public MatlabTemplateComponent
 {
 private:
 
-    //! the type of the first input port (we have only one anyway)
-    typedef typename boost::mpl::front<Tin>::type T;
+  //! the type of the first input port (we have only one anyway)
+  typedef typename boost::mpl::front<Tin>::type T;
 
-    //Convenience pointers to DataSets and Buffers
-    ReadBuffer<T>* inBuf;
-    DataSet<T>* readDataSet;
+  //Convenience pointers to DataSets and Buffers
+  ReadBuffer<T>* inBuf;
+  DataSet<T>* readDataSet;
 	WriteBuffer<T>* outBuf;
 	DataSet<T>* writeDataSet;
 
@@ -237,14 +237,14 @@ public:
 	 * and assign all values from other.
 	 * \param other the PNComponent with correct i/o datatypes
 	 */
-    MatlabTemplateComponentImpl(const PNComponent& other) :
-        MatlabTemplateComponent(other.getName())
-    {
-        // assign all values from other to this
-        assign(other);
-    }
+  MatlabTemplateComponentImpl(const PNComponent& other) :
+    MatlabTemplateComponent(other.getName())
+  {
+    // assign all values from other to this
+    assign(other);
+  }
 
-    /*!
+  /*!
 	 * Destructor - clean up.
 	 */
 	~MatlabTemplateComponentImpl();
@@ -252,14 +252,14 @@ public:
 	/*!
 	 * Do any initialization required by this component.
 	 */
-    virtual void initialize();
+  virtual void initialize();
 
-    /*!
+  /*!
 	 * This is where the work of this component gets done.
 	 * Typically components will take DataSets from their input
 	 * ports, process them and write DataSets to their output ports.
 	 */
-    virtual void process();
+  virtual void process();
 };
 
 }	/* namepace iris */

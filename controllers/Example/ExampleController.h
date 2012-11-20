@@ -42,13 +42,13 @@ namespace iris
 class ExampleController: public Controller
 {
 private:
-    uint32_t counter;
+  uint32_t counter;
 
 public:
-    ExampleController();
+  ExampleController();
 	virtual void subscribeToEvents();
 	virtual void initialize();
-    virtual void processEvent(Event &e);
+  virtual void processEvent(Event &e);
 	virtual void destroy();
 };
 

@@ -46,11 +46,11 @@ private:
 	uint32_t example_x;
 
 public:
-    ExampleComponent(std::string name);
-    virtual void initialize();
-    virtual void start();
-    virtual void stop();
-    virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  ExampleComponent(std::string name);
+  virtual void initialize();
+  virtual void start();
+  virtual void stop();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 };
 

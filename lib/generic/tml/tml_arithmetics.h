@@ -94,17 +94,17 @@ TMLAPI(DCplx  , tml_dc_Conj, (const DCplx a))
   
   if (fabs(b.re) < fabs(b.im))
   {
-    r = b.re / b.im;
-    den = b.im + r * b.re;
-    c.re = (a.re * r + a.im) / den;
-    c.im = (a.im * r - a.re) / den;
+  r = b.re / b.im;
+  den = b.im + r * b.re;
+  c.re = (a.re * r + a.im) / den;
+  c.im = (a.im * r - a.re) / den;
   }
   else
   {
-    r = b.im / b.re;
-    den = b.re + r * b.im;
-    c.re = (a.re + r * a.im) / den;
-    c.im = (a.im - r * a.re) / den;
+  r = b.im / b.re;
+  den = b.re + r * b.im;
+  c.re = (a.re + r * a.im) / den;
+  c.im = (a.im - r * a.re) / den;
   }
   
   return c; 

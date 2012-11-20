@@ -59,28 +59,28 @@ private:
 	bool gotFirstPacket_;
 
 	//Exposed parameters
-	std::string args_x;     //See http://www.ettus.com/uhd_docs/manual/html/identification.html
-	double frequency_x;     //Receive frequency
-	double rate_x;          //Receive rate
+	std::string args_x;   //See http://www.ettus.com/uhd_docs/manual/html/identification.html
+	double frequency_x;   //Receive frequency
+	double rate_x;      //Receive rate
 	double fixLoOffset_x;   //Local oscillator offset
-	float gain_x;           //Receive gain
+	float gain_x;       //Receive gain
 	int outputBlockSize_x;  //Output block size
 	std::string antenna_x;  //Daughterboard antenna selection
 	std::string subDev_x;   //Daughterboard subdevice specification
-	double bw_x;            //Daughterboard IF filter bandwidth in Hz
-	std::string ref_x;      //Reference clock(internal, external, mimo)
+	double bw_x;      //Daughterboard IF filter bandwidth in Hz
+	std::string ref_x;    //Reference clock(internal, external, mimo)
 	std::string wireFmt_x;  //Wire format (sc8 or sc16)
 	
 	void setStreaming(bool s);
 
 public:
-    UsrpUhdRxComponent(std::string name);
-    ~UsrpUhdRxComponent();
-    virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
-    virtual void registerPorts();
-    virtual void initialize();
-    virtual void process();
-    virtual void parameterHasChanged(std::string name);
+  UsrpUhdRxComponent(std::string name);
+  ~UsrpUhdRxComponent();
+  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual void registerPorts();
+  virtual void initialize();
+  virtual void process();
+  virtual void parameterHasChanged(std::string name);
 };
 
 } /* namespace iris */
