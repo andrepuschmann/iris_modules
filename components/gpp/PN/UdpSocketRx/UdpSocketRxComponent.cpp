@@ -45,13 +45,13 @@ namespace iris
 
     UdpSocketRxComponent::UdpSocketRxComponent(string name):
         PNComponent(name, "udpsocketrxpncomponent", "A udp socket rx", "Paul Sutton", "0.1")
-		,bStopping(false)
+		,bStopping_(false)
     {
         //Register all parameters
         //format:        (name,   description,     default,   dynamic, parameter, list/Interval)
-        registerParameter("port", "Port to listen on", "1234", false, x_port);
-        registerParameter("bufferSize", "The size of the buffer used to receive datagrams", "1316", false, x_bufferSize);
-        registerParameter("outputType", "The type of the output", "uint8_t", false, x_outputType);
+        registerParameter("port", "Port to listen on", "1234", false, port_x);
+        registerParameter("bufferSize", "The size of the buffer used to receive datagrams", "1316", false, bufferSize_x);
+        registerParameter("outputType", "The type of the output", "uint8_t", false, outputType_x);
     }
 
     void UdpSocketRxComponent::registerPorts()
@@ -81,47 +81,47 @@ namespace iris
     {
         //Output type is set in the parameters
         map<string, int> outputTypes;
-        if( x_outputType == TypeInfo< uint8_t >::name() )
+        if( outputType_x == TypeInfo< uint8_t >::name() )
             outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
-        if( x_outputType == TypeInfo< uint16_t >::name() )
+        if( outputType_x == TypeInfo< uint16_t >::name() )
             outputTypes["output1"] = TypeInfo< uint16_t >::identifier;
-        if( x_outputType == TypeInfo< uint32_t >::name() )
+        if( outputType_x == TypeInfo< uint32_t >::name() )
             outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
-        if( x_outputType == TypeInfo< uint64_t >::name() )
+        if( outputType_x == TypeInfo< uint64_t >::name() )
             outputTypes["output1"] = TypeInfo< uint64_t >::identifier;
-        if( x_outputType == TypeInfo< int8_t >::name() )
+        if( outputType_x == TypeInfo< int8_t >::name() )
             outputTypes["output1"] = TypeInfo< int8_t >::identifier;
-        if( x_outputType == TypeInfo< int16_t >::name() )
+        if( outputType_x == TypeInfo< int16_t >::name() )
             outputTypes["output1"] = TypeInfo< int16_t >::identifier;
-        if( x_outputType == TypeInfo< int32_t >::name() )
+        if( outputType_x == TypeInfo< int32_t >::name() )
             outputTypes["output1"] = TypeInfo< int32_t >::identifier;
-        if( x_outputType == TypeInfo< int64_t >::name() )
+        if( outputType_x == TypeInfo< int64_t >::name() )
             outputTypes["output1"] = TypeInfo< int64_t >::identifier;
-        if( x_outputType == TypeInfo< float >::name() )
+        if( outputType_x == TypeInfo< float >::name() )
             outputTypes["output1"] = TypeInfo< float >::identifier;
-        if( x_outputType == TypeInfo< double >::name() )
+        if( outputType_x == TypeInfo< double >::name() )
             outputTypes["output1"] = TypeInfo< double >::identifier;
-        if( x_outputType == TypeInfo< long double >::name() )
+        if( outputType_x == TypeInfo< long double >::name() )
             outputTypes["output1"] = TypeInfo< long double >::identifier;
-        if( x_outputType == TypeInfo< complex<float> >::name() )
+        if( outputType_x == TypeInfo< complex<float> >::name() )
             outputTypes["output1"] = TypeInfo< complex<float> >::identifier;
-        if( x_outputType == TypeInfo< complex<double> >::name() )
+        if( outputType_x == TypeInfo< complex<double> >::name() )
             outputTypes["output1"] = TypeInfo< complex<double> >::identifier;
-        if( x_outputType == TypeInfo< complex<long double> >::name() )
+        if( outputType_x == TypeInfo< complex<long double> >::name() )
             outputTypes["output1"] = TypeInfo< complex<long double> >::identifier;
 
-        d_outputTypeId = outputTypes["output1"];
+        outputTypeId_ = outputTypes["output1"];
         return outputTypes;
     }
 
     void UdpSocketRxComponent::initialize()
     {
         //Create our buffer
-        buffer = new char[x_bufferSize];
+        buffer_ = new char[bufferSize_x];
 
         //Create socket
         try{
-            d_socket = new boost::asio::ip::udp::socket(d_ioService);
+            socket_ = new boost::asio::ip::udp::socket(ioService_);
         }
         catch(boost::system::system_error &e)
         {
@@ -134,8 +134,8 @@ namespace iris
     {
         //Open socket
         try{
-            d_socket->open(udp::v4());
-            d_socket->bind(udp::endpoint(udp::v4(), x_port));
+            socket_->open(udp::v4());
+            socket_->bind(udp::endpoint(udp::v4(), port_x));
         }
         catch(boost::system::system_error &e)
         {
@@ -150,7 +150,7 @@ namespace iris
             //Need to throw an exception here
         }
 
-        switch(d_outputTypeId)
+        switch(outputTypeId_)
         {
         case 0:
             writeOutput<uint8_t>();
@@ -202,16 +202,16 @@ namespace iris
     template<typename T>
     void UdpSocketRxComponent::writeOutput()
     {
-		if(!bStopping)
+		if(!bStopping_)
 		{
 			//Get data from socket
 			std::size_t size;
 			try{
 				udp::endpoint sender_endpoint;
-				size = d_socket->receive_from(boost::asio::buffer(buffer, x_bufferSize), sender_endpoint);
+				size = socket_->receive_from(boost::asio::buffer(buffer_, bufferSize_x), sender_endpoint);
 			}catch(boost::system::system_error &e)
 			{
-				if(!bStopping)
+				if(!bStopping_)
 				{
 					LOG(LERROR) << "Error receiving from socket: " << e.what();
 				}
@@ -234,7 +234,7 @@ namespace iris
 			outBuf->getWriteData(writeDataSet, numT);
 
 			//Copy data into output
-			T* bufT = (T*)buffer;
+			T* bufT = (T*)buffer_;
 			copy(bufT, bufT+numT, writeDataSet->data.begin());
 
 			//Release the buffer
@@ -246,9 +246,9 @@ namespace iris
     {
         //Close socket
         try{
-			bStopping = true;
-            d_socket->shutdown(udp::socket::shutdown_receive);
-            d_socket->close();
+			bStopping_ = true;
+            socket_->shutdown(udp::socket::shutdown_receive);
+            socket_->close();
         }
         catch(boost::system::system_error &e)
         {
@@ -259,10 +259,10 @@ namespace iris
 	UdpSocketRxComponent::~UdpSocketRxComponent()
 	{
 		//Destroy our buffer
-        delete [] buffer;
+        delete [] buffer_;
 
         //Destroy socket
-        delete d_socket;
+        delete socket_;
 	}
 
 } /* namespace iris */

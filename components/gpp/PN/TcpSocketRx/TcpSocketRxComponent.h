@@ -51,21 +51,21 @@ class TcpSocketRxComponent: public PNComponent
 {
 private:
 	//! Port number to bind to
-    unsigned short x_port;
+    unsigned short port_x;
     //! Size of buffers to be generated
-    unsigned int x_bufferSize;
+    unsigned int bufferSize_x;
     //! Data type of output
-    std::string x_outputType;
+    std::string outputType_x;
 
     //! The ID of the output data type
-    int d_outputTypeId;
+    int outputTypeId_;
 
-    boost::asio::io_service d_ioService;
-    boost::asio::ip::tcp::socket* d_socket;
-    boost::asio::ip::tcp::acceptor* d_acceptor;
+    boost::asio::io_service ioService_;
+    boost::asio::ip::tcp::socket* socket_;
+    boost::asio::ip::tcp::acceptor* acceptor_;
 
-    char* d_buffer;
-    bool d_connected;
+    char* buffer_;
+    bool connected_;
 
     template<typename T> void writeOutput();
 public:

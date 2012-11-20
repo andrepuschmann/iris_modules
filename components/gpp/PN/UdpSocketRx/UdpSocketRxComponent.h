@@ -51,17 +51,17 @@ class UdpSocketRxComponent: public PNComponent
 {
 private:
 	//! The port to receive from
-    unsigned short x_port;
+    unsigned short port_x;
     //! The size of the buffer used to receive datagrams
-    unsigned int x_bufferSize;
+    unsigned int bufferSize_x;
     //! The data type of output data
-    std::string x_outputType;
+    std::string outputType_x;
 
-    int d_outputTypeId;
-    boost::asio::io_service d_ioService;
-    boost::asio::ip::udp::socket* d_socket;
-    char* buffer;
-	bool bStopping;
+    int outputTypeId_;
+    boost::asio::io_service ioService_;
+    boost::asio::ip::udp::socket* socket_;
+    char* buffer_;
+	  bool bStopping_;
 
     template<typename T> void writeOutput();
 public:

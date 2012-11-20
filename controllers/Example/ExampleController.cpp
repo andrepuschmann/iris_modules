@@ -94,7 +94,7 @@ namespace iris
 		str << counter++;
 		p.parameterValue = str.str();
 
-		r.d_paramReconfigs.push_back(p);
+		r.paramReconfigs_.push_back(p);
 
 		reconfigureRadio(r);
     }

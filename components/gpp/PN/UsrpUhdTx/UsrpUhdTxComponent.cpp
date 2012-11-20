@@ -62,17 +62,17 @@ namespace iris
         PNComponent(name, "usrpuhdtxpncomponent", "A Usrp transmitter using the Universal Hardware Driver", "Paul Sutton", "0.1")
   {
 	  //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-    registerParameter("args", "A delimited string which may be used to specify a particular usrp", "", false, x_args);
-    registerParameter("rate", "The transmit rate", "1000000", true, x_rate);
-    registerParameter("frequency", "The transmit frequency", "2400000000", true, x_frequency);
-    registerParameter("gain", "The transmit gain", "1", true, x_gain);
-    registerParameter("streaming", "Whether we're streaming data to tx", "true", true, x_streaming);
-    registerParameter("fixlooffset","Value to fix LO offset to in Hz - defaults to 2*rate", "-1", false, x_fixLoOffset);
-    registerParameter("antenna","Daughterboard antenna selection", "", false, x_antenna);
-    registerParameter("subdev","Daughterboard subdevice specification", "", false, x_subDev);
-    registerParameter("bw","Daughterboard IF filter bandwidth (Hz)", "0", false, x_bw);
-    registerParameter("ref","Reference waveform (internal, external, mimo)", "internal", false, x_ref);
-    registerParameter("fmt", "Data format (fc64, fc32 or sc16)", "fc32", false, x_fmt);
+    registerParameter("args", "A delimited string which may be used to specify a particular usrp", "", false, args_x);
+    registerParameter("rate", "The transmit rate", "1000000", true, rate_x);
+    registerParameter("frequency", "The transmit frequency", "2400000000", true, frequency_x);
+    registerParameter("gain", "The transmit gain", "1", true, gain_x);
+    registerParameter("streaming", "Whether we're streaming data to tx", "true", true, streaming_x);
+    registerParameter("fixlooffset","Value to fix LO offset to in Hz - defaults to 2*rate", "-1", false, fixLoOffset_x);
+    registerParameter("antenna","Daughterboard antenna selection", "", false, antenna_x);
+    registerParameter("subdev","Daughterboard subdevice specification", "", false, subDev_x);
+    registerParameter("bw","Daughterboard IF filter bandwidth (Hz)", "0", false, bw_x);
+    registerParameter("ref","Reference waveform (internal, external, mimo)", "internal", false, ref_x);
+    registerParameter("fmt", "Data format (fc64, fc32 or sc16)", "fc32", false, fmt_x);
   }
 
 	/*! Destructor
@@ -86,9 +86,9 @@ namespace iris
 		md.start_of_burst = false;
 		md.end_of_burst   = true;
 		vector< complex<float> > v;
-		if(tx_stream != NULL)
+		if(txStream_ != NULL)
 		{
-			tx_stream->send(&v.front(), 0, md);
+			txStream_->send(&v.front(), 0, md);
 		}
 	}
 
@@ -125,88 +125,88 @@ namespace iris
     uhd::set_thread_priority_safe();
 
     //Set up the input DataBuffer
-    d_inBuf = castToType< complex<float> >(inputBuffers.at(0));
+    inBuf_ = castToType< complex<float> >(inputBuffers.at(0));
 
     //Set up the usrp
     try
     {
       //Create the device
-      LOG(LINFO) << "Creating the usrp device with args: " << x_args;
-      usrp = uhd::usrp::multi_usrp::make(x_args);
+      LOG(LINFO) << "Creating the usrp device with args: " << args_x;
+      usrp_ = uhd::usrp::multi_usrp::make(args_x);
       //Lock mboard clocks
-      usrp->set_clock_source(x_ref);
+      usrp_->set_clock_source(ref_x);
       //always select the subdevice first, the channel mapping affects the other settings
-      if (x_subDev!="") usrp->set_tx_subdev_spec(x_subDev);
-      LOG(LINFO) << "Using Device: " << usrp->get_pp_string();
+      if (subDev_x!="") usrp_->set_tx_subdev_spec(subDev_x);
+      LOG(LINFO) << "Using Device: " << usrp_->get_pp_string();
 
       //Set rate
-      LOG(LINFO) << "Setting TX Rate: " << (x_rate/1e6) << "Msps...";
-      usrp->set_tx_rate(x_rate);
-      LOG(LINFO) << "Actual TX Rate: " << (usrp->get_tx_rate()/1e6) << "Msps...";
+      LOG(LINFO) << "Setting TX Rate: " << (rate_x/1e6) << "Msps...";
+      usrp_->set_tx_rate(rate_x);
+      LOG(LINFO) << "Actual TX Rate: " << (usrp_->get_tx_rate()/1e6) << "Msps...";
 
       //Set frequency
-      LOG(LINFO) << "Setting TX Frequency: " << (x_frequency/1e6) << "MHz...";
-      double lo_offset = 2*x_rate;	//Set LO offset to twice signal rate by default
-      if(x_fixLoOffset >= 0)
+      LOG(LINFO) << "Setting TX Frequency: " << (frequency_x/1e6) << "MHz...";
+      double lo_offset = 2*rate_x;	//Set LO offset to twice signal rate by default
+      if(fixLoOffset_x >= 0)
       {
-        lo_offset = x_fixLoOffset;
+        lo_offset = fixLoOffset_x;
       }
-      usrp->set_tx_freq(tune_request_t(x_frequency, lo_offset));
-      LOG(LINFO) << "Actual TX Frequency: " << (usrp->get_tx_freq()/1e6) << "MHz";
+      usrp_->set_tx_freq(tune_request_t(frequency_x, lo_offset));
+      LOG(LINFO) << "Actual TX Frequency: " << (usrp_->get_tx_freq()/1e6) << "MHz";
 
       //We can only set the time on usrp2 devices
-      if(usrp->get_mboard_name().find("usrp1") == string::npos)
+      if(usrp_->get_mboard_name().find("usrp1") == string::npos)
       {
         LOG(LINFO) << "Setting device timestamp to 0...";
-        usrp->set_time_now(uhd::time_spec_t((double)0));
+        usrp_->set_time_now(uhd::time_spec_t((double)0));
       }
 
       //set the rf gain
-      gain_range_t range = usrp->get_tx_gain_range();
+      gain_range_t range = usrp_->get_tx_gain_range();
       LOG(LINFO) << "Gain range: " << range.to_pp_string();
-      LOG(LINFO) << "Setting TX Gain: " << x_gain << " dB...";
-      usrp->set_tx_gain(x_gain);
-      LOG(LINFO) << "Actual TX Gain: " <<  usrp->get_tx_gain() << " dB...";
+      LOG(LINFO) << "Setting TX Gain: " << gain_x << " dB...";
+      usrp_->set_tx_gain(gain_x);
+      LOG(LINFO) << "Actual TX Gain: " <<  usrp_->get_tx_gain() << " dB...";
 
       //set the IF filter bandwidth
-      if(x_bw!=0){
-        LOG(LINFO) << "Setting TX Bandwidth: " << x_bw << " MHz...";
-        usrp->set_tx_bandwidth(x_bw);
-        LOG(LINFO) << "Actual TX Bandwidth: " << usrp->get_tx_bandwidth() << " MHz...";
+      if(bw_x!=0){
+        LOG(LINFO) << "Setting TX Bandwidth: " << bw_x << " MHz...";
+        usrp_->set_tx_bandwidth(bw_x);
+        LOG(LINFO) << "Actual TX Bandwidth: " << usrp_->get_tx_bandwidth() << " MHz...";
       }
 
       //Set the antenna
-      if(x_antenna!="") usrp->set_tx_antenna(x_antenna);
-      LOG(LINFO) << "Using TX Antenna: " << usrp->get_tx_antenna();
+      if(antenna_x!="") usrp_->set_tx_antenna(antenna_x);
+      LOG(LINFO) << "Using TX Antenna: " << usrp_->get_tx_antenna();
 
       boost::this_thread::sleep(boost::posix_time::seconds(1)); //allow for some setup time
 
       //Check Ref and LO Lock detect
       std::vector<std::string> sensor_names;
-      sensor_names = usrp->get_tx_sensor_names(0);
+      sensor_names = usrp_->get_tx_sensor_names(0);
       if (std::find(sensor_names.begin(), sensor_names.end(), "lo_locked") != sensor_names.end()) {
-        uhd::sensor_value_t lo_locked = usrp->get_tx_sensor("lo_locked",0);
+        uhd::sensor_value_t lo_locked = usrp_->get_tx_sensor("lo_locked",0);
         LOG(LINFO) << "Checking TX: " << lo_locked.to_pp_string() << " ...";
         if(!lo_locked.to_bool())
           throw IrisException("Failed to lock LO");
       }
-      sensor_names = usrp->get_mboard_sensor_names(0);
-      if ((x_ref == "mimo") and (std::find(sensor_names.begin(), sensor_names.end(), "mimo_locked") != sensor_names.end())) {
-        uhd::sensor_value_t mimo_locked = usrp->get_mboard_sensor("mimo_locked",0);
+      sensor_names = usrp_->get_mboard_sensor_names(0);
+      if ((ref_x == "mimo") and (std::find(sensor_names.begin(), sensor_names.end(), "mimo_locked") != sensor_names.end())) {
+        uhd::sensor_value_t mimo_locked = usrp_->get_mboard_sensor("mimo_locked",0);
         LOG(LINFO) << "Checking TX: " << mimo_locked.to_pp_string() << " ...";
         if(!mimo_locked.to_bool())
           throw IrisException("Failed to lock LO");
       }
-      if ((x_ref == "external") and (std::find(sensor_names.begin(), sensor_names.end(), "ref_locked") != sensor_names.end())) {
-        uhd::sensor_value_t ref_locked = usrp->get_mboard_sensor("ref_locked",0);
+      if ((ref_x == "external") and (std::find(sensor_names.begin(), sensor_names.end(), "ref_locked") != sensor_names.end())) {
+        uhd::sensor_value_t ref_locked = usrp_->get_mboard_sensor("ref_locked",0);
         LOG(LINFO) << "Checking TX: " << ref_locked.to_pp_string() << " ...";
         if(!ref_locked.to_bool())
           throw IrisException("Failed to lock LO");
       }
 
       //create a transmit streamer
-      uhd::stream_args_t stream_args(x_fmt);
-      tx_stream = usrp->get_tx_stream(stream_args);
+      uhd::stream_args_t stream_args(fmt_x);
+      txStream_ = usrp_->get_tx_stream(stream_args);
     }
     catch(std::exception& e)
     {
@@ -222,14 +222,14 @@ namespace iris
   {
     //Get a DataSet from the input DataBuffer
     DataSet< complex<float> >* readDataSet = NULL;
-    d_inBuf->getReadData(readDataSet);
+    inBuf_->getReadData(readDataSet);
 
     size_t size = readDataSet->data.size();
 
     //Set up metadata
     uhd::tx_metadata_t md;
     md.start_of_burst = true;
-    if(x_streaming)
+    if(streaming_x)
     {
       md.end_of_burst = false;
     }else{
@@ -242,12 +242,12 @@ namespace iris
     }
 
     //Send the data
-    size_t num_tx_samps = tx_stream->send(
+    size_t num_tx_samps = txStream_->send(
       &readDataSet->data.front(), size, md
     );
 
     //Release the DataSet
-    d_inBuf->releaseReadData(readDataSet);
+    inBuf_->releaseReadData(readDataSet);
 
   }
 
@@ -258,28 +258,28 @@ namespace iris
     {
       if(name == "frequency")
       {
-        LOG(LINFO) << "Setting TX Frequency: " << (x_frequency/1e6) << "MHz...";
-        double lo_offset = 2*x_rate;  //Set LO offset to twice signal rate by default
-        if(x_fixLoOffset >= 0)
+        LOG(LINFO) << "Setting TX Frequency: " << (frequency_x/1e6) << "MHz...";
+        double lo_offset = 2*rate_x;  //Set LO offset to twice signal rate by default
+        if(fixLoOffset_x >= 0)
         {
-          lo_offset = x_fixLoOffset;
+          lo_offset = fixLoOffset_x;
         }
-        usrp->set_tx_freq(tune_request_t(x_frequency, lo_offset));
-        LOG(LINFO) << "Actual TX Frequency: " << (usrp->get_tx_freq()/1e6) << "MHz";
+        usrp_->set_tx_freq(tune_request_t(frequency_x, lo_offset));
+        LOG(LINFO) << "Actual TX Frequency: " << (usrp_->get_tx_freq()/1e6) << "MHz";
       }
       else if(name == "rate")
       {
-        LOG(LINFO) << "Setting TX Rate: " << (x_rate/1e6) << "Msps...";
-        usrp->set_tx_rate(x_rate);
-        LOG(LINFO) << "Actual TX Rate: " << (usrp->get_tx_rate()/1e6) << "Msps...";
+        LOG(LINFO) << "Setting TX Rate: " << (rate_x/1e6) << "Msps...";
+        usrp_->set_tx_rate(rate_x);
+        LOG(LINFO) << "Actual TX Rate: " << (usrp_->get_tx_rate()/1e6) << "Msps...";
       }
       else if(name == "gain")
       {
-        gain_range_t range = usrp->get_tx_gain_range();
+        gain_range_t range = usrp_->get_tx_gain_range();
         LOG(LINFO) << "Gain range: " << range.to_pp_string();
-        LOG(LINFO) << "Setting TX Gain: " << x_gain << " dB...";
-        usrp->set_tx_gain(x_gain);
-        LOG(LINFO) << "Actual TX Gain: " <<  usrp->get_tx_gain() << " dB...";
+        LOG(LINFO) << "Setting TX Gain: " << gain_x << " dB...";
+        usrp_->set_tx_gain(gain_x);
+        LOG(LINFO) << "Actual TX Gain: " <<  usrp_->get_tx_gain() << " dB...";
       }
     }
     catch(std::exception e)

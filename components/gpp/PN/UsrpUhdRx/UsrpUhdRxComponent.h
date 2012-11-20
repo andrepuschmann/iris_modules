@@ -47,29 +47,29 @@ class UsrpUhdRxComponent: public PNComponent
 {
 private:
 	//Output DataBuffer
-	WriteBuffer< std::complex<float> >* d_outBuf;
+	WriteBuffer< std::complex<float> >* outBuf_;
 
 	//The device
-	uhd::usrp::multi_usrp::sptr usrp;
-	uhd::rx_streamer::sptr rx_stream;
+	uhd::usrp::multi_usrp::sptr usrp_;
+	uhd::rx_streamer::sptr rxStream_;
 
-	bool isStreaming;
-	bool isUsrp1;
-	uhd::time_spec_t d_currentTimestamp;
-	bool d_gotFirstPacket;
+	bool isStreaming_;
+	bool isUsrp1_;
+	uhd::time_spec_t currentTimestamp_;
+	bool gotFirstPacket_;
 
 	//Exposed parameters
-	std::string x_args;     //See http://www.ettus.com/uhd_docs/manual/html/identification.html
-	double x_frequency;     //Receive frequency
-	double x_rate;          //Receive rate
-	double x_fixLoOffset;   //Local oscillator offset
-	float x_gain;           //Receive gain
-	int x_outputBlockSize;  //Output block size
-	std::string x_antenna;  //Daughterboard antenna selection
-	std::string x_subDev;   //Daughterboard subdevice specification
-	double x_bw;            //Daughterboard IF filter bandwidth in Hz
-	std::string x_ref;      //Reference clock(internal, external, mimo)
-	std::string x_wireFmt;  //Wire format (sc8 or sc16)
+	std::string args_x;     //See http://www.ettus.com/uhd_docs/manual/html/identification.html
+	double frequency_x;     //Receive frequency
+	double rate_x;          //Receive rate
+	double fixLoOffset_x;   //Local oscillator offset
+	float gain_x;           //Receive gain
+	int outputBlockSize_x;  //Output block size
+	std::string antenna_x;  //Daughterboard antenna selection
+	std::string subDev_x;   //Daughterboard subdevice specification
+	double bw_x;            //Daughterboard IF filter bandwidth in Hz
+	std::string ref_x;      //Reference clock(internal, external, mimo)
+	std::string wireFmt_x;  //Wire format (sc8 or sc16)
 	
 	void setStreaming(bool s);
 

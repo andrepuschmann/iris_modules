@@ -24,7 +24,7 @@
 # Prevent in-tree builds
 ########################################################################
 IF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    MESSAGE(FATAL_ERROR "Prevented in-tree built. This is bad practice.")
+    MESSAGE(FATAL_ERROR "Prevented in-tree build. This is bad practice.")
 ENDIF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 
 ########################################################################

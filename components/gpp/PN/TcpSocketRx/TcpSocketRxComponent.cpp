@@ -48,15 +48,15 @@ namespace iris
 
     TcpSocketRxComponent::TcpSocketRxComponent(string name):
             PNComponent(name, "tcpsocketrxpncomponent", "A TCP socket receiver", "Paul Sutton", "0.1"),
-            d_buffer(NULL),
-            d_connected(false)
+            buffer_(NULL),
+            connected_(false)
 
     {
         //Register all parameters
         //format:        (name,   description,     default,   dynamic, parameter, list/Interval)
-        registerParameter("port", "Port to listen on", "1234", false, x_port);
-        registerParameter("bufferSize", "The size of the buffer used to receive datagrams", "1316", false, x_bufferSize);
-        registerParameter("outputType", "The type of the output", "uint8_t", false, x_outputType);
+        registerParameter("port", "Port to listen on", "1234", false, port_x);
+        registerParameter("bufferSize", "The size of the buffer used to receive datagrams", "1316", false, bufferSize_x);
+        registerParameter("outputType", "The type of the output", "uint8_t", false, outputType_x);
     }
 
     void TcpSocketRxComponent::registerPorts()
@@ -74,36 +74,36 @@ namespace iris
         LOG(LINFO) << TypeInfo< complex<float> >::name();
         //Output type is set in the parameters
         map<string, int> outputTypes;
-        if( x_outputType == TypeInfo< uint8_t >::name() )
+        if( outputType_x == TypeInfo< uint8_t >::name() )
             outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
-        if( x_outputType == TypeInfo< uint16_t >::name() )
+        if( outputType_x == TypeInfo< uint16_t >::name() )
             outputTypes["output1"] = TypeInfo< uint16_t >::identifier;
-        if( x_outputType == TypeInfo< uint32_t >::name() )
+        if( outputType_x == TypeInfo< uint32_t >::name() )
             outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
-        if( x_outputType == TypeInfo< uint64_t >::name() )
+        if( outputType_x == TypeInfo< uint64_t >::name() )
             outputTypes["output1"] = TypeInfo< uint64_t >::identifier;
-        if( x_outputType == TypeInfo< int8_t >::name() )
+        if( outputType_x == TypeInfo< int8_t >::name() )
             outputTypes["output1"] = TypeInfo< int8_t >::identifier;
-        if( x_outputType == TypeInfo< int16_t >::name() )
+        if( outputType_x == TypeInfo< int16_t >::name() )
             outputTypes["output1"] = TypeInfo< int16_t >::identifier;
-        if( x_outputType == TypeInfo< int32_t >::name() )
+        if( outputType_x == TypeInfo< int32_t >::name() )
             outputTypes["output1"] = TypeInfo< int32_t >::identifier;
-        if( x_outputType == TypeInfo< int64_t >::name() )
+        if( outputType_x == TypeInfo< int64_t >::name() )
             outputTypes["output1"] = TypeInfo< int64_t >::identifier;
-        if( x_outputType == TypeInfo< float >::name() )
+        if( outputType_x == TypeInfo< float >::name() )
             outputTypes["output1"] = TypeInfo< float >::identifier;
-        if( x_outputType == TypeInfo< double >::name() )
+        if( outputType_x == TypeInfo< double >::name() )
             outputTypes["output1"] = TypeInfo< double >::identifier;
-        if( x_outputType == TypeInfo< long double >::name() )
+        if( outputType_x == TypeInfo< long double >::name() )
             outputTypes["output1"] = TypeInfo< long double >::identifier;
-        if( x_outputType == TypeInfo< complex<float> >::name() )
+        if( outputType_x == TypeInfo< complex<float> >::name() )
             outputTypes["output1"] = TypeInfo< complex<float> >::identifier;
-        if( x_outputType == TypeInfo< complex<double> >::name() )
+        if( outputType_x == TypeInfo< complex<double> >::name() )
             outputTypes["output1"] = TypeInfo< complex<double> >::identifier;
-        if( x_outputType == TypeInfo< complex<long double> >::name() )
+        if( outputType_x == TypeInfo< complex<long double> >::name() )
             outputTypes["output1"] = TypeInfo< complex<long double> >::identifier;
 
-        d_outputTypeId = outputTypes["output1"];
+        outputTypeId_ = outputTypes["output1"];
         return outputTypes;
 
     }
@@ -111,12 +111,12 @@ namespace iris
     void TcpSocketRxComponent::initialize()
     {
         //Create our buffer
-        d_buffer = new char[x_bufferSize];
+        buffer_ = new char[bufferSize_x];
 
         //Create socket and acceptor
         try{
-            d_socket = new boost::asio::ip::tcp::socket(d_ioService);
-            d_acceptor = new tcp::acceptor(d_ioService, tcp::endpoint(tcp::v4(), x_port));
+            socket_ = new boost::asio::ip::tcp::socket(ioService_);
+            acceptor_ = new tcp::acceptor(ioService_, tcp::endpoint(tcp::v4(), port_x));
         }
         catch(boost::system::system_error &e)
         {
@@ -128,8 +128,8 @@ namespace iris
     {
         //Open socket
         try{
-            if(!d_acceptor->is_open())
-                d_acceptor->open(tcp::v4());
+            if(!acceptor_->is_open())
+                acceptor_->open(tcp::v4());
         }
         catch(boost::system::system_error &e)
         {
@@ -144,7 +144,7 @@ namespace iris
             //Need to throw an exception here
         }
 
-        switch(d_outputTypeId)
+        switch(outputTypeId_)
         {
         case 0:
             writeOutput<uint8_t>();
@@ -199,16 +199,16 @@ namespace iris
         std::size_t size;
 
         try{
-            if(!d_connected)
+            if(!connected_)
             {
                 //Listen for connection if necessary
-                d_acceptor->accept(*d_socket);
-                d_connected = true;
+                acceptor_->accept(*socket_);
+                connected_ = true;
             }
 
             //Get data from socket
-            //size = d_socket->receive(boost::asio::buffer(d_buffer, x_bufferSize));
-            size = boost::asio::read(*d_socket, boost::asio::buffer(d_buffer, x_bufferSize));
+            //size = socket_->receive(boost::asio::buffer(d_buffer, x_bufferSize));
+            size = boost::asio::read(*socket_, boost::asio::buffer(buffer_, bufferSize_x));
         }catch(boost::system::system_error &e)
         {
             LOG(LERROR) << "Error listening on socket: " << e.what();
@@ -232,7 +232,7 @@ namespace iris
         outBuf->getWriteData(writeDataSet, numT);
 
         //Copy data into output
-        T* bufT = (T*)d_buffer;
+        T* bufT = (T*)buffer_;
         copy(bufT, bufT+numT, writeDataSet->data.begin());
 
         //Release the buffer
@@ -243,8 +243,8 @@ namespace iris
     {
         //Close acceptor
         try{
-            d_acceptor->close();
-            d_socket->close();
+            acceptor_->close();
+            socket_->close();
         }
         catch(boost::system::system_error &e)
         {
@@ -255,11 +255,11 @@ namespace iris
 	TcpSocketRxComponent::~TcpSocketRxComponent()
 	{
 		//Destroy our buffer
-        delete [] d_buffer;
+        delete [] buffer_;
 
         //Destroy socket and acceptor
-        delete d_socket;
-        delete d_acceptor;
+        delete socket_;
+        delete acceptor_;
 	}
 
 } /* namespace iris */

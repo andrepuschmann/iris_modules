@@ -49,12 +49,12 @@ class ExampleComponent: public PNComponent
 {
 private:
 	//! convenience pointer for incoming DataSet buffer
-	ReadBuffer<uint32_t>* d_inBuf;
+	ReadBuffer<uint32_t>* inBuf_;
 	//! convenience pointer for outgoing DataSet buffer
-	WriteBuffer< uint32_t >* d_outBuf;
+	WriteBuffer< uint32_t >* outBuf_;
 
 	//! Example of a parameter which will be exposed by this component
-	uint32_t x_example;
+	uint32_t example_x;
 
 public:
 	/*!

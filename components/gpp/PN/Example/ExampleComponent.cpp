@@ -47,7 +47,7 @@ namespace iris
         PNComponent(name, "examplepncomponent", "An example pn component", "Paul Sutton", "0.1")
     {
 		//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("exampleparameter", "An example parameter", "0", true, x_example, Interval<uint32_t>(0,5));
+        registerParameter("exampleparameter", "An example parameter", "0", true, example_x, Interval<uint32_t>(0,5));
 
 		//Format: registerEvent(name, description, data type);
 		registerEvent("exampleevent", "An example event", TypeInfo< uint32_t >::identifier);
@@ -75,21 +75,21 @@ namespace iris
     void ExampleComponent::initialize()
     {
 		// Set up the input and output DataBuffers
-		d_inBuf = castToType<uint32_t>(inputBuffers.at(0));
-		d_outBuf = castToType<uint32_t>(outputBuffers.at(0));
+		inBuf_ = castToType<uint32_t>(inputBuffers.at(0));
+		outBuf_ = castToType<uint32_t>(outputBuffers.at(0));
     }
 
     void ExampleComponent::process()
     {
 		//Get a DataSet from the input DataBuffer
 		DataSet<uint32_t>* readDataSet = NULL;
-        d_inBuf->getReadData(readDataSet);
+        inBuf_->getReadData(readDataSet);
 
 		size_t size = readDataSet->data.size();
 
 		//Get a DataSet from the output DataBuffer
         DataSet<uint32_t>* writeDataSet = NULL;
-        d_outBuf->getWriteData(writeDataSet, size);
+        outBuf_->getWriteData(writeDataSet, size);
 
 		//Copy the input DataSet to the output DataSet
 		copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
@@ -99,8 +99,8 @@ namespace iris
 		writeDataSet->sampleRate = readDataSet->sampleRate;
 
 		//Release the DataSets
-        d_inBuf->releaseReadData(readDataSet);
-		d_outBuf->releaseWriteData(writeDataSet);
+        inBuf_->releaseReadData(readDataSet);
+		outBuf_->releaseWriteData(writeDataSet);
     }
 
 } /* namespace iris */

@@ -43,7 +43,7 @@ class ExampleComponent: public StackComponent
 {
 private:
 	//Exposed parameters
-	uint32_t x_example;
+	uint32_t example_x;
 
 public:
     ExampleComponent(std::string name);

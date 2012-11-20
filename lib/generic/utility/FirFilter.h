@@ -57,7 +57,7 @@ public:
     //! constructor setting the filter coefficients
     template<class It>
     FirFilter(It coeff_start, It coeff_end) :
-        d_coeffs(coeff_start, coeff_end), d_sums(d_coeffs.size() + 1)
+        coeffs_(coeff_start, coeff_end), sums_(coeffs_.size() + 1)
     {
     }
 
@@ -65,10 +65,10 @@ public:
     template<class It>
     void setCoeffs(It coeff_start, It coeff_end)
     {
-        d_coeffs.clear();
-        d_coeffs.assign(coeff_start, coeff_end);
-        d_sums.clear();
-        d_sums.resize(d_coeffs.size() + 1);
+        coeffs_.clear();
+        coeffs_.assign(coeff_start, coeff_end);
+        sums_.clear();
+        sums_.resize(coeffs_.size() + 1);
     }
 
     //! \brief Apply filter to given input sequence, writing output to output iterator.
@@ -80,15 +80,15 @@ public:
         while (istart != iend)
         {
             // multiply with each coefficient & add
-            std::transform(d_coeffs.begin(), d_coeffs.end(), ++d_sums.begin(), d_sums.begin(),
+            std::transform(coeffs_.begin(), coeffs_.end(), ++sums_.begin(), sums_.begin(),
                     *istart++ * boost::lambda::_1 + boost::lambda::_2);
-            *ostart++ = d_sums.front();
+            *ostart++ = sums_.front();
         }
         return ostart;
     }
 private:
-    std::vector<CoeffT> d_coeffs; //!< coefficient vector
-    std::vector<OutT> d_sums; //!< keeps sums in a delay line
+    std::vector<CoeffT> coeffs_; //!< coefficient vector
+    std::vector<OutT> sums_; //!< keeps sums in a delay line
 };
 
 //! \brief Upsampling & interpolating filter.
@@ -108,7 +108,7 @@ public:
     //! Also sets the upsampling factor
     template<class It>
     FirFilterUpsamp(unsigned factor, It start, It end) :
-        d_coeffs(start, end), d_delayLine(d_coeffs.size()), d_factor(factor)
+        coeffs_(start, end), delayLine_(coeffs_.size()), factor_(factor)
     {
     }
 
@@ -116,18 +116,18 @@ public:
     template<class It>
     void setCoeffs(It start, It end)
     {
-        d_coeffs.clear();
-        d_coeffs.assign(start, end);
-        d_delayLine.clear();
-        d_delayLine.resize(d_coeffs.size());
+        coeffs_.clear();
+        coeffs_.assign(start, end);
+        delayLine_.clear();
+        delayLine_.resize(coeffs_.size());
     }
 
-    std::vector<CoeffT> getCoeffs() { return d_coeffs; }
+    std::vector<CoeffT> getCoeffs() { return coeffs_; }
 
     //! set the upsampling factor of the filter
     void setUpsamplingFactor(unsigned factor)
     {
-        d_factor = factor;
+        factor_ = factor;
     }
 
     //! \brief Apply filter to given input sequence, writing output to output iterator.
@@ -138,22 +138,22 @@ public:
     {
         while (istart != iend)
         {
-            d_delayLine.pop_back();
-            d_delayLine.push_front(*istart++);
+            delayLine_.pop_back();
+            delayLine_.push_front(*istart++);
 
             OutIt oend = ostart;
-            advance(oend, d_factor);
-            coeff_iterator coeff_start = d_coeffs.begin();
-            coeff_iterator cend = d_coeffs.end();
+            advance(oend, factor_);
+            coeff_iterator coeff_start = coeffs_.begin();
+            coeff_iterator cend = coeffs_.end();
             while (ostart != oend)
             {
                 *ostart = OutT();
-                delay_iterator di = d_delayLine.begin();
+                delay_iterator di = delayLine_.begin();
                 coeff_iterator ci = coeff_start++;
                 while (ci < cend)
                 {
                     *ostart += *ci * *di++;
-                    ci += d_factor;
+                    ci += factor_;
                 }
                 ostart++;
             }
@@ -162,9 +162,9 @@ public:
     }
 
 private:
-    std::vector<CoeffT> d_coeffs; //!< vector holding the coefficients
-    std::deque<InT> d_delayLine; //!< vector holding the delay line
-    unsigned d_factor; //!< upsampling factor
+    std::vector<CoeffT> coeffs_; //!< vector holding the coefficients
+    std::deque<InT> delayLine_; //!< vector holding the delay line
+    unsigned factor_; //!< upsampling factor
 
     //! iterator type for the coefficients vector
     typedef typename std::vector<CoeffT>::iterator coeff_iterator;

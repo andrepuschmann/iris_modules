@@ -48,11 +48,11 @@ namespace iris
     {
         //Register all parameters
         //format:        (name,   description,     default,   dynamic, parameter, list/Interval)
-        registerParameter("address", "Address of the target machine", "127.0.0.1", false, x_address);
-        registerParameter("port", "Port of the target machine", "1234", false, x_port);
+        registerParameter("address", "Address of the target machine", "127.0.0.1", false, address_x);
+        registerParameter("port", "Port of the target machine", "1234", false, port_x);
 
-        d_socket = NULL;
-        d_endPoint = NULL;
+        socket_ = NULL;
+        endPoint_ = NULL;
     }
 
     void UdpSocketTxComponent::registerPorts()
@@ -89,9 +89,9 @@ namespace iris
     {
         //Create socket
         try{
-            d_socket = new boost::asio::ip::udp::socket(d_ioService);
-            d_socket->open(udp::v4());
-            d_endPoint = new udp::endpoint(address::from_string(x_address), x_port);
+            socket_ = new boost::asio::ip::udp::socket(ioService_);
+            socket_->open(udp::v4());
+            endPoint_ = new udp::endpoint(address::from_string(address_x), port_x);
         }
         catch(boost::system::system_error &e)
         {
@@ -165,11 +165,11 @@ namespace iris
 
         try
 	    {
-            d_socket->send_to(boost::asio::buffer(readDataSet->data), *d_endPoint);
+            socket_->send_to(boost::asio::buffer(readDataSet->data), *endPoint_);
 	    }
 	    catch (boost::system::system_error &e)
 	    {
-            LOG(LERROR) << "An error occurred while sending data to " << x_address << ", port " << x_port << \
+            LOG(LERROR) << "An error occurred while sending data to " << address_x << ", port " << port_x << \
                 ": " << e.what();
 	    }
 
@@ -179,15 +179,15 @@ namespace iris
 	UdpSocketTxComponent::~UdpSocketTxComponent()
 	{
 		try{
-            d_socket->shutdown(udp::socket::shutdown_send);
-            d_socket->close();
+            socket_->shutdown(udp::socket::shutdown_send);
+            socket_->close();
 
         }catch (boost::system::system_error &e)
 	    {
             LOG(LERROR) << "An error occurred closing socket: " << e.what();
 	    }
-        delete d_socket;
-        delete d_endPoint;
+        delete socket_;
+        delete endPoint_;
 	}
 
 

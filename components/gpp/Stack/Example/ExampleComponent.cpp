@@ -54,7 +54,7 @@ namespace iris
         StackComponent(name, "examplestackcomponent", "An example stack component", "Paul Sutton", "0.1")
     {
 		//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("exampleparameter", "An example parameter", "0", true, x_example, Interval<uint32_t>(0,5));
+        registerParameter("exampleparameter", "An example parameter", "0", true, example_x, Interval<uint32_t>(0,5));
 
 		//Format: registerEvent(name, description, data type);
 		registerEvent("exampleevent", "An example event", TypeInfo< uint32_t >::identifier);

@@ -52,13 +52,13 @@ class UdpSocketTxComponent: public PNComponent
 {
 private:
 	//! The IP address to send to
-    std::string x_address;
+    std::string address_x;
     //! The destination port number
-    unsigned short x_port;
+    unsigned short port_x;
 
-    boost::asio::io_service d_ioService;
-    boost::asio::ip::udp::socket* d_socket;
-    boost::asio::ip::udp::endpoint* d_endPoint;
+    boost::asio::io_service ioService_;
+    boost::asio::ip::udp::socket* socket_;
+    boost::asio::ip::udp::endpoint* endPoint_;
     template<typename T> void writeOutput();
 public:
 	/*!
