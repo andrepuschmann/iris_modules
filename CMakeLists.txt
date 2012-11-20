@@ -33,7 +33,7 @@ ENDIF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 PROJECT (IRIS_MODULES)
 ENABLE_TESTING()
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+LIST(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 
 INCLUDE(IrisModulesPackage)	#setup cpack
 
@@ -42,7 +42,7 @@ INCLUDE(IrisModulesPackage)	#setup cpack
 ########################################################################
 FIND_PACKAGE(IRIS REQUIRED)
 INCLUDE_DIRECTORIES(${IRIS_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/generic)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic)
 
 ########################################################################
 # Install Dirs
@@ -71,7 +71,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 IF(MSVC)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/msvc) #missing headers
+    INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/msvc) #missing headers
     ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501) #minimum version required is windows xp
     ADD_DEFINITIONS(-DNOMINMAX) #disables stupidity and enables std::min and std::max
     ADD_DEFINITIONS( #stop all kinds of compatibility warnings
