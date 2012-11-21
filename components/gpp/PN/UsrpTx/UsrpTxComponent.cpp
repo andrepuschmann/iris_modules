@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/PN/UsrpUhdTx/UsrpUhdTxComponent.cpp
+ * \file components/gpp/PN/UsrpTx/UsrpTxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -36,7 +36,7 @@
  * packet will be transmitted at that time, if supported by the USRP.
  */
 
-#include "UsrpUhdTxComponent.h"
+#include "UsrpTxComponent.h"
 
 #include <uhd/utils/thread_priority.hpp>
 #include <boost/thread.hpp>
@@ -54,7 +54,7 @@ namespace pn
 {
 
 // export library symbols
-IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdTxComponent);
+IRIS_COMPONENT_EXPORTS(PNComponent, UsrpTxComponent);
 
 /*! Constructor
 *
@@ -63,9 +63,9 @@ IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdTxComponent);
 *
 * \param  name	The name assigned to this component when loaded
 */
-UsrpUhdTxComponent::UsrpUhdTxComponent(std::string name)
+UsrpTxComponent::UsrpTxComponent(std::string name)
   : PNComponent(name,
-                "usrpuhdtxpncomponent",
+                "usrptxpncomponent",
                 "A Usrp transmitter using the Universal Hardware Driver",
                 "Paul Sutton",
                 "0.1")
@@ -140,7 +140,7 @@ UsrpUhdTxComponent::UsrpUhdTxComponent(std::string name)
 *
 *	Send an EOB packet to stop the Usrp
 */
-UsrpUhdTxComponent::~UsrpUhdTxComponent()
+UsrpTxComponent::~UsrpTxComponent()
 {
   //Send a mini EOB packet
   uhd::tx_metadata_t md;
@@ -158,7 +158,7 @@ UsrpUhdTxComponent::~UsrpUhdTxComponent()
 *	Ports are registered by name with a vector of valid data types permitted on those ports.
 *	This example has one input port with a single valid data type - complex<float>.
 */
-void UsrpUhdTxComponent::registerPorts()
+void UsrpTxComponent::registerPorts()
 {
   //Register all ports
   vector<int> validTypes;
@@ -173,7 +173,7 @@ void UsrpUhdTxComponent::registerPorts()
 *	Based on the input data types, tell the system what output data types will be provided.
 *	\param	inputTypes	The data types of the inputs which will be passed to this component
 */
-map<string, int> UsrpUhdTxComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
+map<string, int> UsrpTxComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
 {
   //No output types
   map<string, int> outputTypes;
@@ -181,7 +181,7 @@ map<string, int> UsrpUhdTxComponent::calculateOutputTypes(std::map<std::string, 
 }
 
 //! Do any initialization required
-void UsrpUhdTxComponent::initialize()
+void UsrpTxComponent::initialize()
 {
   uhd::set_thread_priority_safe();
 
@@ -289,7 +289,7 @@ void UsrpUhdTxComponent::initialize()
 *
 *	Take a DataSet from the input buffer and send to the usrp
 */
-void UsrpUhdTxComponent::process()
+void UsrpTxComponent::process()
 {
   //Get a DataSet from the input DataBuffer
   DataSet< complex<float> >* readDataSet = NULL;
@@ -323,7 +323,7 @@ void UsrpUhdTxComponent::process()
 }
 
 //! This gets called whenever a parameter is reconfigured
-void UsrpUhdTxComponent::parameterHasChanged(std::string name)
+void UsrpTxComponent::parameterHasChanged(std::string name)
 {
   try
   {

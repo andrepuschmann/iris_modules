@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/PN/UsrpUhdRx/UsrpUhdRxComponent.h
+ * \file components/gpp/PN/UsrpRx/UsrpRxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -34,8 +34,8 @@
  * sampleRate on the generated DataSet if supported.
  */
 
-#ifndef PN_USRPUHDRXCOMPONENT_H_
-#define PN_USRPUHDRXCOMPONENT_H_
+#ifndef PN_USRPRXCOMPONENT_H_
+#define PN_USRPRXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 #include <uhd/usrp/multi_usrp.hpp>
@@ -51,11 +51,11 @@ namespace pn
  * more data about using the USRP front-ends and the parameters which can be
  * set.
  */
-class UsrpUhdRxComponent: public PNComponent
+class UsrpRxComponent: public PNComponent
 {
 public:
-  UsrpUhdRxComponent(std::string name);
-  ~UsrpUhdRxComponent();
+  UsrpRxComponent(std::string name);
+  ~UsrpRxComponent();
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
   virtual void registerPorts();
   virtual void initialize();
@@ -96,4 +96,4 @@ private:
 } // namespace pn
 } // namespace iris
 
-#endif // PN_USRPUHDRXCOMPONENT_H_
+#endif // PN_USRPRXCOMPONENT_H_

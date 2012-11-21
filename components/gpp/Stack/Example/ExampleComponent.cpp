@@ -41,7 +41,7 @@ using namespace std;
 
 namespace iris
 {
-namspace stack
+namespace stack
 {
 
 //! Export library symbols

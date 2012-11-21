@@ -20,7 +20,7 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-MESSAGE(STATUS "  Processing usrpuhdrx.")
+MESSAGE(STATUS "  Processing usrptx.")
 
 ########################################################################
 # Add includes and dependencies
@@ -31,16 +31,16 @@ FIND_PACKAGE( UHD )
 # Build the library from source files
 ########################################################################
 SET(sources
-	UsrpUhdRxComponent.cpp
+	UsrpTxComponent.cpp
 )
 
 IF (UHD_FOUND)
   INCLUDE_DIRECTORIES(${UHD_INCLUDE_DIRS})
-  ADD_LIBRARY(comp_gpp_pn_usrpuhdrx SHARED ${sources})
-  TARGET_LINK_LIBRARIES(comp_gpp_pn_usrpuhdrx ${UHD_LIBRARIES})
-  SET_TARGET_PROPERTIES(comp_gpp_pn_usrpuhdrx PROPERTIES OUTPUT_NAME "usrpuhdrx")
-  IRIS_INSTALL(comp_gpp_pn_usrpuhdrx)
-  IRIS_APPEND_INSTALL_LIST(usrpuhdrx)
+  ADD_LIBRARY(comp_gpp_pn_usrptx SHARED ${sources})
+  TARGET_LINK_LIBRARIES(comp_gpp_pn_usrptx ${UHD_LIBRARIES})
+  SET_TARGET_PROPERTIES(comp_gpp_pn_usrptx PROPERTIES OUTPUT_NAME "usrptx")
+  IRIS_INSTALL(comp_gpp_pn_usrptx)
+  IRIS_APPEND_INSTALL_LIST(usrptx)
 ELSE (UHD_FOUND)
-  IRIS_APPEND_NOINSTALL_LIST(usrpuhdrx)
+  IRIS_APPEND_NOINSTALL_LIST(usrptx)
 ENDIF (UHD_FOUND)

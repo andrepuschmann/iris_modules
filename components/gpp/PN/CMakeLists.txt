@@ -59,8 +59,8 @@ ADD_SUBDIRECTORY(MatlabTemplate)
 ADD_SUBDIRECTORY(TcpSocketRx)
 ADD_SUBDIRECTORY(UdpSocketRx)
 ADD_SUBDIRECTORY(UdpSocketTx)
-ADD_SUBDIRECTORY(UsrpUhdRx)
-ADD_SUBDIRECTORY(UsrpUhdTx)
+ADD_SUBDIRECTORY(UsrpRx)
+ADD_SUBDIRECTORY(UsrpTx)
 
 ########################################################################
 # List components to be installed/not installed

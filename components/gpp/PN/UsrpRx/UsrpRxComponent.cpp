@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/PN/UsrpUhdRx/UsrpUhdRxComponent.cpp
+ * \file components/gpp/PN/UsrpRx/UsrpRxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -34,7 +34,7 @@
  * sampleRate on the generated DataSet if supported.
  */
 
-#include "UsrpUhdRxComponent.h"
+#include "UsrpRxComponent.h"
 
 #include <uhd/utils/thread_priority.hpp>
 #include <uhd/exception.hpp>
@@ -55,7 +55,7 @@ namespace pn
 {
 
 // export library symbols
-IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdRxComponent);
+IRIS_COMPONENT_EXPORTS(PNComponent, UsrpRxComponent);
 
 /*! Constructor
 *
@@ -64,9 +64,9 @@ IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdRxComponent);
 *
 *   \param  name	The name assigned to this component when loaded
 */
-UsrpUhdRxComponent::UsrpUhdRxComponent(std::string name)
+UsrpRxComponent::UsrpRxComponent(std::string name)
   : PNComponent(name,
-                "usrpuhdrxpncomponent",
+                "usrprxpncomponent",
                 "A Usrp receiver using the UHD",
                 "Paul Sutton",
                 "0.2")
@@ -140,7 +140,7 @@ UsrpUhdRxComponent::UsrpUhdRxComponent(std::string name)
                     wireFmt_x);
 }
 
-UsrpUhdRxComponent::~UsrpUhdRxComponent()
+UsrpRxComponent::~UsrpRxComponent()
 {
   setStreaming(false);
 }
@@ -150,7 +150,7 @@ UsrpUhdRxComponent::~UsrpUhdRxComponent()
 *	Ports are registered by name with a vector of valid data types permitted on those ports.
 *	This receiver has one output port
 */
-void UsrpUhdRxComponent::registerPorts()
+void UsrpRxComponent::registerPorts()
 {
   //Register all ports
   vector<int> validTypes;
@@ -165,7 +165,7 @@ void UsrpUhdRxComponent::registerPorts()
 *	Based on the input data types, tell the system what output data types will be provided.
 *	\param	inputTypes	The data types of the inputs which will be passed to this component
 */
-map<string, int> UsrpUhdRxComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
+map<string, int> UsrpRxComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
 {
   //One output type - complex<float>
   map<string, int> outputTypes;
@@ -174,7 +174,7 @@ map<string, int> UsrpUhdRxComponent::calculateOutputTypes(std::map<std::string, 
 }
 
 //! Do any initialization required
-void UsrpUhdRxComponent::initialize()
+void UsrpRxComponent::initialize()
 {
   // Set up the output DataBuffers
   outBuf_ = castToType< complex<float> >(outputBuffers.at(0));
@@ -289,9 +289,9 @@ void UsrpUhdRxComponent::initialize()
 
 /*! The main work of the component is carried out here
 *
-*	This UsrpUhdRx receives data from the usrp and writes it to an output buffer.
+*	This UsrpRx receives data from the usrp and writes it to an output buffer.
 */
-void UsrpUhdRxComponent::process()
+void UsrpRxComponent::process()
 {
   if(not isStreaming_)
     setStreaming(true);
@@ -363,7 +363,7 @@ void UsrpUhdRxComponent::process()
 }
 
 //! This gets called whenever a parameter is reconfigured
-void UsrpUhdRxComponent::parameterHasChanged(std::string name)
+void UsrpRxComponent::parameterHasChanged(std::string name)
 {
   try
   {
@@ -395,7 +395,7 @@ void UsrpUhdRxComponent::parameterHasChanged(std::string name)
   }
 }
 
-void UsrpUhdRxComponent::setStreaming(bool s)
+void UsrpRxComponent::setStreaming(bool s)
 {
   //setup streaming
   if(s)

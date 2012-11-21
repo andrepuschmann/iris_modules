@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/PN/UsrpUhdTx/UsrpUhdTxComponent.h
+ * \file components/gpp/PN/UsrpTx/UsrpTxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -36,8 +36,8 @@
  * packet will be transmitted at that time, if supported by the USRP.
  */
 
-#ifndef PN_USRPUHDTXCOMPONENT_H_
-#define PN_USRPUHDTXCOMPONENT_H_
+#ifndef PN_USRPTXCOMPONENT_H_
+#define PN_USRPTXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 #include <uhd/usrp/multi_usrp.hpp>
@@ -53,11 +53,11 @@ namespace pn
  * more data about using the USRP front-ends and the parameters which can be
  * set.
  */
-class UsrpUhdTxComponent: public PNComponent
+class UsrpTxComponent: public PNComponent
 {
 public:
-  UsrpUhdTxComponent(std::string name);
-  virtual ~UsrpUhdTxComponent();
+  UsrpTxComponent(std::string name);
+  virtual ~UsrpTxComponent();
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
   virtual void registerPorts();
   virtual void initialize();
@@ -86,4 +86,4 @@ private:
 } // namespace pn
 } // namespace iris
 
-#endif // PN_USRPUHDTXCOMPONENT_H_
+#endif // PN_USRPTXCOMPONENT_H_
