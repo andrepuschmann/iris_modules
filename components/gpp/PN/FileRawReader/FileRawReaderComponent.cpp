@@ -252,7 +252,6 @@ void FileRawReaderComponent::readBlock()
     }
   }
 
-
   if (sizeof(T) > 1)
   {
     //Convert endianess
