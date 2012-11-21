@@ -1,5 +1,5 @@
 /**
- * \file MultiportExampleComponent.h
+ * \file components/gpp/Stack/MultiportExample/MultiportExampleComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -38,7 +38,10 @@
 
 namespace iris
 {
+namespace stack
+{
 
+/// An example of a StackComponent with multiple ports.
 class MultiportExampleComponent
   : public StackComponent
 {
@@ -50,9 +53,10 @@ public:
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 
 private:
-  uint32_t x_example;
+  uint32_t example_x; ///< An example parameter.
 };
 
+} // namespace stack
 } // namespace iris
 
 #endif // STACK_MULTIPORTEXAMPLECOMPONENT_H_

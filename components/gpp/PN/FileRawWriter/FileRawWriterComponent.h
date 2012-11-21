@@ -1,5 +1,5 @@
 /**
- * \file FileRawWriterComponent.h
+ * \file components/gpp/PN/FileRawWriter/FileRawWriterComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,65 +40,35 @@
 
 namespace iris
 {
+namespace pn
+{
 
-/*!
- * \brief The FileRawWriterComponent writes data to a file
+/** A PNComponent to write data to a named file.
+ *
+ * The name of the file to write and the endianness of the data can
+ * be specified using parameters.
  */
 class FileRawWriterComponent: public PNComponent
 {
  public:
-  /*!
-	 * Call the constructor on PNComponent and pass in all details
-	 * about the component.	Register all parameters and events.
-	 * \param name the name given to this component in the radio config
-	 */
   FileRawWriterComponent(std::string name);
-
-  /*!
-	 * Destructor - clean up.
-	 */
 	~FileRawWriterComponent();
-
-	/*!
-	 * Given the data-types associated with each input port, provide
-	 * the data-types which will be produced on each output port.
-	 * \param inputTypes the map of input port names and data-type identifiers
-	 * \return map of output port names and data-type identifiers
-	 */
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
-
-  /*!
-	 * Register the input and output ports of this component
-	 * by declaring them as input or output, naming them and
-	 * providing a list of valid data types.
-	 */
   virtual void registerPorts();
-
-  /*!
-	 * Do any initialization required by this component.
-	 */
   virtual void initialize();
-
-  /*!
-	 * This is where the work of this component gets done.
-	 * Typically components will take DataSets from their input
-	 * ports, process them and write DataSets to their output ports.
-	 */
   virtual void process();
 
  private:
-  //! template function to write data
+  /// template function to write data
   template<typename T> void writeBlock();
 
-  //! name of file to write to
-  std::string fileName_x;
-  //! endianness of data
-  std::string endian_x;
+  std::string fileName_x;   ///< Name of file to write to
+  std::string endian_x;     ///< Endianness of data
 
-  //! the output file stream
-  std::ofstream hOutFile_;
+  std::ofstream hOutFile_;  ///< The output file stream
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_FILERAWWRITERCOMPONENT_H_

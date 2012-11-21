@@ -1,5 +1,5 @@
 /**
- * \file TcpSocketRxComponent.cpp
+ * \file components/gpp/PN/TcpSocketRx/TcpSocketRxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -44,6 +44,9 @@ using namespace boost::asio::ip;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, TcpSocketRxComponent);
 
@@ -290,4 +293,5 @@ TcpSocketRxComponent::~TcpSocketRxComponent()
   delete acceptor_;
 }
 
+} // namespace pn
 } // namespace iris

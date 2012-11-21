@@ -1,5 +1,5 @@
 /**
- * \file MultiportExampleComponent.cpp
+ * \file components/gpp/Stack/MultiportExample/MultiportExampleComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,8 +40,10 @@ using namespace boost;
 
 namespace iris
 {
+namespace stack
+{
 
-//! Export library symbols
+/// Export library symbols
 IRIS_COMPONENT_EXPORTS(StackComponent, MultiportExampleComponent);
 
 MultiportExampleComponent::MultiportExampleComponent(std::string name)
@@ -55,7 +57,7 @@ MultiportExampleComponent::MultiportExampleComponent(std::string name)
                     "An example parameter",   // description
                     "0",                      // default value
                     true,                     // dynamic?
-                    x_example,                // parameter
+                    example_x,                // parameter
                     Interval<uint32_t>(0,5)); // allowed values
 }
 
@@ -78,7 +80,7 @@ void MultiportExampleComponent::registerPorts()
 void MultiportExampleComponent::initialize()
 {}
 
-/*! Process a message from above
+/** Process a message from above
 *
 *	This example copies StackDataSets onto all its bottom ports
 */
@@ -92,7 +94,7 @@ void MultiportExampleComponent::processMessageFromAbove(boost::shared_ptr<StackD
   sendDownwards("bottomport2", cpy);
 }
 
-/*! Process a message from below
+/** Process a message from below
 *
 *	This example just passes data through.
 */
@@ -101,4 +103,5 @@ void MultiportExampleComponent::processMessageFromBelow(boost::shared_ptr<StackD
   sendUpwards(set);
 }
 
+} // namespace stack
 } // namespace iris

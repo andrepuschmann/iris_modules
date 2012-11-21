@@ -1,5 +1,5 @@
 /**
- * \file ExampleComponent.h
+ * \file components/gpp/Stack/Example/ExampleComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -38,8 +38,10 @@
 
 namespace iris
 {
+namespace stack
+{
 
-/*! An example StackComponent to be used as a template for new StackComponents
+/** An example StackComponent to be used as a template for new StackComponents.
  *
  * Copy this component, rename folder, .h and .cpp files.
  * Edit all files for your new component and build.
@@ -48,25 +50,28 @@ class ExampleComponent
   : public StackComponent
 {
 public:
-	/*!
-   * Call the constructor on StackComponent and pass in all details
+	/** Call the constructor on StackComponent and pass in all details
    * about the component. Register all parameters and events.
+   *
    * \param name The name given to this component in the radio config
    */
   ExampleComponent(std::string name);
 
+  /// Do any initialization required by this component.
   virtual void initialize();
+  /// Start this component.
   virtual void start();
+  /// Stop this component
   virtual void stop();
 
-  /*!
-   * Called whenever this component receives a message from above.
+  /**Called whenever this component receives a message from above.
+   *
    * \param set Shared pointer to the received message
    */
   virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 
-  /*!
-   * Called whenever this component receives a message from below.
+  /** Called whenever this component receives a message from below.
+   *
    * \param set Shared pointer to the received message
    */
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
@@ -75,6 +80,7 @@ private:
   uint32_t example_x; //!< Example parameter exposed by this component
 };
 
+} // namespace stack
 } // namespace iris
 
 #endif // STACK_EXAMPLECOMPONENT_H_

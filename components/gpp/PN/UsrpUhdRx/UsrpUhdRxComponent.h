@@ -1,5 +1,5 @@
 /**
- * \file UsrpUhdRxComponent.h
+ * \file components/gpp/PN/UsrpUhdRx/UsrpUhdRxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -42,7 +42,15 @@
 
 namespace iris
 {
+namespace pn
+{
 
+/** A PNComponent which receives data from a USRP front-end.
+ *
+ * See http://ettus-apps.sourcerepo.com/redmine/ettus/projects/uhd/wiki for
+ * more data about using the USRP front-ends and the parameters which can be
+ * set.
+ */
 class UsrpUhdRxComponent: public PNComponent
 {
 public:
@@ -55,20 +63,14 @@ public:
   virtual void parameterHasChanged(std::string name);
 
 private:
+  /** Turn continuous streaming on or off on the USRP.
+   *
+   * @param s True = turn on streaming.
+   */
   void setStreaming(bool s);
 
-  WriteBuffer< std::complex<float> >* outBuf_;  //!< Output DataBuffer
-
-  uhd::usrp::multi_usrp::sptr usrp_;  //!< The device
-  uhd::rx_streamer::sptr rxStream_;   //!< Pointer to our streaming object
-
-  bool isStreaming_;
-  bool isUsrp1_;
-  uhd::time_spec_t currentTimestamp_;
-  bool gotFirstPacket_;
-
   //Exposed parameters
-  std::string args_x;     //!< See http://www.ettus.com/uhd_docs/manual/html/identification.html
+  std::string args_x;     //!< See http://files.ettus.com/uhd_docs/manual/html/index.html
   double frequency_x;     //!< Receive frequency
   double rate_x;          //!< Receive rate
   double fixLoOffset_x;   //!< Local oscillator offset
@@ -80,8 +82,18 @@ private:
   std::string ref_x;      //!< Reference clock(internal, external, mimo)
   std::string wireFmt_x;  //!< Wire format (sc8 or sc16)
 
+  WriteBuffer< std::complex<float> >* outBuf_;  //!< Output DataBuffer
+  uhd::usrp::multi_usrp::sptr usrp_;  //!< The device
+  uhd::rx_streamer::sptr rxStream_;   //!< Pointer to our streaming object
+
+  bool isStreaming_;
+  bool isUsrp1_;
+  uhd::time_spec_t currentTimestamp_;
+  bool gotFirstPacket_;
+
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_USRPUHDRXCOMPONENT_H_

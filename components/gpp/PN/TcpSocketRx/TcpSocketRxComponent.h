@@ -1,5 +1,5 @@
 /**
- * \file TcpSocketRxComponent.h
+ * \file components/gpp/PN/TcpSocketRx/TcpSocketRxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,77 +41,36 @@
 
 namespace iris
 {
+namespace pn
+{
 
-/*!
- * \brief A TCP socket receiver
+/** A PNComponent which receives from a TCP socket.
  *
- * The TcpSocketRxComponent receives data from a TCP socket.
+ * The TcpSocketRxComponent receives data from a TCP socket. The port number,
+ * buffer size and data type can be specified using parameters.
  */
 class TcpSocketRxComponent
   : public PNComponent
 {
  public:
-	/*!
-	 * Call the constructor on PNComponent and pass in all details
-	 * about the component.	Register all parameters and events.
-	 * \param name the name given to this component in the radio config
-	 */
   TcpSocketRxComponent(std::string name);
-
-	/*!
-	 * Destructor - clean up
-	 */
 	~TcpSocketRxComponent();
-
-	/*!
-	 * Given the data-types associated with each input port, provide
-	 * the data-types which will be produced on each output port.
-	 * \param inputTypes the map of input port names and data-type identifiers
-	 * \return map of output port names and data-type identifiers
-	 */
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
-
-  /*!
-	 * Register the input and output ports of this component
-	 * by declaring them as input or output, naming them and
-	 * providing a list of valid data types.
-	 */
   virtual void registerPorts();
-
-  /*!
-	 * Do any initialization required by this component.
-	 */
   virtual void initialize();
-
-  /*!
-   * Start this IO component
-   */
   virtual void start();
-
-  /*!
-   	 * This is where the work of this component gets done.
-   	 * Typically components will take DataSets from their input
-   	 * ports, process them and write DataSets to their output ports.
-   	 */
   virtual void process();
-
-  /*!
-	 * Stop this IO component
-	 */
   virtual void stop();
 
  private:
+  /// Template function used to write the output.
   template<typename T> void writeOutput();
 
-  //! Port number to bind to
-  unsigned short port_x;
-  //! Size of buffers to be generated
-  unsigned int bufferSize_x;
-  //! Data type of output
-  std::string outputType_x;
+  unsigned short port_x;      ///< Port number to bind to.
+  unsigned int bufferSize_x;  ///< Size of buffers to be generated.
+  std::string outputType_x;   ///< Data type of output.
 
-  //! The ID of the output data type
-  int outputTypeId_;
+  int outputTypeId_;          ///< The ID of the output data type
 
   boost::asio::io_service ioService_;
   boost::asio::ip::tcp::socket* socket_;
@@ -121,6 +80,7 @@ class TcpSocketRxComponent
   bool connected_;
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_TCPSOCKETRXCOMPONENT_H_

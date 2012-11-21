@@ -1,5 +1,5 @@
 /**
- * \file MatlabTemplateComponent.cpp
+ * \file components/gpp/PN/MatlabTemplate/MatlabTemplateComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -42,6 +42,9 @@ using namespace std;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, MatlabTemplateComponent);
 
@@ -224,4 +227,5 @@ template <class Tin, class Tout>
 MatlabTemplateComponentImpl<Tin,Tout>::~MatlabTemplateComponentImpl()
 {}
 
-} /* namespace iris */
+} // namespace pn
+} // namespace iris

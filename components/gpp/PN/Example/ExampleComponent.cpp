@@ -1,5 +1,5 @@
 /**
- * \file ExampleComponent.cpp
+ * \file components/gpp/PN/Example/ExampleComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,12 +41,15 @@ using namespace std;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, ExampleComponent);
 
 ExampleComponent::ExampleComponent(std::string name)
   : PNComponent(name,                       // component name
-                "examplepncomponent",       // component type
+                "example",                  // component type
                 "An example pn component",  // description
                 "Paul Sutton",              // author
                 "0.1")                      // version
@@ -67,7 +70,7 @@ ExampleComponent::ExampleComponent(std::string name)
 
 void ExampleComponent::registerPorts()
 {
-  //Register all ports
+  //Create a vector of the valid types for each port
   vector<int> validTypes;
   validTypes.push_back(TypeInfo< uint32_t >::identifier);
 
@@ -79,7 +82,7 @@ void ExampleComponent::registerPorts()
 map<string, int> ExampleComponent::calculateOutputTypes(std::map<std::string,
                                                         int> inputTypes)
 {
-  //One output type - uint32_t
+  //One output type - always uint32_t
   map<string, int> outputTypes;
   outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
   return outputTypes;
@@ -116,4 +119,5 @@ void ExampleComponent::process()
   outBuf_->releaseWriteData(writeDataSet);
 }
 
+} // namesapce pn
 } // namespace iris

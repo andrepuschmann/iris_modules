@@ -1,5 +1,5 @@
 /**
- * \file UsrpUhdTxComponent.cpp
+ * \file components/gpp/PN/UsrpUhdTx/UsrpUhdTxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -50,6 +50,9 @@ using namespace uhd;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdTxComponent);
 
@@ -356,4 +359,5 @@ void UsrpUhdTxComponent::parameterHasChanged(std::string name)
   }
 }
 
+} // namespace pn
 } // namespace iris

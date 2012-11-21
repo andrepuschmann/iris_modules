@@ -1,5 +1,5 @@
 /**
- * \file ExampleController.h
+ * \file controllers/Example/ExampleController.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -46,41 +46,21 @@ namespace iris
 //! Export library functions
 IRIS_CONTROLLER_EXPORTS(ExampleController);
 
-/*! Constructor
-*
-* Call the constructor on Controller and pass in all details about the controller.
-*/
 ExampleController::ExampleController()
   : Controller("examplecontroller", "An example controller", "Paul Sutton", "0.1")
 {
   counter_ = 1;
 }
 
-/*! Subscribe to events
-*
-*	Subscribe to events on specific components that this controller is interested in.
-*/
 void ExampleController::subscribeToEvents()
 {
   // Format: subscribeToEvent(Event name, Component name);
   subscribeToEvent("testevent", "snk1");
 }
 
-/*! Initialize this controller
-*
-*	Do any initialization required by this controller.
-*	This function is guaranteed to be called by this controller's thread.
-*/
 void ExampleController::initialize()
 {}
 
-/*! Process an event
-*
-*	If an event which this controller has subscribed to is activated, this function is called by
-*	the controller thread.
-*
-*	\param	e	The event which was activated by the component
-*/
 void ExampleController::processEvent(Event &e)
 {
   //Reconfigure the radio by creating a reconfiguration set
@@ -99,12 +79,6 @@ void ExampleController::processEvent(Event &e)
   reconfigureRadio(r);
 }
 
-/*! Destroy this controller
-*
-*	Do any destruction required by this controller.
-*	This function is guaranteed to be called by this controller's thread.
-*	IMPORTANT: This function should never throw an exception.
-*/
 void ExampleController::destroy()
 {}
 

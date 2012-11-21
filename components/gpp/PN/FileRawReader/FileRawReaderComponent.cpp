@@ -1,5 +1,5 @@
 /**
- * \file FileRawReaderComponent.cpp
+ * \file components/gpp/PN/FileRawReader/FileRawReaderComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -42,11 +42,18 @@ using namespace std;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, FileRawReaderComponent);
 
 FileRawReaderComponent::FileRawReaderComponent(string name)
-  : PNComponent(name, "filerawreader", "A filereader", "Paul Sutton", "0.2")
+  : PNComponent(name,
+                "filerawreader",
+                "A filereader",
+                "Paul Sutton",
+                "0.2")
 {
   list<string> allowedTypes;
   allowedTypes.push_back(TypeInfo< uint8_t >::name());
@@ -262,4 +269,5 @@ void FileRawReaderComponent::readBlock()
   outBuf->releaseWriteData(writeDataSet);
 }
 
+} // namespace pn
 } // namespace iris

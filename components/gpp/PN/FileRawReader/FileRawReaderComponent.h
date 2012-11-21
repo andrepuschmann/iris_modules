@@ -1,5 +1,5 @@
 /**
- * \file FileRawReaderComponent.h
+ * \file components/gpp/PN/FileRawReader/FileRawReaderComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,67 +40,37 @@
 
 namespace iris
 {
+namespace pn
+{
 
-/*!
- * \brief Read data from file
+/** A PNComponent to read data from a named file.
  *
- * The FileRawReaderComponent reads raw data from a file
- * and interprets it as a given data type.
+ * The FileRawReaderComponent reads raw data from a named file
+ * and interprets it as a given data type. The size of blocks
+ * to read and the data endianness can be specified using parameters.
  */
 class FileRawReaderComponent: public PNComponent
 {
  public:
-  /*!
-	 * Call the constructor on PNComponent and pass in all details
-	 * about the component.	Register all parameters and events.
-	 * \param name the name given to this component in the radio config
-	 */
   FileRawReaderComponent(std::string name);
-
-	/*!
-	 * Given the data-types associated with each input port, provide
-	 * the data-types which will be produced on each output port.
-	 * \param inputTypes the map of input port names and data-type identifiers
-	 * \return map of output port names and data-type identifiers
-	 */
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
-
-  /*!
-	 * Register the input and output ports of this component
-	 * by declaring them as input or output, naming them and
-	 * providing a list of valid data types.
-	 */
   virtual void registerPorts();
-
-  /*!
-	 * Do any initialization required by this component.
-	 */
   virtual void initialize();
-
-  /*!
-	 * This is where the work of this component gets done.
-	 * Typically components will take DataSets from their input
-	 * ports, process them and write DataSets to their output ports.
-	 */
   virtual void process();
 
  private:
-  //! template function used to read the data
+  /// Template function used to read the data
   template<typename T> void readBlock();
 
-  //! size of blocks to read from file
-  int blockSize_x;
-  //! name of file to read
-  std::string fileName_x;
-  //! interpret the data as this data type
-  std::string dataType_x;
-  //! endianness of the data
-  std::string endian_x;
+  int blockSize_x;          ///< Size of blocks to read from file
+  std::string fileName_x;   ///< Name of file to read
+  std::string dataType_x;   ///< Interpret the data as this data type
+  std::string endian_x;     ///< Endianness of the data
 
-  //! the file stream
-  std::ifstream hInFile_;
+  std::ifstream hInFile_;   ///< The file stream
 };
 
+} // namespace pn
 } // namespace iris
 #endif // PN_FILERAWREADERCOMPONENT_H_
 

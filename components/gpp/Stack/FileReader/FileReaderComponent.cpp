@@ -1,5 +1,5 @@
 /**
- * \file FileReaderComponent.cpp
+ * \file components/gpp/Stack/FileReader/FileReaderComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -43,6 +43,8 @@
 using namespace std;
 
 namespace iris
+{
+namespace stack
 {
 
 //! Export library symbols
@@ -184,4 +186,5 @@ void FileReaderComponent::readBlock(boost::shared_ptr<StackDataSet> readDataBuff
   }
 }
 
+} // namespace stack
 } // namespace iris

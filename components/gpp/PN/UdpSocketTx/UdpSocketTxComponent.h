@@ -1,5 +1,5 @@
 /**
- * \file UdpSocketTxComponent.h
+ * \file components/gpp/PN/UdpSocketTx/UdpSocketTxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,9 +41,10 @@
 
 namespace iris
 {
+namespace pn
+{
 
-/*!
- * \brief Transmit data over a UDP socket
+/** A PNComponent which transmits data over a UDP socket.
  *
  * The UdpSocketTxComponent transmits data over a UDP socket
  * to a specified IP address and port.
@@ -52,46 +53,15 @@ class UdpSocketTxComponent
   : public PNComponent
 {
 public:
-	/*!
-	 * Call the constructor on PNComponent and pass in all details
-	 * about the component.	Register all parameters and events.
-	 * \param name the name given to this component in the radio config
-	 */
   UdpSocketTxComponent(std::string name);
-
-	/*!
-	 * Destructor - clean up
-	 */
 	~UdpSocketTxComponent();
-
-	/*!
-	 * Given the data-types associated with each input port, provide
-	 * the data-types which will be produced on each output port.
-	 * \param inputTypes the map of input port names and data-type identifiers
-	 * \return map of output port names and data-type identifiers
-	 */
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
-
-  /*!
-   * Register the input and output ports of this component
-   * by declaring them as input or output, naming them and
-   * providing a list of valid data types.
-   */
   virtual void registerPorts();
-
-  /*!
-   * Do any initialization required by this component.
-   */
   virtual void initialize();
-
-  /*!
-   * This is where the work of this component gets done.
-   * Typically components will take DataSets from their input
-   * ports, process them and write DataSets to their output ports.
-   */
   virtual void process();
 
 private:
+  /// Template function to write output.
   template<typename T> void writeOutput();
 
   std::string address_x;  //!< The IP address to send to
@@ -103,6 +73,7 @@ private:
 
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_UDPSOCKETTXCOMPONENT_H_

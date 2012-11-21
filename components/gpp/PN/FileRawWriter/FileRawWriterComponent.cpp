@@ -1,5 +1,5 @@
 /**
- * \file FileRawWriterComponent.cpp
+ * \file components/gpp/PN/FileRawWriter/FileRawWriterComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -42,11 +42,18 @@ using namespace std;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, FileRawWriterComponent);
 
 FileRawWriterComponent::FileRawWriterComponent(string name)
-  : PNComponent(name, "filerawwriter", "A filewriter", "Paul Sutton", "0.1")
+  : PNComponent(name,
+                "filerawwriter",
+                "A filewriter",
+                "Paul Sutton",
+                "0.1")
 {
   /*
    * format:
@@ -175,4 +182,5 @@ FileRawWriterComponent::~FileRawWriterComponent()
   hOutFile_.close();
 }
 
+} // namespace pn
 } // namespace iris

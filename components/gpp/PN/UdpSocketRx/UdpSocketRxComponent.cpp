@@ -1,5 +1,5 @@
 /**
- * \file UdpSocketRxComponent.cpp
+ * \file components/gpp/PN/UdpSocketRx/UdpSocketRxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,6 +41,9 @@ using namespace boost::asio::ip;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, UdpSocketRxComponent);
 
@@ -294,4 +297,5 @@ UdpSocketRxComponent::~UdpSocketRxComponent()
   delete socket_;
 }
 
-} /* namespace iris */
+} // namespace pn
+} // namespace iris

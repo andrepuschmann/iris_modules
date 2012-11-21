@@ -1,5 +1,5 @@
 /**
- * \file ExampleController.h
+ * \file controllers/Example/ExampleController.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -39,13 +39,50 @@
 namespace iris
 {
 
-class ExampleController: public Controller
+/** An example Controller to be used as a template for new Controllers
+ *
+ * Copy this controller, rename folder, .h and .cpp files.
+ * Edit all files for your new controller and build.
+ */
+class ExampleController
+  : public Controller
 {
 public:
+  /** Construct the controller.
+   *
+   * Call the constructor on the parent Controller class, pass in all
+   * details about this controller.
+   */
   ExampleController();
+
+  /** Subscribe to events.
+  *
+  * Subscribe to events on specific components that this controller is interested in.
+  */
 	virtual void subscribeToEvents();
+
+	/** Initialize this controller.
+	*
+	* Do any initialization required by this controller.
+	* This function is guaranteed to be called by this controller's thread.
+	*/
 	virtual void initialize();
+
+	/** Process an event.
+	*
+	* If an event which this controller has subscribed to is activated, this function is called by
+	* the controller thread.
+	*
+	* \param  e The event which was activated by the component
+	*/
   virtual void processEvent(Event &e);
+
+  /** Destroy this controller
+  *
+  * Do any destruction required by this controller.
+  * This function is guaranteed to be called by this controller's thread.
+  * IMPORTANT: This function should never throw an exception.
+  */
 	virtual void destroy();
 
 private:

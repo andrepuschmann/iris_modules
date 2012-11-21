@@ -1,5 +1,5 @@
 /**
- * \file FileRawWriterTemplateComponent.h
+ * \file components/gpp/PN/FileRawWriterTemplate/FileRawWriterTemplateComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,70 +40,52 @@
 
 namespace iris
 {
+namespace pn
+{
 
 // forward declaration
 template <class Tin, class Tout>
 class FileRawWriterTemplateComponentImpl;
 
 
-/*!
- * \brief A template component used to write data to file
+/** A template PNComponent used to write data to a named file.
  *
  * The FileRawWriterTemplateComponent is derived from TemplatePNComponent,
- * so we need to give the class name itself as a template parameter.
+ * so we need to give the class name itself as a template parameter. This
+ * component is an example of a template component for Iris and will write
+ * any data type to a named file.
  */
 class FileRawWriterTemplateComponent
   : public TemplatePNComponent<FileRawWriterTemplateComponent>
 {
  public:
-  /*!
-   * supported types at the input port
+  /**
+   * Supported types at the input port
    * (can be a boost::mpl::vector of types, or of other
    * mpl vectors if multiple inputs are present)
    */
   typedef IrisDataTypes supportedInputTypes;
 
-  /*!
-   * we have no output, so empty vector here.
+  /**
+   * We have no output, so empty vector here.
    * \todo we should typdef the empty mpl::vector<> to some name for convenience.
    */
   typedef boost::mpl::vector<> supportedOutputTypes;
 
-  /*!
-	 * Constructor - call the constructor on TemplatePNComponent and pass in
-	 * all details about the component.	Register all parameters and events.
-	 * \param name the name given to this component in the radio config
-	 */
+
   FileRawWriterTemplateComponent(std::string name);
-
-  /*!
-	 * Destructor - clean up.
-	 */
 	virtual ~FileRawWriterTemplateComponent(){};
-
-	/*!
-	 * Given the data-types associated with each input port, provide
-	 * the data-types which will be produced on each output port.
-	 * \param inputTypes the map of input port names and data-type identifiers
-	 * \return map of output port names and data-type identifiers
-	 */
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string,
                                                           int> inputTypes);
-
-  /*!
-	 * Register the input and output ports of this component
-	 * by declaring them as input or output, naming them and
-	 * providing a list of valid data types.
-	 */
   virtual void registerPorts();
 
-  /*!
-	 * Creates a new instance of the implementation class,
+  /** Creates a new instance of the implementation class,
 	 * with the correct template parameters.
+	 *
 	 * Also copies all values of the parameters to the newly
 	 * created instance.
-	 * \param comp the component used to create the instance
-	 * \return the created component instance
+	 * \param comp The component used to create the instance
+	 * \return The created component instance
 	 */
   template <typename Tin, typename Tout>
   static PNComponent* createInstance(const PNComponent* comp)
@@ -112,23 +94,21 @@ class FileRawWriterTemplateComponent
   }
 
  protected:
-  //! the file name to write to
-  std::string fileName_x;
+  std::string fileName_x; ///< The name of the file to write
 };
 
-/*!
- * \brief The FileRawWriterComponent implementation
+/** The actual FileRawWriterTemplateComponent implementation.
  *
- * The actual implementation of the FileRawWriter - implemented as template
+ * The actual implementation of the FileRawWriter - implemented as template.
  */
 template <class Tin, class Tout>
 class FileRawWriterTemplateComponentImpl
   : public FileRawWriterTemplateComponent
 {
  public:
-  /*!
-   * Constructor - call the constructor on parent
+  /** Constructor - call the constructor on parent
    * and assign all values from other.
+   *
    * \param other the PNComponent with correct i/o datatypes
    */
   FileRawWriterTemplateComponentImpl(const PNComponent& other)
@@ -138,35 +118,20 @@ class FileRawWriterTemplateComponentImpl
     assign(other);
   }
 
-  /*!
-   * Destructor - clean up.
-   */
   ~FileRawWriterTemplateComponentImpl();
-
-  /*!
-   * Do any initialization required by this component.
-   */
   virtual void initialize();
-
-  /*!
-   * This is where the work of this component gets done.
-   * Typically components will take DataSets from their input
-   * ports, process them and write DataSets to their output ports.
-   */
   virtual void process();
 
  private:
-	//! The file stream
-  std::ofstream hOutFile_;
+  std::ofstream hOutFile_;  ///< The file stream
 
-  //! the type of the first input port (we have only one anyway)
-  typedef typename boost::mpl::front<Tin>::type T;
-  //! convenience pointer for incoming DataSet buffer
-  ReadBuffer<T>* inBuf_;
-  //! convenience pointer for incoming DataSet
-  DataSet<T>* readDataSet_;
+  typedef typename boost::mpl::front<Tin>::type T; ///< The input port type
+
+  ReadBuffer<T>* inBuf_;    ///< Convenience pointer for incoming DataSet buffer
+  DataSet<T>* readDataSet_; ///< Convenience pointer for incoming DataSet
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_FILERAWWRITERTEMPLATECOMPONENT_H_

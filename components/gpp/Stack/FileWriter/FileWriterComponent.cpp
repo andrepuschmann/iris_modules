@@ -1,5 +1,5 @@
 /**
- * \file FileWriterComponent.h
+ * \file components/gpp/Stack/FileWriter/FileWriterComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,6 +41,9 @@ using namespace std;
 
 namespace iris
 {
+namespace stack
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(StackComponent, FileWriterComponent);
 
@@ -100,4 +103,5 @@ void FileWriterComponent::writeBlock(boost::shared_ptr<StackDataSet> toWrite)
   RawFileUtility::write(toWrite->data.begin(), toWrite->data.end(), hOutFile_);
 }
 
+} // namespace stack
 } // namespace iris

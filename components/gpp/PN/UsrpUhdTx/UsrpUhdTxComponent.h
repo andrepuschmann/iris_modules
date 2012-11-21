@@ -1,5 +1,5 @@
 /**
- * \file UsrpUhdTxComponent.h
+ * \file components/gpp/PN/UsrpUhdTx/UsrpUhdTxComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -44,7 +44,15 @@
 
 namespace iris
 {
+namespace pn
+{
 
+/** A PNComponent which sends data to a USRP front-end.
+ *
+ * See http://ettus-apps.sourcerepo.com/redmine/ettus/projects/uhd/wiki for
+ * more data about using the USRP front-ends and the parameters which can be
+ * set.
+ */
 class UsrpUhdTxComponent: public PNComponent
 {
 public:
@@ -57,9 +65,7 @@ public:
   virtual void parameterHasChanged(std::string name);
 
 private:
-  ReadBuffer< std::complex<float> >* inBuf_;
-
-  //Exposed parameters
+    //Exposed parameters
   std::string args_x;   //!< See http://www.ettus.com/uhd_docs/manual/html/identification.html
   double rate_x;        //!< Rate of outgoing samples
   double frequency_x;   //!< Tx frequency
@@ -72,11 +78,12 @@ private:
   bool streaming_x;     //!< Streaming or bursty traffic?
   std::string fmt_x;    //!< Data format (fc64, fc32 or sc16)
 
-  //The device
-  uhd::usrp::multi_usrp::sptr usrp_;
+  ReadBuffer< std::complex<float> >* inBuf_; ///< Convenience pointer to input buffer.
+  uhd::usrp::multi_usrp::sptr usrp_;  ///< The device.
   uhd::tx_streamer::sptr txStream_;
 };
 
+} // namespace pn
 } // namespace iris
 
 #endif // PN_USRPUHDTXCOMPONENT_H_

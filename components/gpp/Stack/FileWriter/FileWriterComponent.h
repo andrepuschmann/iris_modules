@@ -1,5 +1,5 @@
 /**
- * \file FileWriterComponent.h
+ * \file components/gpp/Stack/FileWriter/FileWriterComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,33 +40,37 @@
 
 namespace iris
 {
+namespace stack
+{
 
+/** A StackComponent to write data to a named file.
+ *
+ * File name can be specified using parameters.
+ */
 class FileWriterComponent
   : public StackComponent
 {
 public:
-  /*! Constructor
-  *
-  * Call the constructor on StackComponent and pass in all details about the component.
-  * Register all parameters and events in the constructor.
-  *
-  *   \param  name  The name assigned to this component when loaded
-  */
   FileWriterComponent(std::string name);
   virtual void initialize();
   virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 
 private:
+	/** Write a block of data to file.
+	 *
+	 * @param toWrite   Pointer to the data set containing the data.
+	 */
 	void writeBlock(boost::shared_ptr<StackDataSet> toWrite);
 
-  std::string fileName_x; //!< The name of the file to write to
-  bool fromBelow_x;
+  std::string fileName_x; ///< The name of the file to write to.
+  bool fromBelow_x;       ///< Do we write data coming from below?
 
-  std::ofstream hOutFile_;
+  std::ofstream hOutFile_;  ///< Handle to our file stream.
 
 };
 
+} // namespace stack
 } // namespace iris
 
 #endif // STACK_FILEWRITERCOMPONENT_H_

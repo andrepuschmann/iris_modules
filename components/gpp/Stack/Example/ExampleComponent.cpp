@@ -1,5 +1,5 @@
 /**
- * \file ExampleComponent.cpp
+ * \file components/gpp/Stack/Example/ExampleComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -41,6 +41,9 @@ using namespace std;
 
 namespace iris
 {
+namspace stack
+{
+
 //! Export library symbols
 IRIS_COMPONENT_EXPORTS(StackComponent, ExampleComponent);
 
@@ -98,4 +101,5 @@ void ExampleComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> s
   sendUpwards(set);  // Simply send the message on
 }
 
+} // namespace stack
 } // namespace iris

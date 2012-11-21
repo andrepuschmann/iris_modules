@@ -1,5 +1,5 @@
 /**
- * \file FileReaderComponent.h
+ * \file components/gpp/Stack/FileReader/FileReaderComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -40,20 +40,18 @@
 
 namespace iris
 {
+namespace stack
+{
 
+/** A StackComponent to read data from a named file.
+ *
+ * File name, data block size etc. can be specified using parameters.
+ */
 class FileReaderComponent
   : public StackComponent
 {
 public:
-  /*! Constructor
-  *
-  *    Call the constructor on StackComponent and pass in all details about the component.
-  *    Register all parameters and events in the constructor.
-  *
-  *   \param  name    The name assigned to this component when loaded
-  */
   FileReaderComponent(std::string name);
-
   virtual void initialize();
   virtual void start();
   virtual void stop();
@@ -61,31 +59,33 @@ public:
   virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 
 private:
-  //Private functions
+  /** Read a block of data from the file
+   *
+   * @param readDataBuffer  Buffer to hold the read data.
+   */
   void readBlock(boost::shared_ptr<StackDataSet> readDataBuffer);
+  /// Entry point for file reading thread.
   void fileReadingLoop();
 
   //Exposed parameters
-  uint32_t blockSize_x;
-  std::string fileName_x;
-  bool sendBelow_x;
-  bool enabled_x;
-  uint32_t delay_x;
+  uint32_t blockSize_x;     ///< Size of data blocks to read.
+  std::string fileName_x;   ///< Name of file to read.
+  bool sendBelow_x;         ///< Send data down?
+  bool enabled_x;           ///< Is this reader enabled?
+  uint32_t delay_x;         ///< Time to wait between blocks.
   uint32_t intermittentPauseLength_x;
-  int packets_x;
+  int packets_x;            ///< Number of packets to generate.
 
   int count_;
 
   //\todo Remove these filthy hacks
   uint32_t counter_;
 
-  //! Handle for file reading thread
-  boost::scoped_ptr< boost::thread > thread_;
-  
-  //The file stream
-  std::ifstream hInFile_;
+  boost::scoped_ptr< boost::thread > thread_; ///< Handle for file reading thread.
+  std::ifstream hInFile_; ///< The file stream.
 };
 
+} // namespace stack
 } // namespace iris
 
 #endif // STACK_FILEREADERCOMPONENT_H_

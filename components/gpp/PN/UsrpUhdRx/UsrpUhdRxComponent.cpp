@@ -1,5 +1,5 @@
 /**
- * \file UsrpUhdRxComponent.cpp
+ * \file components/gpp/PN/UsrpUhdRx/UsrpUhdRxComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -51,6 +51,9 @@ using namespace uhd;
 
 namespace iris
 {
+namespace pn
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(PNComponent, UsrpUhdRxComponent);
 
@@ -406,4 +409,5 @@ void UsrpUhdRxComponent::setStreaming(bool s)
   isStreaming_ = s;
 }
 
-} /* namespace iris */
+} // namespace pn
+} // namespace iris
