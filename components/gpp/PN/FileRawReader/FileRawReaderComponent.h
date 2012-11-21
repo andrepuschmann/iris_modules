@@ -31,8 +31,8 @@
  * Source component to read data from file.
  */
 
-#ifndef FILERAWREADERCOMPONENT_H_
-#define FILERAWREADERCOMPONENT_H_
+#ifndef PN_FILERAWREADERCOMPONENT_H_
+#define PN_FILERAWREADERCOMPONENT_H_
 
 #include <fstream>
 
@@ -49,24 +49,7 @@ namespace iris
  */
 class FileRawReaderComponent: public PNComponent
 {
-private:
-  //! size of blocks to read from file
-  int x_blockSize;
-  //! name of file to read
-  std::string x_fileName;
-  //! interpret the data as this data type
-  std::string x_dataType;
-  //! endianness of the data
-  std::string x_endian;
-
-	//! the file stream
-  std::ifstream hInFile;
-  
-	//! template function used to read the data
-  template<typename T> void readBlock();
-
-
-public:
+ public:
   /*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
@@ -100,8 +83,24 @@ public:
 	 * ports, process them and write DataSets to their output ports.
 	 */
   virtual void process();
+
+ private:
+  //! template function used to read the data
+  template<typename T> void readBlock();
+
+  //! size of blocks to read from file
+  int blockSize_x;
+  //! name of file to read
+  std::string fileName_x;
+  //! interpret the data as this data type
+  std::string dataType_x;
+  //! endianness of the data
+  std::string endian_x;
+
+  //! the file stream
+  std::ifstream hInFile_;
 };
 
-}
-#endif /* FILERAWREADERCOMPONENT_H_ */
+} // namespace iris
+#endif // PN_FILERAWREADERCOMPONENT_H_
 

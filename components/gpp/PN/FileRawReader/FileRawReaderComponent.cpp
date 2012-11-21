@@ -65,10 +65,10 @@ namespace iris
 
         //Register all parameters
         //format:        (name,   description,     default,   dynamic, parameter, list/Interval)
-        registerParameter("filename", "The file to read", "temp.bin", false, x_fileName);
-        registerParameter("blocksize", "Size of output blocks", "1024", false, x_blockSize, Interval<int>(1, 1024000));
-        registerParameter("datatype", "Type of data in file", "uint8_t", false, x_dataType, allowedTypes);
-        registerParameter("endian", "Endianess of file (little|big|native)", "native", false, x_endian);
+        registerParameter("filename", "The file to read", "temp.bin", false, fileName_x);
+        registerParameter("blocksize", "Size of output blocks", "1024", false, blockSize_x, Interval<int>(1, 1024000));
+        registerParameter("datatype", "Type of data in file", "uint8_t", false, dataType_x, allowedTypes);
+        registerParameter("endian", "Endianess of file (little|big|native)", "native", false, endian_x);
 
     }
 
@@ -99,33 +99,33 @@ namespace iris
     {
         //Set output type
         map<string, int> outputTypes;
-        if( x_dataType == "uint8_t" )
+        if( dataType_x == "uint8_t" )
             outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
-		if( x_dataType == "uint16_t" )
+		if( dataType_x == "uint16_t" )
             outputTypes["output1"] = TypeInfo< uint16_t >::identifier;
-		if( x_dataType == "uint32_t" )
+		if( dataType_x == "uint32_t" )
             outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
-		if( x_dataType == "uint64_t" )
+		if( dataType_x == "uint64_t" )
             outputTypes["output1"] = TypeInfo< uint64_t >::identifier;
-		if( x_dataType == "int8_t" )
+		if( dataType_x == "int8_t" )
             outputTypes["output1"] = TypeInfo< int8_t >::identifier;
-		if( x_dataType == "int16_t" )
+		if( dataType_x == "int16_t" )
             outputTypes["output1"] = TypeInfo< int16_t >::identifier;
-		if( x_dataType == "int32_t" )
+		if( dataType_x == "int32_t" )
             outputTypes["output1"] = TypeInfo< int32_t >::identifier;
-		if( x_dataType == "int64_t" )
+		if( dataType_x == "int64_t" )
             outputTypes["output1"] = TypeInfo< int64_t >::identifier;
-		if( x_dataType == "float" )
+		if( dataType_x == "float" )
             outputTypes["output1"] = TypeInfo< float >::identifier;
-		if( x_dataType == "double" )
+		if( dataType_x == "double" )
             outputTypes["output1"] = TypeInfo< double >::identifier;
-		if( x_dataType == "long double" )
+		if( dataType_x == "long double" )
             outputTypes["output1"] = TypeInfo< long double >::identifier;
-        if( x_dataType == "complex<float>" )
+        if( dataType_x == "complex<float>" )
             outputTypes["output1"] = TypeInfo< complex<float> >::identifier;
-		if( x_dataType == "complex<double>" )
+		if( dataType_x == "complex<double>" )
             outputTypes["output1"] = TypeInfo< complex<double> >::identifier;
-		if( x_dataType == "complex<long double>" )
+		if( dataType_x == "complex<long double>" )
             outputTypes["output1"] = TypeInfo< complex<long double> >::identifier;
 
         return outputTypes;
@@ -134,13 +134,13 @@ namespace iris
     void FileRawReaderComponent::initialize()
     {
         //Open the file and retrieve its size
-        hInFile.open(x_fileName.c_str(), ios::in|ios::binary|ios::ate);
-        if (hInFile.fail() || hInFile.bad() || !hInFile.is_open())
+        hInFile_.open(fileName_x.c_str(), ios::in|ios::binary|ios::ate);
+        if (hInFile_.fail() || hInFile_.bad() || !hInFile_.is_open())
         {
-            LOG(LFATAL) << "Could not open file " << x_fileName << " for reading.";
-            throw ResourceNotFoundException("Could not open file " + x_fileName + " for reading.");
+            LOG(LFATAL) << "Could not open file " << fileName_x << " for reading.";
+            throw ResourceNotFoundException("Could not open file " + fileName_x + " for reading.");
         }
-        hInFile.seekg(0, ios::beg);
+        hInFile_.seekg(0, ios::beg);
     }
 
     void FileRawReaderComponent::process()
@@ -200,21 +200,21 @@ namespace iris
         //Get the output buffer & work directly on it
         WriteBuffer< T >* outBuf = castToType<T>(outputBuffers[0]);
         DataSet<T>* writeDataSet = NULL;
-        outBuf->getWriteData(writeDataSet, x_blockSize);
+        outBuf->getWriteData(writeDataSet, blockSize_x);
 
         char *bytebuf = reinterpret_cast<char*>(&writeDataSet->data[0]);
-        ifstream::pos_type toread = x_blockSize * sizeof(T);
+        ifstream::pos_type toread = blockSize_x * sizeof(T);
 
         //Read a block (loop if necessary)
         while( toread > 0 )
         {
-            hInFile.read(bytebuf, toread);
-            toread -= hInFile.gcount();
-            bytebuf += hInFile.gcount();
-            if( hInFile.eof() )
+            hInFile_.read(bytebuf, toread);
+            toread -= hInFile_.gcount();
+            bytebuf += hInFile_.gcount();
+            if( hInFile_.eof() )
             {
-                hInFile.clear();
-                hInFile.seekg(0, ios::beg);
+                hInFile_.clear();
+                hInFile_.seekg(0, ios::beg);
             }
         }
 
@@ -222,12 +222,12 @@ namespace iris
         if (sizeof(T) > 1)
         {
             //Convert endianess
-            if (x_endian == "native")
+            if (endian_x == "native")
                 ; // nothing to do
-            else if (x_endian == "little")
+            else if (endian_x == "little")
                 transform(writeDataSet->data.begin(), writeDataSet->data.end(),
                         writeDataSet->data.begin(), lit2sys<T> );
-            else if (x_endian == "big")
+            else if (endian_x == "big")
                 transform(writeDataSet->data.begin(), writeDataSet->data.end(),
                         writeDataSet->data.begin(), big2sys<T> );
         }

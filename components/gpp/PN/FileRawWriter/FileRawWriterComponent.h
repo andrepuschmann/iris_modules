@@ -46,19 +46,7 @@ namespace iris
  */
 class FileRawWriterComponent: public PNComponent
 {
-private:
-  //! name of file to write to
-  std::string x_fileName;
-  //! endianness of data
-	std::string x_endian;
-
-	//! the output file stream
-  std::ofstream hOutFile;
-
-  //! template function to write data
-  template<typename T> void writeBlock();
-
-public:
+ public:
   /*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
@@ -97,6 +85,18 @@ public:
 	 * ports, process them and write DataSets to their output ports.
 	 */
   virtual void process();
+
+ private:
+  //! template function to write data
+  template<typename T> void writeBlock();
+
+  //! name of file to write to
+  std::string fileName_x;
+  //! endianness of data
+  std::string endian_x;
+
+  //! the output file stream
+  std::ofstream hOutFile_;
 };
 
 }

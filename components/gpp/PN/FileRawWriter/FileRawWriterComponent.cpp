@@ -48,8 +48,8 @@ namespace iris
         PNComponent(name, "filerawwriter", "A filewriter", "Paul Sutton", "0.1")
     {
         //format:        (name,   description,     default,   dynamic, parameter, list/Interval)
-        registerParameter("filename", "The file to read", "temp.bin", false, x_fileName);
-		registerParameter("endian", "Endianess of file (little|big|native)", "native", false, x_endian);
+        registerParameter("filename", "The file to read", "temp.bin", false, fileName_x);
+		registerParameter("endian", "Endianess of file (little|big|native)", "native", false, endian_x);
 
         //Initialize variables
     }
@@ -71,10 +71,10 @@ namespace iris
 
     void FileRawWriterComponent::initialize()
     {
-        hOutFile.open(x_fileName.c_str(), ios::out|ios::binary);
-        if (hOutFile.fail() || hOutFile.bad() || !hOutFile.is_open())
+        hOutFile_.open(fileName_x.c_str(), ios::out|ios::binary);
+        if (hOutFile_.fail() || hOutFile_.bad() || !hOutFile_.is_open())
         {
-            cout << "Could not open file " << x_fileName << " for writing." << endl;
+            cout << "Could not open file " << fileName_x << " for writing." << endl;
             //TODO: Throw an exception
         }
     }
@@ -144,7 +144,7 @@ namespace iris
         inBuf->getReadData(readDataSet);
 
         //Write to file
-		RawFileUtility::write(readDataSet->data.begin(), readDataSet->data.end(), hOutFile, x_endian);
+		RawFileUtility::write(readDataSet->data.begin(), readDataSet->data.end(), hOutFile_, endian_x);
 
         //Release data set
         inBuf->releaseReadData(readDataSet);
@@ -152,7 +152,7 @@ namespace iris
 
 	FileRawWriterComponent::~FileRawWriterComponent()
 	{
-		hOutFile.close();
+		hOutFile_.close();
 	}
 
 } /* namespace iris */
