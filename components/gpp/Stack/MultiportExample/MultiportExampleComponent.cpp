@@ -48,7 +48,7 @@ IRIS_COMPONENT_EXPORTS(StackComponent, MultiportExampleComponent);
 
 MultiportExampleComponent::MultiportExampleComponent(std::string name)
   : StackComponent(name,
-                   "multiportexamplestackcomponent",
+                   "multiportexample",
                    "An example stack component with multiple ports",
                    "Paul Sutton",
                    "0.1")

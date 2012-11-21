@@ -49,7 +49,7 @@ IRIS_COMPONENT_EXPORTS(StackComponent, FileWriterComponent);
 
 FileWriterComponent::FileWriterComponent(std::string name)
   : StackComponent(name,
-                   "filewriterstackcomponent",
+                   "filewriter",
                    "A simple stack component for writing bytes to a file",
                    "Colman O'Sullivan & Paul Sutton",
                    "0.1")

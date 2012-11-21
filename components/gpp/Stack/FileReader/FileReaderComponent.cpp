@@ -51,7 +51,8 @@ namespace stack
 IRIS_COMPONENT_EXPORTS(StackComponent, FileReaderComponent);
 
 FileReaderComponent::FileReaderComponent(std::string name)
-  : StackComponent(name, "filereaderstackcomponent",
+  : StackComponent(name,
+                   "filereader",
                    "A simple stack component for reading bytes from a file",
                    "Colman O'Sullivan & Paul Sutton",
                    "0.1")

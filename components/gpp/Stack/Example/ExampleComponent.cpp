@@ -49,7 +49,7 @@ IRIS_COMPONENT_EXPORTS(StackComponent, ExampleComponent);
 
 ExampleComponent::ExampleComponent(std::string name)
   : StackComponent(name,                          // Component name
-                   "examplestackcomponent",       // Component type
+                   "example",                     // Component type
                    "An example stack component",  // Description
                    "Paul Sutton",                 // Author
                    "0.1")                         // Version
