@@ -47,7 +47,7 @@ namespace iris
 IRIS_CONTROLLER_EXPORTS(ExampleController);
 
 ExampleController::ExampleController()
-  : Controller("examplecontroller", "An example controller", "Paul Sutton", "0.1")
+  : Controller("Example", "An example controller", "Paul Sutton", "0.1")
 {
   counter_ = 1;
 }

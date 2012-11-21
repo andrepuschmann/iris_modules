@@ -50,7 +50,7 @@ IRIS_COMPONENT_EXPORTS(PNComponent, FileRawReaderComponent);
 
 FileRawReaderComponent::FileRawReaderComponent(string name)
   : PNComponent(name,
-                "filerawreader",
+                "FileRawReader",
                 "A filereader",
                 "Paul Sutton",
                 "0.2")
