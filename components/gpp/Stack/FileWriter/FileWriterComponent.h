@@ -31,8 +31,8 @@
  * A sink stack component which writes data to file.
  */
 
-#ifndef FILEWRITERCOMPONENT_H_
-#define FILEWRITERCOMPONENT_H_
+#ifndef STACK_FILEWRITERCOMPONENT_H_
+#define STACK_FILEWRITERCOMPONENT_H_
 
 #include <fstream>
 
@@ -41,23 +41,32 @@
 namespace iris
 {
 
-class FileWriterComponent: public StackComponent
+class FileWriterComponent
+  : public StackComponent
 {
-private:
-	//Exposed parameters
-  std::string x_fileName;
-	bool x_fromBelow;
-
-  std::ofstream hOutFile;
-	void writeBlock(boost::shared_ptr<StackDataSet> toWrite);
-
 public:
+  /*! Constructor
+  *
+  * Call the constructor on StackComponent and pass in all details about the component.
+  * Register all parameters and events in the constructor.
+  *
+  *   \param  name  The name assigned to this component when loaded
+  */
   FileWriterComponent(std::string name);
   virtual void initialize();
   virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+
+private:
+	void writeBlock(boost::shared_ptr<StackDataSet> toWrite);
+
+  std::string fileName_x; //!< The name of the file to write to
+  bool fromBelow_x;
+
+  std::ofstream hOutFile_;
+
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* FILEWRITERCOMPONENT_H_ */
+#endif // STACK_FILEWRITERCOMPONENT_H_

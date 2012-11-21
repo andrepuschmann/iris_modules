@@ -72,9 +72,8 @@ class ExampleComponent: public PNComponent
 	 */
   virtual void registerPorts();
 
-  /*!
-	 * Do any initialization required by this component.
-	 */
+
+	//! Do any initialization required by this component.
   virtual void initialize();
 
   /*!

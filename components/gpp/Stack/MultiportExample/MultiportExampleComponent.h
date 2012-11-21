@@ -31,28 +31,28 @@
  * An example StackComponent which uses multiple ports
  */
 
-#ifndef MULTIPORTEXAMPLECOMPONENT_H_
-#define MULTIPORTEXAMPLECOMPONENT_H_
+#ifndef STACK_MULTIPORTEXAMPLECOMPONENT_H_
+#define STACK_MULTIPORTEXAMPLECOMPONENT_H_
 
 #include "irisapi/StackComponent.h"
 
 namespace iris
 {
 
-class MultiportExampleComponent: public StackComponent
+class MultiportExampleComponent
+  : public StackComponent
 {
-private:
-	//Exposed parameters
-	uint32_t x_example;
-
 public:
   MultiportExampleComponent(std::string name);
   virtual void registerPorts(); //We're overriding this to specify multiple ports
   virtual void initialize();
   virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
 	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+
+private:
+  uint32_t x_example;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* EXAMPLECOMPONENT_H_ */
+#endif // STACK_MULTIPORTEXAMPLECOMPONENT_H_

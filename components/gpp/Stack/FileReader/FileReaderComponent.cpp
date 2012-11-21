@@ -31,162 +31,157 @@
  * Implementation of a source stack component which reads data from file.
  */
 
-#include "irisapi/LibraryDefs.h"
-#include "irisapi/Version.h"
 #include "FileReaderComponent.h"
-
-#include "utility/EndianConversion.h"
 
 #include <algorithm>
 #include <boost/scoped_array.hpp>
+
+#include "irisapi/LibraryDefs.h"
+#include "irisapi/Version.h"
+#include "utility/EndianConversion.h"
 
 using namespace std;
 
 namespace iris
 {
-    // export library symbols
-    IRIS_COMPONENT_EXPORTS(StackComponent, FileReaderComponent);
 
-    /*! Constructor
-    *
-    *    Call the constructor on StackComponent and pass in all details about the component.
-    *    Register all parameters and events in the constructor.
-    *
-    *   \param  name    The name assigned to this component when loaded
-    */
-    FileReaderComponent::FileReaderComponent(std::string name):
-        StackComponent(name, "filereaderstackcomponent", "A simple stack component for reading bytes from a file", "Colman O'Sullivan & Paul Sutton", "0.1")
-        ,count_(0)
+//! Export library symbols
+IRIS_COMPONENT_EXPORTS(StackComponent, FileReaderComponent);
+
+FileReaderComponent::FileReaderComponent(std::string name)
+  : StackComponent(name, "filereaderstackcomponent",
+                   "A simple stack component for reading bytes from a file",
+                   "Colman O'Sullivan & Paul Sutton",
+                   "0.1")
+  ,count_(0)
+{
+  //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
+  registerParameter("filename", "The file to read", "temp.bin", false, fileName_x);
+  registerParameter("blocksize", "Size of output blocks", "1024", true, blockSize_x, Interval<uint32_t>(1, 1024000));
+  registerParameter("sendbelow", "Send data below rather than above", "true", false, sendBelow_x);
+  registerParameter("delay","Delay in us between reads","100000",true, delay_x, Interval<uint32_t>(0,5000000));
+  registerParameter("enabled","Dynamic parameter to pause or resume file reading.", "true", true, enabled_x);
+  registerParameter("intermittentpauselength","Number of iterations to pause reading for (0 means no intermittent pauses).","0",false,intermittentPauseLength_x,Interval<uint32_t>(0,5000));
+  registerParameter("packets","How many packets to be sent","500",true,packets_x);
+
+  registerEvent("transmitbegin","Event indicating transmitter should be active",TypeInfo<int32_t>::identifier);
+  registerEvent("transmitend","Event indicating transmission has ended",TypeInfo<int32_t>::identifier);
+}
+
+//! Do any initialization required
+void FileReaderComponent::initialize()
+{
+  hInFile_.open(fileName_x.c_str(), ios::in|ios::binary|ios::ate);
+  if (hInFile_.fail() || hInFile_.bad() || !hInFile_.is_open())
+  {
+      LOG(LFATAL) << "Could not open file " << fileName_x << " for reading.";
+      throw ResourceNotFoundException("Could not open file " + fileName_x + " for reading.");
+  }
+  hInFile_.seekg(0, ios::beg);
+}
+
+/*! Process a message from above
+*
+*    This example just passes data through.
+*/
+void FileReaderComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
+{
+  sendDownwards(set);
+}
+
+/*! Process a message from below
+*
+*    This example just passes data through.
+*/
+void FileReaderComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
+{
+  sendUpwards(set);
+}
+
+
+void FileReaderComponent::start()
+{
+  thread_.reset( new boost::thread( boost::bind( &FileReaderComponent::fileReadingLoop, this ) ) );
+}
+
+void FileReaderComponent::stop()
+{
+  thread_->interrupt();
+  thread_->join();
+}
+
+void FileReaderComponent::fileReadingLoop()
+{
+  int32_t x=1;
+  boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+  try
+  {
+    activateEvent("transmitbegin", x);
+    while(true)
     {
-        //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("filename", "The file to read", "temp.bin", false, fileName_x);
-        registerParameter("blocksize", "Size of output blocks", "1024", true, blockSize_x, Interval<uint32_t>(1, 1024000));
-        registerParameter("sendbelow", "Send data below rather than above", "true", false, sendBelow_x);
-        registerParameter("delay","Delay in us between reads","100000",true, delay_x, Interval<uint32_t>(0,5000000));
-        registerParameter("enabled","Dynamic parameter to pause or resume file reading.", "true", true, enabled_x);
-        registerParameter("intermittentpauselength","Number of iterations to pause reading for (0 means no intermittent pauses).","0",false,intermittentPauseLength_x,Interval<uint32_t>(0,5000));
-        registerParameter("packets","How many packets to be sent","500",true,packets_x);
+      if(enabled_x)
+      {
+        boost::shared_ptr<StackDataSet> readDataBuffer(new StackDataSet);
+        readBlock(readDataBuffer);
 
-        registerEvent("transmitbegin","Event indicating transmitter should be active",TypeInfo<int32_t>::identifier);
-        registerEvent("transmitend","Event indicating transmission has ended",TypeInfo<int32_t>::identifier);
-        
-    }
-
-    //! Do any initialization required
-    void FileReaderComponent::initialize()
-    {
-        hInFile_.open(fileName_x.c_str(), ios::in|ios::binary|ios::ate);
-        if (hInFile_.fail() || hInFile_.bad() || !hInFile_.is_open())
+        if(sendBelow_x)
         {
-            LOG(LFATAL) << "Could not open file " << fileName_x << " for reading.";
-            throw ResourceNotFoundException("Could not open file " + fileName_x + " for reading.");
+          sendDownwards(readDataBuffer);
         }
-        hInFile_.seekg(0, ios::beg);
-    }
-
-    /*! Process a message from above
-    *
-    *    This example just passes data through.
-    */
-    void FileReaderComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
-    {
-        sendDownwards(set);
-    }
-
-    /*! Process a message from below
-    *
-    *    This example just passes data through.
-    */
-    void FileReaderComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
-    {
-        sendUpwards(set);
-    }
-
-
-    void FileReaderComponent::start()
-    {
-        thread_.reset( new boost::thread( boost::bind( &FileReaderComponent::fileReadingLoop, this ) ) );
-    }
-
-    void FileReaderComponent::stop()
-    {
-        thread_->interrupt();
-        thread_->join();
-    }
-
-    void FileReaderComponent::fileReadingLoop()
-    {
-        
-        int32_t x=1;
-        boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-        try
+        else
         {
-            activateEvent("transmitbegin", x);
-            while(true)
-            {
-                if(enabled_x)
-                {
-                    boost::shared_ptr<StackDataSet> readDataBuffer(new StackDataSet);
-                    readBlock(readDataBuffer);
-
-                    if(sendBelow_x)
-                    {
-                        sendDownwards(readDataBuffer);
-                    }
-                    else
-                    {
-                        sendUpwards(readDataBuffer);
-                    }
-                }
-                boost::this_thread::interruption_point();
-                boost::this_thread::sleep(boost::posix_time::microseconds(delay_x));
-                if(intermittentPauseLength_x > 0 && ++counter_ % intermittentPauseLength_x == 0)
-                {
-                    LOG(LDEBUG) << "Toggling read loop activity for "<<intermittentPauseLength_x<<" iterations";
-                    enabled_x = !enabled_x;
-                    if(enabled_x)
-                        activateEvent("transmitbegin", x);
-                    else
-                        activateEvent("transmitend", x);
-                }
-            }
+          sendUpwards(readDataBuffer);
         }
-        catch(IrisException& ex)
-        {
-            LOG(LFATAL) << "Error in FileReader component: " << ex.what() << " - file reading thread exiting.";
-        }
+      }
+      boost::this_thread::interruption_point();
+      boost::this_thread::sleep(boost::posix_time::microseconds(delay_x));
+      if(intermittentPauseLength_x > 0 && ++counter_ % intermittentPauseLength_x == 0)
+      {
+        LOG(LDEBUG) << "Toggling read loop activity for "<<intermittentPauseLength_x<<" iterations";
+        enabled_x = !enabled_x;
+        if(enabled_x)
+          activateEvent("transmitbegin", x);
+        else
+          activateEvent("transmitend", x);
+      }
     }
+  }
+  catch(IrisException& ex)
+  {
+    LOG(LFATAL) << "Error in FileReader component: " << ex.what() << " - file reading thread exiting.";
+  }
+}
 
-    void FileReaderComponent::readBlock(boost::shared_ptr<StackDataSet> readDataBuffer)
+void FileReaderComponent::readBlock(boost::shared_ptr<StackDataSet> readDataBuffer)
+{
+  char *bytebuffer = new char[blockSize_x];
+  char * bytebufferBackup = bytebuffer;
+  ifstream::pos_type toread = blockSize_x * sizeof(uint8_t);
+
+  //Read a block (loop if necessary)
+  while( toread > 0 )
+  {
+    hInFile_.read(bytebuffer, toread);
+    for(int i=0; i < hInFile_.gcount(); i++)
     {
-        char *bytebuffer = new char[blockSize_x];
-        char * bytebufferBackup = bytebuffer;
-        ifstream::pos_type toread = blockSize_x * sizeof(uint8_t);
-
-        //Read a block (loop if necessary)
-        while( toread > 0 )
-        {
-            hInFile_.read(bytebuffer, toread);
-            for(int i=0; i < hInFile_.gcount(); i++)
-            {
-                readDataBuffer->data.push_back(*bytebuffer);
-                bytebuffer++;
-            }
-            toread -= hInFile_.gcount();
-            if( hInFile_.eof() )
-            {
-                hInFile_.clear();
-                hInFile_.seekg(0, ios::beg);
-            }
-        }
-        delete[] bytebufferBackup;
-        LOG(LDEBUG) << "One block read.";
-        count_++;
-        if(count_==packets_x)
-            {
-                thread_->interrupt();
-                thread_->join();
-            }
+      readDataBuffer->data.push_back(*bytebuffer);
+      bytebuffer++;
     }
+    toread -= hInFile_.gcount();
+    if( hInFile_.eof() )
+    {
+      hInFile_.clear();
+      hInFile_.seekg(0, ios::beg);
+    }
+  }
+  delete[] bytebufferBackup;
+  LOG(LDEBUG) << "One block read.";
+  count_++;
+  if(count_==packets_x)
+  {
+    thread_->interrupt();
+    thread_->join();
+  }
+}
 
-} /* namespace iris */
+} // namespace iris

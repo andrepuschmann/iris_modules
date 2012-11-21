@@ -31,8 +31,8 @@
  * An example controller to be used when creating new controllers.
  */
 
-#ifndef EXAMPLECONTROLLER_H_
-#define EXAMPLECONTROLLER_H_
+#ifndef CONTROLLERS_EXAMPLECONTROLLER_H_
+#define CONTROLLERS_EXAMPLECONTROLLER_H_
 
 #include "irisapi/Controller.h"
 
@@ -41,17 +41,17 @@ namespace iris
 
 class ExampleController: public Controller
 {
-private:
-  uint32_t counter;
-
 public:
   ExampleController();
 	virtual void subscribeToEvents();
 	virtual void initialize();
   virtual void processEvent(Event &e);
 	virtual void destroy();
+
+private:
+  uint32_t counter_;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* EXAMPLECONTROLLER_H_ */
+#endif // CONTROLLERS_EXAMPLECONTROLLER_H_

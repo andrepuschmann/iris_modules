@@ -32,65 +32,70 @@
  * for new StackComponents.
  */
 
+#include "ExampleComponent.h"
+
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
-#include "ExampleComponent.h"
 
 using namespace std;
 
 namespace iris
 {
-	// export library symbols
-	IRIS_COMPONENT_EXPORTS(StackComponent, ExampleComponent);
+//! Export library symbols
+IRIS_COMPONENT_EXPORTS(StackComponent, ExampleComponent);
 
-	/*! Constructor
-	*
-	*	Call the constructor on StackComponent and pass in all details about the component.
-	*	Register all parameters and events in the constructor.
-    *
-    *   \param  name	The name assigned to this component when loaded
-    */
-	ExampleComponent::ExampleComponent(std::string name):
-        StackComponent(name, "examplestackcomponent", "An example stack component", "Paul Sutton", "0.1")
-    {
-		//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("exampleparameter", "An example parameter", "0", true, example_x, Interval<uint32_t>(0,5));
+ExampleComponent::ExampleComponent(std::string name)
+  : StackComponent(name,                          // Component name
+                   "examplestackcomponent",       // Component type
+                   "An example stack component",  // Description
+                   "Paul Sutton",                 // Author
+                   "0.1")                         // Version
+{
+  //Register all parameters
+  /*
+   * Format:
+   * registerParameter(name,
+   *                   description,
+   *                   default value,
+   *                   dynamic?,
+   *                   parameter,
+   *                   allowed values)
+   */
+  registerParameter("exampleparameter",
+                    "An example parameter",
+                    "0",
+                    true,
+                    example_x,
+                    Interval<uint32_t>(0,5));
 
-		//Format: registerEvent(name, description, data type);
-		registerEvent("exampleevent", "An example event", TypeInfo< uint32_t >::identifier);
-    }
+  /*
+   * Format:
+   * registerEvent(name,
+   *               description,
+   *               data type);
+   */
+  registerEvent("exampleevent",
+                "An example event",
+                TypeInfo< uint32_t >::identifier);
+}
 
-	//! Do any initialization required
-    void ExampleComponent::initialize()
-    {
-    }
+void ExampleComponent::initialize()
+{}
 
-    //! Start this stack component
-	void ExampleComponent::start()
-	{
-	}
+void ExampleComponent::start()
+{}
 
-	//! Stop this stack component
-	void ExampleComponent::stop()
-	{
-	}
+void ExampleComponent::stop()
+{}
 
-	/*! Process a message from above
-	*
-	*	This example just passes data through.
-    */
-	void ExampleComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
-	{
-		sendDownwards(set);
-	}
+void ExampleComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
+{
+  sendDownwards(set); // Simply send the message on
+}
 
-	/*! Process a message from below
-	*
-	*	This example just passes data through.
-    */
-	void ExampleComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
-	{
-		sendUpwards(set);
-	}
+void ExampleComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
+{
+  sendUpwards(set);  // Simply send the message on
+}
 
-} /* namespace iris */
+} // namespace iris

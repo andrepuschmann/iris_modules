@@ -40,65 +40,65 @@ using namespace boost;
 
 namespace iris
 {
-	// export library symbols
-	IRIS_COMPONENT_EXPORTS(StackComponent, MultiportExampleComponent);
 
-	/*! Constructor
-	*
-	*	Call the constructor on StackComponent and pass in all details about the component.
-	*	Register all parameters and events in the constructor.
-    *
-    *   \param  name	The name assigned to this component when loaded
-    */
-	MultiportExampleComponent::MultiportExampleComponent(std::string name):
-        StackComponent(name, "multiportexamplestackcomponent", "An example stack component with multiple ports", "Paul Sutton", "0.1")
-    {
-		//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("exampleparameter", "An example parameter", "0", true, x_example, Interval<uint32_t>(0,5));
-    }
+//! Export library symbols
+IRIS_COMPONENT_EXPORTS(StackComponent, MultiportExampleComponent);
 
-	//We're overriding registerPorts as we want to use multiple ports
-	void MultiportExampleComponent::registerPorts()
-	{
-		std::vector<int> types;
-        types.push_back( int(TypeInfo< uint8_t >::identifier) );
+MultiportExampleComponent::MultiportExampleComponent(std::string name)
+  : StackComponent(name,
+                   "multiportexamplestackcomponent",
+                   "An example stack component with multiple ports",
+                   "Paul Sutton",
+                   "0.1")
+{
+  registerParameter("exampleparameter",       // name
+                    "An example parameter",   // description
+                    "0",                      // default value
+                    true,                     // dynamic?
+                    x_example,                // parameter
+                    Interval<uint32_t>(0,5)); // allowed values
+}
 
-		//The port on top of the componen
-		registerInputPort("topport1", types);
+//We're overriding registerPorts as we want to use multiple ports
+void MultiportExampleComponent::registerPorts()
+{
+  std::vector<int> types;
+  types.push_back( int(TypeInfo< uint8_t >::identifier) );
 
-		//The first port below the component
-		registerInputPort("bottomport1", types);
+  //The port on top of the component
+  registerInputPort("topport1", types);
 
-		//The second port below the component
-		registerInputPort("bottomport2", types);
-	};
+  //The first port below the component
+  registerInputPort("bottomport1", types);
 
-	//! Do any initialization required
-    void MultiportExampleComponent::initialize()
-    {
-    }
+  //The second port below the component
+  registerInputPort("bottomport2", types);
+};
 
-	/*! Process a message from above
-	*
-	*	This example copies StackDataSets onto all its bottom ports
-    */
-	void MultiportExampleComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
-	{
-		//Create a second StackDataSet and copy the set into it
-		shared_ptr<StackDataSet> cpy(new StackDataSet);
-		*cpy = *set;
+void MultiportExampleComponent::initialize()
+{}
 
-		sendDownwards("bottomport1", set);
-		sendDownwards("bottomport2", cpy);
-	}
+/*! Process a message from above
+*
+*	This example copies StackDataSets onto all its bottom ports
+*/
+void MultiportExampleComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
+{
+  //Create a second StackDataSet and copy the set into it
+  shared_ptr<StackDataSet> cpy(new StackDataSet);
+  *cpy = *set;
 
-	/*! Process a message from below
-	*
-	*	This example just passes data through.
-    */
-	void MultiportExampleComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
-	{
-		sendUpwards(set);
-	}
+  sendDownwards("bottomport1", set);
+  sendDownwards("bottomport2", cpy);
+}
 
-} /* namespace iris */
+/*! Process a message from below
+*
+*	This example just passes data through.
+*/
+void MultiportExampleComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
+{
+  sendUpwards(set);
+}
+
+} // namespace iris

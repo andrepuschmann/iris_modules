@@ -31,8 +31,8 @@
  * A source stack component which reads data from file.
  */
 
-#ifndef FILEREADERCOMPONENT_H_
-#define FILEREADERCOMPONENT_H_
+#ifndef STACK_FILEREADERCOMPONENT_H_
+#define STACK_FILEREADERCOMPONENT_H_
 
 #include <fstream>
 #include "irisapi/StackComponent.h"
@@ -41,9 +41,30 @@
 namespace iris
 {
 
-class FileReaderComponent: public StackComponent
+class FileReaderComponent
+  : public StackComponent
 {
-  private:
+public:
+  /*! Constructor
+  *
+  *    Call the constructor on StackComponent and pass in all details about the component.
+  *    Register all parameters and events in the constructor.
+  *
+  *   \param  name    The name assigned to this component when loaded
+  */
+  FileReaderComponent(std::string name);
+
+  virtual void initialize();
+  virtual void start();
+  virtual void stop();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+
+private:
+  //Private functions
+  void readBlock(boost::shared_ptr<StackDataSet> readDataBuffer);
+  void fileReadingLoop();
+
   //Exposed parameters
   uint32_t blockSize_x;
   std::string fileName_x;
@@ -63,20 +84,8 @@ class FileReaderComponent: public StackComponent
   
   //The file stream
   std::ifstream hInFile_;
-
-  //Private function
-  void readBlock(boost::shared_ptr<StackDataSet> readDataBuffer);
-  void fileReadingLoop();
-
-  public:
-  FileReaderComponent(std::string name);
-  virtual void initialize();
-  virtual void start();
-  virtual void stop();
-  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
-  virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* FILEREADERCOMPONENT_H_ */
+#endif // STACK_FILEREADERCOMPONENT_H_
