@@ -31,8 +31,8 @@
  * A source component which listens to a UDP socket.
  */
 
-#ifndef UDPSOCKETRXCOMPONENT_H_
-#define UDPSOCKETRXCOMPONENT_H_
+#ifndef PN_UDPSOCKETRXCOMPONENT_H_
+#define PN_UDPSOCKETRXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 
@@ -47,23 +47,9 @@ namespace iris
  *
  * The UdpSocketRxComponent receives data from a UDP socket.
  */
-class UdpSocketRxComponent: public PNComponent
+class UdpSocketRxComponent
+  : public PNComponent
 {
-private:
-	//! The port to receive from
-  unsigned short port_x;
-  //! The size of the buffer used to receive datagrams
-  unsigned int bufferSize_x;
-  //! The data type of output data
-  std::string outputType_x;
-
-  int outputTypeId_;
-  boost::asio::io_service ioService_;
-  boost::asio::ip::udp::socket* socket_;
-  char* buffer_;
-	  bool bStopping_;
-
-  template<typename T> void writeOutput();
 public:
 	/*!
 	 * Call the constructor on PNComponent and pass in all details
@@ -113,8 +99,24 @@ public:
   	 * Stop this IO component
   	 */
   virtual void stop();
+
+private:
+  template<typename T> void writeOutput();
+
+  //! The port to receive from
+  unsigned short port_x;
+  //! The size of the buffer used to receive datagrams
+  unsigned int bufferSize_x;
+  //! The data type of output data
+  std::string outputType_x;
+
+  int outputTypeId_;
+  boost::asio::io_service ioService_;
+  boost::asio::ip::udp::socket* socket_;
+  char* buffer_;
+  bool bStopping_;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* UDPSOCKETRXCOMPONENT_H_ */
+#endif // PN_UDPSOCKETRXCOMPONENT_H_

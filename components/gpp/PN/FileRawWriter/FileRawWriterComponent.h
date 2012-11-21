@@ -31,8 +31,8 @@
  * Sink component to write data to file.
  */
 
-#ifndef FILERAWWRITERCOMPONENT_H_
-#define FILERAWWRITERCOMPONENT_H_
+#ifndef PN_FILERAWWRITERCOMPONENT_H_
+#define PN_FILERAWWRITERCOMPONENT_H_
 
 #include <fstream>
 
@@ -99,5 +99,6 @@ class FileRawWriterComponent: public PNComponent
   std::ofstream hOutFile_;
 };
 
-}
-#endif /* FILERAWWRITERCOMPONENT_H_ */
+} // namespace iris
+
+#endif // PN_FILERAWWRITERCOMPONENT_H_

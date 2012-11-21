@@ -31,9 +31,10 @@
  * An example PNComponent to be used as a template for new PNComponents.
  */
 
-#ifndef EXAMPLECOMPONENT_H_
-#define EXAMPLECOMPONENT_H_
+#ifndef PN_EXAMPLECOMPONENT_H_
+#define PN_EXAMPLECOMPONENT_H_
 
+#include <string>
 #include "irisapi/PNComponent.h"
 
 namespace iris
@@ -42,21 +43,12 @@ namespace iris
 /*!
  * \brief An example PNComponent to be used as a template for new PNComponents
  *
- * Copy this component, rename folder, .h, .cpp and .vcproj files.
+ * Copy this component, rename folder, .h and .cpp files.
  * Edit all files for your new component and build.
  */
 class ExampleComponent: public PNComponent
 {
-private:
-	//! convenience pointer for incoming DataSet buffer
-	ReadBuffer<uint32_t>* inBuf_;
-	//! convenience pointer for outgoing DataSet buffer
-	WriteBuffer< uint32_t >* outBuf_;
-
-	//! Example of a parameter which will be exposed by this component
-	uint32_t example_x;
-
-public:
+ public:
 	/*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
@@ -70,7 +62,8 @@ public:
 	 * \param inputTypes the map of input port names and data-type identifiers
 	 * \return map of output port names and data-type identifiers
 	 */
-  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
+  virtual std::map<std::string, int> calculateOutputTypes(
+      std::map<std::string, int> inputTypes);
 
   /*!
 	 * Register the input and output ports of this component
@@ -90,8 +83,17 @@ public:
 	 * ports, process them and write DataSets to their output ports.
 	 */
   virtual void process();
+
+ private:
+   //! convenience pointer for incoming DataSet buffer
+   ReadBuffer<uint32_t>* inBuf_;
+   //! convenience pointer for outgoing DataSet buffer
+   WriteBuffer< uint32_t >* outBuf_;
+
+   //! Example of a parameter which will be exposed by this component
+   uint32_t example_x;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* EXAMPLECOMPONENT_H_ */
+#endif // PN_EXAMPLECOMPONENT_H_

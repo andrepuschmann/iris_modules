@@ -32,75 +32,88 @@
  * for new PNComponents.
  */
 
+#include "ExampleComponent.h"
+
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
-#include "ExampleComponent.h"
 
 using namespace std;
 
 namespace iris
 {
-	// export library symbols
-	IRIS_COMPONENT_EXPORTS(PNComponent, ExampleComponent);
+// export library symbols
+IRIS_COMPONENT_EXPORTS(PNComponent, ExampleComponent);
 
-	ExampleComponent::ExampleComponent(std::string name):
-        PNComponent(name, "examplepncomponent", "An example pn component", "Paul Sutton", "0.1")
-    {
-		//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-        registerParameter("exampleparameter", "An example parameter", "0", true, example_x, Interval<uint32_t>(0,5));
+ExampleComponent::ExampleComponent(std::string name)
+  : PNComponent(name,                       // component name
+                "examplepncomponent",       // component type
+                "An example pn component",  // description
+                "Paul Sutton",              // author
+                "0.1")                      // version
+{
+  registerParameter(
+      "exampleparameter",                   // name
+      "An example parameter",               // description
+      "0",                                  // default value
+      true,                                 // dynamic?
+      example_x,                            // parameter
+      Interval<uint32_t>(0,5));             // allowed values
 
-		//Format: registerEvent(name, description, data type);
-		registerEvent("exampleevent", "An example event", TypeInfo< uint32_t >::identifier);
-    }
+  registerEvent(
+      "exampleevent",                       // name
+      "An example event",                   // description
+      TypeInfo< uint32_t >::identifier);    // data type
+}
 
-	void ExampleComponent::registerPorts()
-    {
-        //Register all ports
-        vector<int> validTypes;
-        validTypes.push_back(TypeInfo< uint32_t >::identifier);
+void ExampleComponent::registerPorts()
+{
+  //Register all ports
+  vector<int> validTypes;
+  validTypes.push_back(TypeInfo< uint32_t >::identifier);
 
-        //format:        (name, vector of valid types)
-        registerInputPort("input1", validTypes);
-		registerOutputPort("output1", validTypes);
-    }
+  //format:        (name, vector of valid types)
+  registerInputPort("input1", validTypes);
+  registerOutputPort("output1", validTypes);
+}
 
-	map<string, int> ExampleComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
-    {
-        //One output type - uint32_t
-        map<string, int> outputTypes;
-		outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
-        return outputTypes;
-    }
+map<string, int> ExampleComponent::calculateOutputTypes(std::map<std::string,
+                                                        int> inputTypes)
+{
+  //One output type - uint32_t
+  map<string, int> outputTypes;
+  outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
+  return outputTypes;
+}
 
-    void ExampleComponent::initialize()
-    {
-		// Set up the input and output DataBuffers
-		inBuf_ = castToType<uint32_t>(inputBuffers.at(0));
-		outBuf_ = castToType<uint32_t>(outputBuffers.at(0));
-    }
+void ExampleComponent::initialize()
+{
+  // Set up the input and output DataBuffers
+  inBuf_ = castToType<uint32_t>(inputBuffers.at(0));
+  outBuf_ = castToType<uint32_t>(outputBuffers.at(0));
+}
 
-    void ExampleComponent::process()
-    {
-		//Get a DataSet from the input DataBuffer
-		DataSet<uint32_t>* readDataSet = NULL;
-        inBuf_->getReadData(readDataSet);
+void ExampleComponent::process()
+{
+  //Get a DataSet from the input DataBuffer
+  DataSet<uint32_t>* readDataSet = NULL;
+  inBuf_->getReadData(readDataSet);
 
-		size_t size = readDataSet->data.size();
+  std::size_t size = readDataSet->data.size();
 
-		//Get a DataSet from the output DataBuffer
-        DataSet<uint32_t>* writeDataSet = NULL;
-        outBuf_->getWriteData(writeDataSet, size);
+  //Get a DataSet from the output DataBuffer
+  DataSet<uint32_t>* writeDataSet = NULL;
+  outBuf_->getWriteData(writeDataSet, size);
 
-		//Copy the input DataSet to the output DataSet
-		copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
+  //Copy the input DataSet to the output DataSet
+  copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
 
-		//Copy the timestamp and sample rate for the DataSets
-		writeDataSet->timeStamp = readDataSet->timeStamp;
-		writeDataSet->sampleRate = readDataSet->sampleRate;
+  //Copy the timestamp and sample rate for the DataSets
+  writeDataSet->timeStamp = readDataSet->timeStamp;
+  writeDataSet->sampleRate = readDataSet->sampleRate;
 
-		//Release the DataSets
-        inBuf_->releaseReadData(readDataSet);
-		outBuf_->releaseWriteData(writeDataSet);
-    }
+  //Release the DataSets
+  inBuf_->releaseReadData(readDataSet);
+  outBuf_->releaseWriteData(writeDataSet);
+}
 
-} /* namespace iris */
+} // namespace iris

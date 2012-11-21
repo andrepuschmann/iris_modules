@@ -31,8 +31,8 @@
  * A source component which listens to a TCP socket.
  */
 
-#ifndef TCPSOCKETRXCOMPONENT_H_
-#define TCPSOCKETRXCOMPONENT_H_
+#ifndef PN_TCPSOCKETRXCOMPONENT_H_
+#define PN_TCPSOCKETRXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 
@@ -47,28 +47,10 @@ namespace iris
  *
  * The TcpSocketRxComponent receives data from a TCP socket.
  */
-class TcpSocketRxComponent: public PNComponent
+class TcpSocketRxComponent
+  : public PNComponent
 {
-private:
-	//! Port number to bind to
-  unsigned short port_x;
-  //! Size of buffers to be generated
-  unsigned int bufferSize_x;
-  //! Data type of output
-  std::string outputType_x;
-
-  //! The ID of the output data type
-  int outputTypeId_;
-
-  boost::asio::io_service ioService_;
-  boost::asio::ip::tcp::socket* socket_;
-  boost::asio::ip::tcp::acceptor* acceptor_;
-
-  char* buffer_;
-  bool connected_;
-
-  template<typename T> void writeOutput();
-public:
+ public:
 	/*!
 	 * Call the constructor on PNComponent and pass in all details
 	 * about the component.	Register all parameters and events.
@@ -117,8 +99,28 @@ public:
 	 * Stop this IO component
 	 */
   virtual void stop();
+
+ private:
+  template<typename T> void writeOutput();
+
+  //! Port number to bind to
+  unsigned short port_x;
+  //! Size of buffers to be generated
+  unsigned int bufferSize_x;
+  //! Data type of output
+  std::string outputType_x;
+
+  //! The ID of the output data type
+  int outputTypeId_;
+
+  boost::asio::io_service ioService_;
+  boost::asio::ip::tcp::socket* socket_;
+  boost::asio::ip::tcp::acceptor* acceptor_;
+
+  char* buffer_;
+  bool connected_;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* TCPSOCKETRXCOMPONENT_H_ */
+#endif // PN_TCPSOCKETRXCOMPONENT_H_

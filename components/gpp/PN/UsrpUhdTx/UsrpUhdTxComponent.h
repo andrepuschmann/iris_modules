@@ -36,8 +36,8 @@
  * packet will be transmitted at that time, if supported by the USRP.
  */
 
-#ifndef USRPUHDTXCOMPONENT_H_
-#define USRPUHDTXCOMPONENT_H_
+#ifndef PN_USRPUHDTXCOMPONENT_H_
+#define PN_USRPUHDTXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 #include <uhd/usrp/multi_usrp.hpp>
@@ -47,27 +47,6 @@ namespace iris
 
 class UsrpUhdTxComponent: public PNComponent
 {
-private:
-	//Input and output DataBuffers
-	ReadBuffer< std::complex<float> >* inBuf_;
-
-	//Exposed parameters
-	std::string args_x;   //See http://www.ettus.com/uhd_docs/manual/html/identification.html
-	double rate_x;    //Rate of outgoing samples
-	double frequency_x;   //Tx frequency
-	double fixLoOffset_x; //Fix the local oscillator offset (defaults to 2*rate)
-	float gain_x;     //Overall tx gain
-	std::string antenna_x;//Daughterboard antenna selection
-	std::string subDev_x; //Daughterboard subdevice specification
-	double bw_x;      //Daughterboard IF filter bandwidth (Hz)
-	std::string ref_x;  //Reference waveform (internal, external, mimo)
-	bool streaming_x;   //Streaming or bursty traffic?
-	std::string fmt_x;  //Data format (fc64, fc32 or sc16)
-
-	//The device
-  uhd::usrp::multi_usrp::sptr usrp_;
-  uhd::tx_streamer::sptr txStream_;
-
 public:
   UsrpUhdTxComponent(std::string name);
   virtual ~UsrpUhdTxComponent();
@@ -76,8 +55,28 @@ public:
   virtual void initialize();
   virtual void process();
   virtual void parameterHasChanged(std::string name);
+
+private:
+  ReadBuffer< std::complex<float> >* inBuf_;
+
+  //Exposed parameters
+  std::string args_x;   //!< See http://www.ettus.com/uhd_docs/manual/html/identification.html
+  double rate_x;        //!< Rate of outgoing samples
+  double frequency_x;   //!< Tx frequency
+  double fixLoOffset_x; //!< Fix the local oscillator offset (defaults to 2*rate)
+  float gain_x;         //!< Overall tx gain
+  std::string antenna_x;//!< Daughterboard antenna selection
+  std::string subDev_x; //!< Daughterboard subdevice specification
+  double bw_x;          //!< Daughterboard IF filter bandwidth (Hz)
+  std::string ref_x;    //!< Reference waveform (internal, external, mimo)
+  bool streaming_x;     //!< Streaming or bursty traffic?
+  std::string fmt_x;    //!< Data format (fc64, fc32 or sc16)
+
+  //The device
+  uhd::usrp::multi_usrp::sptr usrp_;
+  uhd::tx_streamer::sptr txStream_;
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* USRPUHDTXCOMPONENT_H_ */
+#endif // PN_USRPUHDTXCOMPONENT_H_

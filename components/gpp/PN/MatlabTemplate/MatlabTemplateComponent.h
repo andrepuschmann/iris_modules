@@ -31,8 +31,8 @@
  * A template component used to read/write data to a matlab script.
  */
 
-#ifndef MATLABTEMPLATECOMPONENT_H_
-#define MATLABTEMPLATECOMPONENT_H_
+#ifndef PN_MATLABTEMPLATECOMPONENT_H_
+#define PN_MATLABTEMPLATECOMPONENT_H_
 
 #include "irisapi/TemplatePNComponent.h"
 #include "utility/Matlab.h"
@@ -53,28 +53,10 @@ class MatlabTemplateComponentImpl;
  * This component passes data to a named Matlab script and optionally
  * accepts returned data to be passed on.
  */
-class MatlabTemplateComponent: public TemplatePNComponent<MatlabTemplateComponent>
+class MatlabTemplateComponent
+  : public TemplatePNComponent<MatlabTemplateComponent>
 {
-protected:
-	//! Matlab script to be called
-  std::string x_scriptName;
-  //! Does this component output data?
-	bool x_hasOutput;
-	//! Does this component pass data through?
-	bool x_passThrough;
-
-	//! The Matlab engine
-	Matlab matlab;  
-	//! Array for Matlab input
-	mxArray *matlab_input;
-	//! Array for Matlab output
-	mxArray *matlab_output;
-
-	//! Command used to execute Matlab script
-	std::string command;
-
-public:
-
+ public:
 	/*!
 	 * supported types at the input port
 	 * (can be a boost::mpl::vector of types, or of other
@@ -126,6 +108,23 @@ public:
     return new MatlabTemplateComponentImpl<Tin,Tout>(*comp);
   }
 
+ protected:
+  //! Matlab script to be called
+  std::string scriptName_x;
+  //! Does this component output data?
+  bool hasOutput_x;
+  //! Does this component pass data through?
+  bool passThrough_x;
+
+  //! The Matlab engine
+  Matlab matlab_;
+  //! Array for Matlab input
+  mxArray *matlabInput_;
+  //! Array for Matlab output
+  mxArray *matlabOutput_;
+
+  //! Command used to execute Matlab script
+  std::string command_;
 };
 
 /*!
@@ -134,111 +133,17 @@ public:
  * The actual implementation of the MatlabComponent - implemented as template
  */
 template <class Tin, class Tout>
-class MatlabTemplateComponentImpl : public MatlabTemplateComponent
+class MatlabTemplateComponentImpl
+  : public MatlabTemplateComponent
 {
-private:
-
-  //! the type of the first input port (we have only one anyway)
-  typedef typename boost::mpl::front<Tin>::type T;
-
-  //Convenience pointers to DataSets and Buffers
-  ReadBuffer<T>* inBuf;
-  DataSet<T>* readDataSet;
-	WriteBuffer<T>* outBuf;
-	DataSet<T>* writeDataSet;
-
-	//! Buffer to capture messages from Matlab
-	char buffer[256];
-
-	/*!
-	 * This captures boost::mpl::void_ template instantiations
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	void copyInData(std::vector<boost::mpl::void_> &data, mxArray* matlab_input)
-	{
-	}
-
-	/*!
-	 * Template specialization to handle complex data
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	template<class U>
-	void copyInData(std::vector< std::complex<U> > &data, mxArray* matlab_input)
-	{
-		double* pR = mxGetPr(matlab_input);
-		double* pI = mxGetPi(matlab_input);
-		for(size_t i=0;i<data.size();i++)
-		{
-			pR[i] = (double)data[i].real();
-			pI[i] = (double)data[i].imag();
-		}
-	}
-
-	/*!
-	 * Copy data from our vector into the mxArray container used by Matlab
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	template<class U>
-	void copyInData(std::vector<U> &data, mxArray* matlab_input)
-	{
-		double* ptr = mxGetPr(matlab_input);
-		for(size_t i=0;i<data.size();i++)
-		{
-			ptr[i] = (double)data[i];
-		}
-	}
-
-	/*!
-	 * This captures boost::mpl::void_ template instantiations
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	void copyOutData(mxArray* matlab_output, std::vector<boost::mpl::void_> &data)
-	{
-	}
-
-	/*!
-	 * Template specialization to handle complex data
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	template<class U>
-	void copyOutData(mxArray* matlab_output, std::vector< std::complex<U> > &data)
-	{
-		double* pR = mxGetPr(matlab_output);
-		double* pI = mxGetPi(matlab_output);
-		for(size_t i=0;i<data.size();i++)
-		{
-			data[i] = std::complex<U>((U)pR[i], (U)pI[i]);
-		}
-	}
-
-	/*!
-	 * Copy data from the mxArray container used by Matlab into our vector
-	 * \param data the data to be copied
-	 * \param matlab_input the target for the data to be copied
-	 */
-	template<class U>
-	void copyOutData(mxArray* matlab_output, std::vector<U> &data)
-	{
-		double* ptr = mxGetPr(matlab_output);
-		for(size_t i=0;i<data.size();i++)
-		{
-			data[i] = (U)ptr[i];
-		}
-	}
-
-public:
+ public:
 	/*!
 	 * Constructor - call the constructor on parent
 	 * and assign all values from other.
 	 * \param other the PNComponent with correct i/o datatypes
 	 */
-  MatlabTemplateComponentImpl(const PNComponent& other) :
-    MatlabTemplateComponent(other.getName())
+  MatlabTemplateComponentImpl(const PNComponent& other)
+    : MatlabTemplateComponent(other.getName())
   {
     // assign all values from other to this
     assign(other);
@@ -260,7 +165,100 @@ public:
 	 * ports, process them and write DataSets to their output ports.
 	 */
   virtual void process();
+
+ private:
+  //! the type of the first input port (we have only one anyway)
+  typedef typename boost::mpl::front<Tin>::type T;
+
+  /*!
+  * This captures boost::mpl::void_ template instantiations
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  void copyInData(std::vector<boost::mpl::void_> &data, mxArray* matlabInput)
+  {}
+
+  /*!
+  * Template specialization to handle complex data
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  template<class U>
+  void copyInData(std::vector< std::complex<U> > &data, mxArray* matlabInput)
+  {
+    double* pR = mxGetPr(matlabInput);
+    double* pI = mxGetPi(matlabInput);
+    for(size_t i=0;i<data.size();i++)
+    {
+     pR[i] = (double)data[i].real();
+     pI[i] = (double)data[i].imag();
+    }
+  }
+
+  /*!
+  * Copy data from our vector into the mxArray container used by Matlab
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  template<class U>
+  void copyInData(std::vector<U> &data, mxArray* matlabInput)
+  {
+    double* ptr = mxGetPr(matlabInput);
+    for(size_t i=0;i<data.size();i++)
+    {
+     ptr[i] = (double)data[i];
+    }
+  }
+
+  /*!
+  * This captures boost::mpl::void_ template instantiations
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  void copyOutData(mxArray* matlabOutput, std::vector<boost::mpl::void_> &data)
+  {}
+
+  /*!
+  * Template specialization to handle complex data
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  template<class U>
+  void copyOutData(mxArray* matlabOutput, std::vector< std::complex<U> > &data)
+  {
+    double* pR = mxGetPr(matlabOutput);
+    double* pI = mxGetPi(matlabOutput);
+    for(size_t i=0;i<data.size();i++)
+    {
+     data[i] = std::complex<U>((U)pR[i], (U)pI[i]);
+    }
+  }
+
+  /*!
+  * Copy data from the mxArray container used by Matlab into our vector
+  * \param data the data to be copied
+  * \param matlab_input the target for the data to be copied
+  */
+  template<class U>
+  void copyOutData(mxArray* matlabOutput, std::vector<U> &data)
+  {
+    double* ptr = mxGetPr(matlabOutput);
+    for(size_t i=0;i<data.size();i++)
+    {
+     data[i] = (U)ptr[i];
+    }
+  }
+
+  //Convenience pointers to DataSets and Buffers
+  ReadBuffer<T>* inBuf_;
+  DataSet<T>* readDataSet_;
+  WriteBuffer<T>* outBuf_;
+  DataSet<T>* writeDataSet_;
+
+  //! Buffer to capture messages from Matlab
+  char buffer_[256];
 };
 
-}	/* namepace iris */
-#endif	/* MATLABTEMPLATECOMPONENT_H_ */
+}	// namepace iris
+
+#endif	// PN_MATLABTEMPLATECOMPONENT_H_

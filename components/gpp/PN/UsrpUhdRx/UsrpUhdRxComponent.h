@@ -34,8 +34,8 @@
  * sampleRate on the generated DataSet if supported.
  */
 
-#ifndef USRPUHDRXCOMPONENT_H_
-#define USRPUHDRXCOMPONENT_H_
+#ifndef PN_USRPUHDRXCOMPONENT_H_
+#define PN_USRPUHDRXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 #include <uhd/usrp/multi_usrp.hpp>
@@ -45,34 +45,6 @@ namespace iris
 
 class UsrpUhdRxComponent: public PNComponent
 {
-private:
-	//Output DataBuffer
-	WriteBuffer< std::complex<float> >* outBuf_;
-
-	//The device
-	uhd::usrp::multi_usrp::sptr usrp_;
-	uhd::rx_streamer::sptr rxStream_;
-
-	bool isStreaming_;
-	bool isUsrp1_;
-	uhd::time_spec_t currentTimestamp_;
-	bool gotFirstPacket_;
-
-	//Exposed parameters
-	std::string args_x;   //See http://www.ettus.com/uhd_docs/manual/html/identification.html
-	double frequency_x;   //Receive frequency
-	double rate_x;      //Receive rate
-	double fixLoOffset_x;   //Local oscillator offset
-	float gain_x;       //Receive gain
-	int outputBlockSize_x;  //Output block size
-	std::string antenna_x;  //Daughterboard antenna selection
-	std::string subDev_x;   //Daughterboard subdevice specification
-	double bw_x;      //Daughterboard IF filter bandwidth in Hz
-	std::string ref_x;    //Reference clock(internal, external, mimo)
-	std::string wireFmt_x;  //Wire format (sc8 or sc16)
-	
-	void setStreaming(bool s);
-
 public:
   UsrpUhdRxComponent(std::string name);
   ~UsrpUhdRxComponent();
@@ -81,8 +53,35 @@ public:
   virtual void initialize();
   virtual void process();
   virtual void parameterHasChanged(std::string name);
+
+private:
+  void setStreaming(bool s);
+
+  WriteBuffer< std::complex<float> >* outBuf_;  //!< Output DataBuffer
+
+  uhd::usrp::multi_usrp::sptr usrp_;  //!< The device
+  uhd::rx_streamer::sptr rxStream_;   //!< Pointer to our streaming object
+
+  bool isStreaming_;
+  bool isUsrp1_;
+  uhd::time_spec_t currentTimestamp_;
+  bool gotFirstPacket_;
+
+  //Exposed parameters
+  std::string args_x;     //!< See http://www.ettus.com/uhd_docs/manual/html/identification.html
+  double frequency_x;     //!< Receive frequency
+  double rate_x;          //!< Receive rate
+  double fixLoOffset_x;   //!< Local oscillator offset
+  float gain_x;           //!< Receive gain
+  int outputBlockSize_x;  //!< Output block size
+  std::string antenna_x;  //!< Daughterboard antenna selection
+  std::string subDev_x;   //!< Daughterboard subdevice specification
+  double bw_x;            //!< Daughterboard IF filter bandwidth in Hz
+  std::string ref_x;      //!< Reference clock(internal, external, mimo)
+  std::string wireFmt_x;  //!< Wire format (sc8 or sc16)
+
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* USRPUHDRXCOMPONENT_H_ */
+#endif // PN_USRPUHDRXCOMPONENT_H_

@@ -31,8 +31,8 @@
  * A sink component which writes to a UDP socket.
  */
 
-#ifndef UDPSOCKETTXCOMPONENT_H_
-#define UDPSOCKETTXCOMPONENT_H_
+#ifndef PN_UDPSOCKETTXCOMPONENT_H_
+#define PN_UDPSOCKETTXCOMPONENT_H_
 
 #include "irisapi/PNComponent.h"
 
@@ -48,18 +48,9 @@ namespace iris
  * The UdpSocketTxComponent transmits data over a UDP socket
  * to a specified IP address and port.
  */
-class UdpSocketTxComponent: public PNComponent
+class UdpSocketTxComponent
+  : public PNComponent
 {
-private:
-	//! The IP address to send to
-  std::string address_x;
-  //! The destination port number
-  unsigned short port_x;
-
-  boost::asio::io_service ioService_;
-  boost::asio::ip::udp::socket* socket_;
-  boost::asio::ip::udp::endpoint* endPoint_;
-  template<typename T> void writeOutput();
 public:
 	/*!
 	 * Call the constructor on PNComponent and pass in all details
@@ -82,25 +73,36 @@ public:
   virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes);
 
   /*!
-  	 * Register the input and output ports of this component
-  	 * by declaring them as input or output, naming them and
-  	 * providing a list of valid data types.
-  	 */
+   * Register the input and output ports of this component
+   * by declaring them as input or output, naming them and
+   * providing a list of valid data types.
+   */
   virtual void registerPorts();
 
   /*!
-  	 * Do any initialization required by this component.
-  	 */
+   * Do any initialization required by this component.
+   */
   virtual void initialize();
 
   /*!
-  	 * This is where the work of this component gets done.
-  	 * Typically components will take DataSets from their input
-  	 * ports, process them and write DataSets to their output ports.
-  	 */
+   * This is where the work of this component gets done.
+   * Typically components will take DataSets from their input
+   * ports, process them and write DataSets to their output ports.
+   */
   virtual void process();
+
+private:
+  template<typename T> void writeOutput();
+
+  std::string address_x;  //!< The IP address to send to
+  unsigned short port_x;  //!< The destination port number
+
+  boost::asio::io_service ioService_;
+  boost::asio::ip::udp::socket* socket_;
+  boost::asio::ip::udp::endpoint* endPoint_;
+
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* UDPSOCKETTXCOMPONENT_H_ */
+#endif // PN_UDPSOCKETTXCOMPONENT_H_
