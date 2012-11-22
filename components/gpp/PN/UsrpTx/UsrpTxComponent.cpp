@@ -353,7 +353,7 @@ void UsrpTxComponent::parameterHasChanged(std::string name)
       LOG(LINFO) << "Actual TX Gain: " <<  usrp_->get_tx_gain() << " dB...";
     }
   }
-  catch(std::exception e)
+  catch(std::exception &e)
   {
     throw IrisException(e.what());
   }

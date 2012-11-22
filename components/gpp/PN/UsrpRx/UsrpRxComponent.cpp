@@ -389,7 +389,7 @@ void UsrpRxComponent::parameterHasChanged(std::string name)
       usrp_->set_rx_gain(gain_x);
     }
   }
-  catch(std::exception e)
+  catch(std::exception &e)
   {
     throw IrisException(e.what());
   }
