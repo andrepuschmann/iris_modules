@@ -74,7 +74,7 @@ void ExampleController::processEvent(Event &e)
   str << counter_++;
   p.parameterValue = str.str();
 
-  r.paramReconfigs_.push_back(p);
+  r.paramReconfigs.push_back(p);
 
   reconfigureRadio(r);
 }
