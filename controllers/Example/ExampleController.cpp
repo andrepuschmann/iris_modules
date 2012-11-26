@@ -67,7 +67,7 @@ void ExampleController::processEvent(Event &e)
   ReconfigSet r;
 
   ParametricReconfig p;
-  p.engineName = "pnengine1";
+  p.engineName = "phyengine1";
   p.componentName = "src1";
   p.parameterName = "counter_";
   stringstream str;

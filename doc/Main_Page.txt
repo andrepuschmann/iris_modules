@@ -6,11 +6,11 @@
 *
 * Example modules are available for reference:
 * 
-* - Example PN Component
-* -# components/gpp/PN/Example/ExampleComponent.h
+* - Example Phy Component
+* -# components/gpp/phy/Example/ExampleComponent.h
 *
 * - Example Stack Component
-* -# components/gpp/Stack/Example/ExampleComponent.h
+* -# components/gpp/stack/Example/ExampleComponent.h
 *
 * - Example Controller
 * -# controllers/Example/ExampleController.h

@@ -21,16 +21,31 @@
 #
 
 ########################################################################
-# Add an install dir for components
+# unit test suite
 ########################################################################
-SET(COMPONENTS_GPP_PHY_DIR ${COMPONENTS_GPP_DIR}/phy)
-SET(COMPONENTS_GPP_STACK_DIR ${COMPONENTS_GPP_DIR}/stack)
+
 
 ########################################################################
-# Add the subdirectories
+# Add includes and dependencies
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(phy)
-ADD_SUBDIRECTORY(stack)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
+
+########################################################################
+# Build executables, register as tests, and install
+########################################################################
+# Build each test and link to libraries
+SET(test_sources
+	
+)
+
+#turn each test cpp file into an executable with an int main() function
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+
+#for each source: build an executable, register it as a test, and install
+FOREACH(test_source ${test_sources})
+    GET_FILENAME_COMPONENT(test_name ${test_source} NAME_WE)
+    ADD_EXECUTABLE(${test_name} ${test_source})
+    ADD_TEST(${test_name} ${test_name})
+    INSTALL(TARGETS ${test_name} RUNTIME DESTINATION ${DATA_DIR}/tests/components/gpp/phy)
+ENDFOREACH(test_source)
+

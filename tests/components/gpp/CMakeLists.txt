@@ -26,5 +26,5 @@
 # Recurse into subdirectories. This does not actually cause another cmake 
 # executable to run. The same process will walk through the project's 
 # entire directory structure.
-ADD_SUBDIRECTORY(PN)
-ADD_SUBDIRECTORY(Stack)
+ADD_SUBDIRECTORY(phy)
+ADD_SUBDIRECTORY(stack)

@@ -20,17 +20,32 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-########################################################################
-# Add an install dir for components
-########################################################################
-SET(COMPONENTS_GPP_PHY_DIR ${COMPONENTS_GPP_DIR}/phy)
-SET(COMPONENTS_GPP_STACK_DIR ${COMPONENTS_GPP_DIR}/stack)
+MESSAGE(STATUS "  Processing matlabtemplate.")
 
 ########################################################################
-# Add the subdirectories
+# Add includes and dependencies
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(phy)
-ADD_SUBDIRECTORY(stack)
+FIND_PACKAGE( MATLAB )
+
+########################################################################
+# Build the library from source files
+########################################################################
+SET(sources
+	MatlabTemplateComponent.cpp
+)
+
+IF (MATLAB_FOUND)
+  INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
+  ADD_LIBRARY(comp_gpp_phy_matlabtemplate SHARED ${sources})
+  TARGET_LINK_LIBRARIES(comp_gpp_phy_matlabtemplate ${MATLAB_LIBRARIES})
+  SET_TARGET_PROPERTIES(comp_gpp_phy_matlabtemplate PROPERTIES OUTPUT_NAME "matlabtemplate")
+  
+  # We add an rpath to the library so matlab dependencies will be found
+  # while avoiding clashes with system libraries
+  SET_TARGET_PROPERTIES(comp_gpp_phy_matlabtemplate PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+  SET_TARGET_PROPERTIES(comp_gpp_phy_matlabtemplate PROPERTIES INSTALL_RPATH ${MATLAB_LIB_DIR})
+  IRIS_INSTALL(comp_gpp_phy_matlabtemplate)
+  IRIS_APPEND_INSTALL_LIST(matlabtemplate)
+ELSE (MATLAB_FOUND)
+  IRIS_APPEND_NOINSTALL_LIST(matlabtemplate)
+ENDIF (MATLAB_FOUND)

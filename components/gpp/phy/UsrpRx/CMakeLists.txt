@@ -20,17 +20,27 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-########################################################################
-# Add an install dir for components
-########################################################################
-SET(COMPONENTS_GPP_PHY_DIR ${COMPONENTS_GPP_DIR}/phy)
-SET(COMPONENTS_GPP_STACK_DIR ${COMPONENTS_GPP_DIR}/stack)
+MESSAGE(STATUS "  Processing usrprx.")
 
 ########################################################################
-# Add the subdirectories
+# Add includes and dependencies
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(phy)
-ADD_SUBDIRECTORY(stack)
+FIND_PACKAGE( UHD )
+
+########################################################################
+# Build the library from source files
+########################################################################
+SET(sources
+	UsrpRxComponent.cpp
+)
+
+IF (UHD_FOUND)
+  INCLUDE_DIRECTORIES(${UHD_INCLUDE_DIRS})
+  ADD_LIBRARY(comp_gpp_phy_usrprx SHARED ${sources})
+  TARGET_LINK_LIBRARIES(comp_gpp_phy_usrprx ${UHD_LIBRARIES})
+  SET_TARGET_PROPERTIES(comp_gpp_phy_usrprx PROPERTIES OUTPUT_NAME "usrprx")
+  IRIS_INSTALL(comp_gpp_phy_usrprx)
+  IRIS_APPEND_INSTALL_LIST(usrprx)
+ELSE (UHD_FOUND)
+  IRIS_APPEND_NOINSTALL_LIST(usrprx)
+ENDIF (UHD_FOUND)

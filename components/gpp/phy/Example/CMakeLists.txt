@@ -20,17 +20,20 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-########################################################################
-# Add an install dir for components
-########################################################################
-SET(COMPONENTS_GPP_PHY_DIR ${COMPONENTS_GPP_DIR}/phy)
-SET(COMPONENTS_GPP_STACK_DIR ${COMPONENTS_GPP_DIR}/stack)
+MESSAGE(STATUS "  Processing example.")
 
 ########################################################################
-# Add the subdirectories
+# Add includes and dependencies
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(phy)
-ADD_SUBDIRECTORY(stack)
+
+########################################################################
+# Build the library from source files
+########################################################################
+SET(sources
+	ExampleComponent.cpp
+)
+
+ADD_LIBRARY(comp_gpp_phy_example SHARED ${sources})
+SET_TARGET_PROPERTIES(comp_gpp_phy_example PROPERTIES OUTPUT_NAME "example")
+IRIS_INSTALL(comp_gpp_phy_example)
+IRIS_APPEND_INSTALL_LIST(example)
