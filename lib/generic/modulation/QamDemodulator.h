@@ -1,0 +1,190 @@
+/**
+ * \file lib/generic/modulation/QamDemodulator.h
+ * \version 1.0
+ *
+ * \section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * \section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * \section DESCRIPTION
+ *
+ * A Quadrature Amplitude Demodulation class. Objects of this class
+ * can be used to demodulate using M-ary QAM with a constellation on
+ * a rectangular lattice. Expects constellations which are Gray coded
+ * with average unit energy.
+ */
+
+#ifndef MOD_QAMDEMODULATOR_H_
+#define MOD_QAMDEMODULATOR_H_
+
+#include <complex>
+#include <vector>
+
+#include "irisapi/Exceptions.h"
+#include "irisapi/TypeInfo.h"
+#include "irisapi/Logging.h"
+
+namespace iris
+{
+
+/** A Quadrature Amplitude Demodulation class.
+ *
+ * Objects of this class provide M-ary QAM demodulation. Expects constellations
+ * which are Gray coded with average unit energy.
+ */
+class QamDemodulator
+{
+ public:
+
+  static void demodulate(std::complex<float>* inFirst,
+                         std::complex<float>* inLast,
+                         uint8_t* outFirst,
+                         uint8_t* outLast,
+                         unsigned int M)
+  {
+    // Check for sufficient output size
+    if((outLast-outFirst)*8/M < inLast-inFirst)
+      throw IrisException("Insufficient storage provided for demodulate output.");
+
+    if((outLast-outFirst)*8/M > inLast-inFirst)
+      LOG(LWARNING) << "Output size larger than required for demodulate.";
+
+    int count=0;
+    int symIndex,pointsPerQuadrant;
+    std::complex<float> tempV;
+    float biasValues[2]={2.0f/sqrtf(10.0f),0.0f};
+
+    switch (M)
+    {
+      case 2: //QPSK
+        for(;inFirst!=inLast;inFirst++)
+        {
+          if(count%4 == 0 && count!=0)
+            outFirst++;
+          //slice to demodulate
+          if((*inFirst).real() > 0)
+            if((*inFirst).imag() > 0)
+              *outFirst = *outFirst<<2 | 0x3;
+            else
+              *outFirst = *outFirst<<2 | 0x2;
+          else
+            if((*inFirst).imag() > 0)
+              *outFirst = *outFirst<<2 | 0x1;
+            else
+              *outFirst = *outFirst<<2 | 0x0;
+          count++;
+        }
+        break;
+      case 4: //16 QAM
+        for(;inFirst!=inLast;inFirst++)
+        {
+          if(count%2 == 0 && count!=0)
+            outFirst++;
+
+          symIndex = 0;
+          pointsPerQuadrant = 4;
+          tempV = *inFirst;
+          for(int j=0;j<2;j++)
+          {
+            if (tempV.real() > 0)
+            {
+              if (tempV.imag() > 0)
+              {
+                tempV = tempV + std::complex<float>(-biasValues[j],-biasValues[j]);
+              }
+              else
+              {
+                tempV = tempV + std::complex<float>(-biasValues[j],biasValues[j]);
+                symIndex += 3*pointsPerQuadrant;
+              }
+            }
+            else
+            {
+              if (tempV.imag() > 0)
+              {
+                tempV = tempV + std::complex<float>(biasValues[j],-biasValues[j]);
+                symIndex += pointsPerQuadrant;
+              }
+              else
+              {
+                tempV = tempV + std::complex<float>(biasValues[j],biasValues[j]);
+                symIndex += 2*pointsPerQuadrant;
+              }
+            }
+            pointsPerQuadrant = pointsPerQuadrant >> 2;
+          }
+          *outFirst = *outFirst<<4 | Qam16Lut_[symIndex];
+          count++;
+        }
+        break;
+      default : //BPSK
+        for(;inFirst!=inLast;inFirst++)
+        {
+          if(count%8 == 0 && count!=0)
+            outFirst++;
+          (*inFirst).real() > 0 ? *outFirst = *outFirst<<1 | 0: *outFirst = *outFirst<<1 | 1;
+          count++;
+        }
+        break;
+    }
+  }
+
+  static std::string getName(){ return "QamDemodulator"; }
+
+  static std::vector< uint8_t > createQam16Lut()
+  {
+    using namespace std;
+    vector< uint8_t > vec;
+    vec.push_back(15);
+    vec.push_back(13);
+    vec.push_back(12);
+    vec.push_back(14);
+
+    vec.push_back(5);
+    vec.push_back(7);
+    vec.push_back(6);
+    vec.push_back(4);
+
+    vec.push_back(0);
+    vec.push_back(2);
+    vec.push_back(3);
+    vec.push_back(1);
+
+    vec.push_back(10);
+    vec.push_back(8);
+    vec.push_back(9);
+    vec.push_back(11);
+    return vec;
+  }
+
+ private:
+  QamDemodulator(); // Disabled constructor
+
+  static const std::vector< uint8_t > Qam16Lut_;
+};
+
+const std::vector< uint8_t > QamDemodulator::Qam16Lut_ = QamDemodulator::createQam16Lut();
+
+} // namespace iris
+
+#endif // MOD_QAMDEMODULATOR_H_
