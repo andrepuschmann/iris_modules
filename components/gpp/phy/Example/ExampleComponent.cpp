@@ -48,9 +48,9 @@ namespace phy
 IRIS_COMPONENT_EXPORTS(PhyComponent, ExampleComponent);
 
 ExampleComponent::ExampleComponent(std::string name)
-  : PhyComponent(name,                       // component name
+  : PhyComponent(name,                      // component name
                 "example",                  // component type
-                "An example phy component",  // description
+                "An example phy component", // description
                 "Paul Sutton",              // author
                 "0.1")                      // version
 {
@@ -70,42 +70,32 @@ ExampleComponent::ExampleComponent(std::string name)
 
 void ExampleComponent::registerPorts()
 {
-  //Create a vector of the valid types for each port
-  vector<int> validTypes;
-  validTypes.push_back(TypeInfo< uint32_t >::identifier);
-
-  //format:        (name, vector of valid types)
-  registerInputPort("input1", validTypes);
-  registerOutputPort("output1", validTypes);
+  registerInputPort("input1", TypeInfo< uint32_t >::identifier);
+  registerOutputPort("output1", TypeInfo< uint32_t >::identifier);
 }
 
-map<string, int> ExampleComponent::calculateOutputTypes(std::map<std::string,
-                                                        int> inputTypes)
+void ExampleComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   //One output type - always uint32_t
-  map<string, int> outputTypes;
   outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
-  return outputTypes;
 }
 
 void ExampleComponent::initialize()
 {
-  // Set up the input and output DataBuffers
-  inBuf_ = castToType<uint32_t>(inputBuffers.at(0));
-  outBuf_ = castToType<uint32_t>(outputBuffers.at(0));
 }
 
 void ExampleComponent::process()
 {
   //Get a DataSet from the input DataBuffer
   DataSet<uint32_t>* readDataSet = NULL;
-  inBuf_->getReadData(readDataSet);
-
+  getInputDataSet("input1", readDataSet);
   std::size_t size = readDataSet->data.size();
 
   //Get a DataSet from the output DataBuffer
   DataSet<uint32_t>* writeDataSet = NULL;
-  outBuf_->getWriteData(writeDataSet, size);
+  getOutputDataSet("output1", writeDataSet, size);
 
   //Copy the input DataSet to the output DataSet
   copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
@@ -115,8 +105,8 @@ void ExampleComponent::process()
   writeDataSet->sampleRate = readDataSet->sampleRate;
 
   //Release the DataSets
-  inBuf_->releaseReadData(readDataSet);
-  outBuf_->releaseWriteData(writeDataSet);
+  releaseInputDataSet("input1", readDataSet);
+  releaseOutputDataSet("output1", writeDataSet);
 }
 
 } // namesapce phy

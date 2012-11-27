@@ -165,12 +165,12 @@ void UsrpRxComponent::registerPorts()
 *	Based on the input data types, tell the system what output data types will be provided.
 *	\param	inputTypes	The data types of the inputs which will be passed to this component
 */
-map<string, int> UsrpRxComponent::calculateOutputTypes(std::map<std::string, int> inputTypes)
+void UsrpRxComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   //One output type - complex<float>
-  map<string, int> outputTypes;
   outputTypes["output1"] = TypeInfo< complex<float> >::identifier;
-  return outputTypes;
 }
 
 //! Do any initialization required

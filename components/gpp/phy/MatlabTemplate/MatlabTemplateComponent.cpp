@@ -104,16 +104,15 @@ void MatlabTemplateComponent::registerPorts()
   }
 }
 
-map<string, int> MatlabTemplateComponent::calculateOutputTypes(map<string, int> inputTypes)
+void MatlabTemplateComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   //Output type is the same as input type
-  map<string, int> outputTypes;
   if(hasOutput_x || passThrough_x)
   {
     outputTypes["output1"] = inputTypes["input1"];
   }
-
-  return outputTypes;
 }
 
 template <class Tin, class Tout>

@@ -62,11 +62,12 @@ class ExampleComponent
    *
 	 * Given the data-types associated with each input port, provide
 	 * the data-types which will be produced on each output port.
-	 * \param inputTypes The map of input port names and data-type identifiers
-	 * \return Map of output port names and data-type identifiers
+	 * \param inputTypes  The map of input port names and data-type identifiers
+	 * \param outputTypes Map of output port names and data-type identifiers
 	 */
-  virtual std::map<std::string, int> calculateOutputTypes(
-      std::map<std::string, int> inputTypes);
+  virtual void calculateOutputTypes(
+      const std::map<std::string, int>& inputTypes,
+      std::map<std::string, int>& outputTypes);
 
   /** Register the ports of this component.
    *
@@ -87,10 +88,6 @@ class ExampleComponent
   virtual void process();
 
  private:
-   /// Convenience pointer for incoming DataSet buffer
-   ReadBuffer<uint32_t>* inBuf_;
-   /// Convenience pointer for outgoing DataSet buffer
-   WriteBuffer< uint32_t >* outBuf_;
 
    /// Example of a parameter which will be exposed by this component
    uint32_t example_x;

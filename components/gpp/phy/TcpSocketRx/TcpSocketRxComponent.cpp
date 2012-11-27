@@ -96,11 +96,12 @@ void TcpSocketRxComponent::registerPorts()
   registerOutputPort("output1", validTypes);
 }
 
-map<string, int> TcpSocketRxComponent::calculateOutputTypes(map<string, int> inputTypes)
+void TcpSocketRxComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   LOG(LINFO) << TypeInfo< complex<float> >::name();
   //Output type is set in the parameters
-  map<string, int> outputTypes;
   if( outputType_x == TypeInfo< uint8_t >::name() )
     outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
   if( outputType_x == TypeInfo< uint16_t >::name() )
@@ -131,7 +132,6 @@ map<string, int> TcpSocketRxComponent::calculateOutputTypes(map<string, int> inp
     outputTypes["output1"] = TypeInfo< complex<long double> >::identifier;
 
   outputTypeId_ = outputTypes["output1"];
-  return outputTypes;
 }
 
 void TcpSocketRxComponent::initialize()

@@ -128,10 +128,11 @@ void FileRawReaderComponent::registerPorts()
   registerOutputPort("output1", validTypes);
 }
 
-map<string, int> FileRawReaderComponent::calculateOutputTypes(map<string, int> inputTypes)
+void FileRawReaderComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   //Set output type
-  map<string, int> outputTypes;
   if( dataType_x == "uint8_t" )
     outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
   if( dataType_x == "uint16_t" )
@@ -160,8 +161,6 @@ map<string, int> FileRawReaderComponent::calculateOutputTypes(map<string, int> i
     outputTypes["output1"] = TypeInfo< complex<double> >::identifier;
   if( dataType_x == "complex<long double>" )
     outputTypes["output1"] = TypeInfo< complex<long double> >::identifier;
-
-  return outputTypes;
 }
 
 void FileRawReaderComponent::initialize()

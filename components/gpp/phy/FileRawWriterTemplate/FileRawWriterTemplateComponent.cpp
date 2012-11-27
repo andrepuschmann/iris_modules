@@ -79,12 +79,11 @@ void FileRawWriterTemplateComponent::registerPorts()
   registerInputPort("input1", validTypes);
 }
 
-map<string, int> FileRawWriterTemplateComponent::calculateOutputTypes(
-    map<string, int> inputTypes)
+void FileRawWriterTemplateComponent::calculateOutputTypes(
+    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& outputTypes)
 {
   //No output
-  map<string, int> outputTypes;
-  return outputTypes;
 }
 
 template <class Tin, class Tout>
