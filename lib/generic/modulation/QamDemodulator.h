@@ -55,18 +55,27 @@ namespace iris
 class QamDemodulator
 {
  public:
-
-  static void demodulate(std::complex<float>* inFirst,
-                         std::complex<float>* inLast,
-                         uint8_t* outFirst,
-                         uint8_t* outLast,
+  /** Demodulate a set of QAM complex<float> symbols to uint8_t bytes.
+   * Defaults to BPSK.
+   *
+   * @param inBegin   Iterator to first input QAM symbol.
+   * @param inEnd     Iterator to one past last input QAM symbol.
+   * @param outBegin  Iterator to first output byte.
+   * @param outEnd    Iterator to one past last output byte.
+   * @param M         Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)
+   */
+  template <class InputInterator, class OutputIterator>
+  static void demodulate(InputInterator inBegin,
+                         InputInterator inEnd,
+                         OutputIterator outBegin,
+                         OutputIterator outEnd,
                          unsigned int M)
   {
     // Check for sufficient output size
-    if((outLast-outFirst)*8/M < inLast-inFirst)
+    if((outEnd-outBegin)*8/M < inEnd-inBegin)
       throw IrisException("Insufficient storage provided for demodulate output.");
 
-    if((outLast-outFirst)*8/M > inLast-inFirst)
+    if((outEnd-outBegin)*8/M > inEnd-inBegin)
       LOG(LWARNING) << "Output size larger than required for demodulate.";
 
     int count=0;
@@ -77,33 +86,33 @@ class QamDemodulator
     switch (M)
     {
       case 2: //QPSK
-        for(;inFirst!=inLast;inFirst++)
+        for(;inBegin!=inEnd;inBegin++)
         {
           if(count%4 == 0 && count!=0)
-            outFirst++;
+            outBegin++;
           //slice to demodulate
-          if((*inFirst).real() > 0)
-            if((*inFirst).imag() > 0)
-              *outFirst = *outFirst<<2 | 0x3;
+          if((*inBegin).real() > 0)
+            if((*inBegin).imag() > 0)
+              *outBegin = *outBegin<<2 | 0x3;
             else
-              *outFirst = *outFirst<<2 | 0x2;
+              *outBegin = *outBegin<<2 | 0x2;
           else
-            if((*inFirst).imag() > 0)
-              *outFirst = *outFirst<<2 | 0x1;
+            if((*inBegin).imag() > 0)
+              *outBegin = *outBegin<<2 | 0x1;
             else
-              *outFirst = *outFirst<<2 | 0x0;
+              *outBegin = *outBegin<<2 | 0x0;
           count++;
         }
         break;
       case 4: //16 QAM
-        for(;inFirst!=inLast;inFirst++)
+        for(;inBegin!=inEnd;inBegin++)
         {
           if(count%2 == 0 && count!=0)
-            outFirst++;
+            outBegin++;
 
           symIndex = 0;
           pointsPerQuadrant = 4;
-          tempV = *inFirst;
+          tempV = *inBegin;
           for(int j=0;j<2;j++)
           {
             if (tempV.real() > 0)
@@ -133,22 +142,23 @@ class QamDemodulator
             }
             pointsPerQuadrant = pointsPerQuadrant >> 2;
           }
-          *outFirst = *outFirst<<4 | Qam16Lut_[symIndex];
+          *outBegin = *outBegin<<4 | Qam16Lut_[symIndex];
           count++;
         }
         break;
       default : //BPSK
-        for(;inFirst!=inLast;inFirst++)
+        for(;inBegin!=inEnd;inBegin++)
         {
           if(count%8 == 0 && count!=0)
-            outFirst++;
-          (*inFirst).real() > 0 ? *outFirst = *outFirst<<1 | 0: *outFirst = *outFirst<<1 | 1;
+            outBegin++;
+          (*inBegin).real() > 0 ? *outBegin = *outBegin<<1 | 0: *outBegin = *outBegin<<1 | 1;
           count++;
         }
         break;
     }
   }
 
+  /// Convenience function for logging.
   static std::string getName(){ return "QamDemodulator"; }
 
   static std::vector< uint8_t > createQam16Lut()

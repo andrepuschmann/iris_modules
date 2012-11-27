@@ -1,5 +1,5 @@
 /**
- * \file CrcTable.h
+ * \file lib/generic/modulation/Crc.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -31,7 +31,19 @@
  * Cyclic Redundancy Check Table.
  */
 
-unsigned int crcTable[256]= {
+#ifndef MOD_CRCTABLE_H_
+#define MOD_CRCTABLE_H_
+
+#include "irisapi/TypeInfo.h"
+
+namespace iris
+{
+
+/// Inner namespace to hold the crcTable
+namespace crcdetail
+{
+
+uint32_t crcTable[256]= {
   0x00000000U,0x04C11DB7U,0x09823B6EU,0x0D4326D9U,0x130476DCU,0x17C56B6BU,0x1A864DB2U,0x1E475005U,
   0x2608EDB8U,0x22C9F00FU,0x2F8AD6D6U,0x2B4BCB61U,0x350C9B64U,0x31CD86D3U,0x3C8EA00AU,0x384FBDBDU,
   0x4C11DB70U,0x48D0C6C7U,0x4593E01EU,0x4152FDA9U,0x5F15ADACU,0x5BD4B01BU,0x569796C2U,0x52568B75U,
@@ -65,3 +77,37 @@ unsigned int crcTable[256]= {
   0x89B8FD09U,0x8D79E0BEU,0x803AC667U,0x84FBDBD0U,0x9ABC8BD5U,0x9E7D9662U,0x933EB0BBU,0x97FFAD0CU,
   0xAFB010B1U,0xAB710D06U,0xA6322BDFU,0xA2F33668U,0xBCB4666DU,0xB8757BDAU,0xB5365D03U,0xB1F740B4U,
   };
+
+} // namespace crcdetail
+
+/** A cyclic redundancy check class.
+ *
+ * The Crc class simply provides a static function to
+ * generate a 32-bit CRC for a given set of data.
+ */
+class Crc
+{
+public:
+  /** Generate a 32-bit crc for some uint8_t data.
+   *
+   * @param inBegin Iterator to first data element.
+   * @param inEnd   Iterator to one past last data element.
+   */
+  template<class InputIterator>
+  static uint32_t generate(InputIterator inBegin, InputIterator inEnd)
+  {
+    uint32_t crc = 0;
+    for(; inBegin != inEnd; ++inBegin)
+    {
+      crc = crcdetail::crcTable[*inBegin ^ ((crc >> 24) & 0xff)] ^ (crc << 8);
+    }
+    return crc;
+  }
+
+private:
+  Crc(){}; ///< Disable constructor by making it private
+};
+
+} // namespace iris
+
+#endif // MOD_CRCTABLE_H_

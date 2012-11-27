@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Bpsk_Fail_Test)
 
   uint8_t output[1];  // Should be length 2
 
-  BOOST_CHECK_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 1), IrisException);
+  BOOST_CHECK_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 1), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamDemodulator_Qpsk_Fail_Test)
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Qpsk_Fail_Test)
 
   uint8_t output[3]; // Should be length 4
 
-  BOOST_CHECK_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 2), IrisException);
+  BOOST_CHECK_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 2), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamDemodulator_Qam16_Fail_Test)
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Qam16_Fail_Test)
 
   uint8_t output[7]; // Should be length 8
 
-  BOOST_CHECK_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 4), IrisException);
+  BOOST_CHECK_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 4), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamDemodulator_Bpsk_Test)
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Bpsk_Test)
 
   uint8_t output[1];
 
-  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 1));
+  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 1));
 
   uint8_t a = 0x55;
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Qpsk_Test)
 
   uint8_t output[2];
 
-  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 2));
+  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 2));
 
   uint8_t a = 0x1B;
   BOOST_CHECK(output[0] == a);
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(QamDemodulator_Qam16_Test)
 
   uint8_t output[8];
 
-  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(&(*input.begin()), &(*input.end()), begin(output), end(output), 4));
+  BOOST_CHECK_NO_THROW(QamDemodulator::demodulate(input.begin(), input.end(), begin(output), end(output), 4));
 
   uint8_t expected[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
   for(int i=0;i<8;i++)

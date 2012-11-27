@@ -1,5 +1,5 @@
 /**
- * \file Whitener.h
+ * \file lib/generic/modulation/Whitener.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -31,19 +31,20 @@
  * A data whitener class which uses a scrambling code to whiten data.
  */
 
-#include <vector>
+#ifndef MOD_WHITENER_H_
+#define MOD_WHITENER_H_
 
-#ifndef WHITENER_H_
-#define WHITENER_H_
+#include <vector>
+#include "irisapi/TypeInfo.h"
 
 namespace iris
 {
 
-//! Inner namespace to hold the whitenCode
+/// Inner namespace to hold the whitenCode
 namespace whitenerdetail
 {
 
-//! The code used to whiten incoming data
+/// The code used to whiten incoming data
 uint8_t whitenCode[4096] = {
 	255,  63,   0,  16,   0,  12,   0,   5, 192,   3,  16,   1, 204,   0,  85, 192,
 	63,  16,  16,  12,  12,   5, 197, 195,  19,  17, 205, 204,  85, 149, 255,  47, 
@@ -304,34 +305,36 @@ uint8_t whitenCode[4096] = {
 	};
 }
 
-/*!
- * \brief A data whitener class
+/** A data whitener class
  *
  * The Whitener class simply provides a
  * static function to whiten a vector of data
  */
 class Whitener
 {
-private:
-	Whitener(){};	//Disable constructor by making it private
 
 public:
 
-	/*!
-	 * Whiten an input vector of data
-	 * \param	inData	The vector of data to be whitened
+	/** Whiten some uint8_t data.
+	 *
+	 * @param inBegin Iterator to first data element.
+	 * @param inEnd   Iterator to one past last data element.
 	 */
-	template<class T>
-	static void whiten(std::vector<T> &inData)
+	template<class InputIterator>
+	static void whiten(InputIterator inBegin, InputIterator inEnd)
 	{
-		//Supports input block sizes larger than the whitened table (4096)
-		uint8_t *charData = (uint8_t*)&inData[0];
-		for(unsigned i = 0; i < inData.size()*sizeof(T); i++){
-			charData[i] = charData[i] ^ whitenerdetail::whitenCode[i%4096]; 
+		// Supports input block sizes larger than the whitened table (4096)
+	  int count = 0;
+		for(; inBegin != inEnd; ++inBegin, ++count)
+		{
+			*inBegin = *inBegin ^ whitenerdetail::whitenCode[count%4096];
 		}
 	}
+
+private:
+  Whitener(){}; ///< Disable constructor by making it private
 };
 
-} /* namespace iris */
-#endif /* WHITENER_H_ */
+} // namespace iris
+#endif // WHITENER_H_
 

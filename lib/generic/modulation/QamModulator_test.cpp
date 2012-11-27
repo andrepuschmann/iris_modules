@@ -54,33 +54,33 @@ T* end(T(&arr)[N]) { return &arr[0]+N; }
 BOOST_AUTO_TEST_CASE(QamModulator_Bpsk_Fail_Test)
 {
   uint8_t input[] = {0x00, 0x0F, 0xFF};
-  complex<float> output[23];  // Should be length 24
+  vector< complex<float> > output(23);  // Should be length 24
 
-  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 1), IrisException);
+  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 1), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamModulator_Qpsk_Fail_Test)
 {
   uint8_t input[] = {0x00, 0x55, 0xAA, 0xFF};
-  complex<float> output[15]; // Should be length 16
+  vector< complex<float> > output(15); // Should be length 16
 
-  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 2), IrisException);
+  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 2), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamModulator_Qam16_Fail_Test)
 {
   uint8_t input[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
-  complex<float> output[15];  // Should be length 16
+  vector< complex<float> > output(15);  // Should be length 16
 
-  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 4), IrisException);
+  BOOST_CHECK_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 4), IrisException);
 }
 
 BOOST_AUTO_TEST_CASE(QamModulator_Bpsk_Test)
 {
   uint8_t input[] = {0x00, 0x0F, 0xFF};
-  complex<float> output[24];
+  vector< complex<float> > output(24);
 
-  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 1));
+  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 1));
 
   complex<float> a(1,0);
   complex<float> b(-1,0);
@@ -95,9 +95,9 @@ BOOST_AUTO_TEST_CASE(QamModulator_Bpsk_Test)
 BOOST_AUTO_TEST_CASE(QamModulator_Qpsk_Test)
 {
   uint8_t input[] = {0x00, 0x55, 0xAA, 0xFF};
-  complex<float> output[16];
+  vector< complex<float> > output(16);
 
-  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 2));
+  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 2));
 
   complex<float> a(-1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f));
   complex<float> b(-1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f));
@@ -120,9 +120,9 @@ BOOST_AUTO_TEST_CASE(QamModulator_Qpsk_Test)
 BOOST_AUTO_TEST_CASE(QamModulator_Qam16_Test)
 {
   uint8_t input[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
-  complex<float> output[16];
+  vector< complex<float> > output(16);
 
-  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), begin(output), end(output), 4));
+  BOOST_CHECK_NO_THROW(QamModulator::modulate(begin(input), end(input), output.begin(), output.end(), 4));
 
   vector< complex<float> > vec;
   vec.push_back(complex<float>(-1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));

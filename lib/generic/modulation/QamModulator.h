@@ -56,55 +56,58 @@ class QamModulator
 {
  public:
 
-  /** QAM modulate a sequence of bytes stored as uint8_t. Defaults to BPSK.
+  /** Modulate a sequence of uint8_t bytes to QAM complex<float>
+   * symbols. Defaults to BPSK.
    *
-   * @param inFirst   Pointer to first input byte.
-   * @param inLast    Pointer to last input byte.
-   * @param outFirst  Pointer to first output QAM symbol.
-   * @param outLast   Pointer to last output QAM symbol.
+   * @param inBegin   Iterator to first input byte.
+   * @param inEnd     Iterator to one past last input byte.
+   * @param outBegin  Iterator to first output QAM symbol.
+   * @param outEnd    Iterator to one past last output QAM symbol.
    * @param M         Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)
    */
-  static void modulate(uint8_t* inFirst,
-                       uint8_t* inLast,
-                       std::complex<float>* outFirst,
-                       std::complex<float>* outLast,
+  template <class InputInterator, class OutputIterator>
+  static void modulate(InputInterator inBegin,
+                       InputInterator inEnd,
+                       OutputIterator outBegin,
+                       OutputIterator outEnd,
                        unsigned int M)
   {
     // Check for sufficient output size
-    if(outLast-outFirst < (inLast-inFirst)*8/M)
+    if(outEnd-outBegin < (inEnd-inBegin)*8/M)
       throw IrisException("Insufficient storage provided for modulate output.");
 
-    if(outLast-outFirst > (inLast-inFirst)*8/M)
+    if(outEnd-outBegin > (inEnd-inBegin)*8/M)
       LOG(LWARNING) << "Output size larger than required for modulate.";
 
     switch (M)
     {
       case 2: //QPSK
         //Convert bytes into bit-sequences and use LUT
-        for(; inFirst != inLast; inFirst++)
+        for(; inBegin != inEnd; inBegin++)
         {
           for(int j = 3; j>=0; j--)
-            *outFirst++ = QpskLut_[(int)((*inFirst >> (j*2)) & 0x3)];
+            *outBegin++ = QpskLut_[(int)((*inBegin >> (j*2)) & 0x3)];
         }
         break;
       case 4: //16 QAM
         //Convert bytes into bit-sequences and use LUT
-        for(; inFirst != inLast; inFirst++)
+        for(; inBegin != inEnd; inBegin++)
         {
           for (int j = 1; j>=0; j--)
-            *outFirst++ = Qam16Lut_[(int)((*inFirst >> (j*4)) & 0xF)];
+            *outBegin++ = Qam16Lut_[(int)((*inBegin >> (j*4)) & 0xF)];
         }
         break;
       default : //BPSK
         //Convert bytes into bit-sequences and use LUT
-        for(; inFirst != inLast; inFirst++){
+        for(; inBegin != inEnd; inBegin++){
           for (int j = 7; j>=0; j--)
-            *outFirst++ = BpskLut_[(int)((*inFirst >> j) & 0x1)];
+            *outBegin++ = BpskLut_[(int)((*inBegin >> j) & 0x1)];
         }
         break;
     }
   }
 
+  /// Convenience function for logging.
   static std::string getName(){ return "QamModulator"; }
 
   static std::vector< std::complex<float> > createBpskLut()

@@ -25,8 +25,10 @@
 ########################################################################
 # Build each test and link to libraries
 SET(test_sources
+    Crc_test.cpp
     QamDemodulator_test.cpp
     QamModulator_test.cpp
+    Whitener_test.cpp
 )
 
 #turn each test cpp file into an executable with an int main() function
