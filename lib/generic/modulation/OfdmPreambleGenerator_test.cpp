@@ -59,4 +59,16 @@ BOOST_AUTO_TEST_CASE(OfdmPreambleGenerator_Basic_Test)
     BOOST_CHECK(preamble[i] == preamble[i+128]);
 }
 
+BOOST_AUTO_TEST_CASE(OfdmPreambleGenerator_Long_Test)
+{
+  int numData=400;
+  int numGuard=111;
+  std::vector< std::complex<float> > preamble(512);
+
+  OfdmPreambleGenerator::generatePreamble(numData,numGuard,preamble.begin(),preamble.end());
+
+  for(int i=0;i<256;i++)
+    BOOST_CHECK(preamble[i] == preamble[i+256]);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
