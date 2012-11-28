@@ -61,10 +61,11 @@ class OfdmPreambleGenerator
   typedef std::vector<Cplx>     CplxVec;
   typedef CplxVec::iterator     CplxVecIt;
 
-  /** Generate an OFDM preamble symbol.
+  /** Generate an OFDM preamble symbol with a half-symbol repetition.
    *
    * A time-domain OFDM preamble symbol is generated using the 802.16
-   * preamble sequence. The symbol contains a half-symbol repetition.
+   * preamble sequence. Pseudo-noise data is placed on carriers -100:2:100,
+   * resulting in a half-symbol repetition.
    * The DC carrier is null and carrier symbols are qpsk with average
    * energy sqrt(2). The symbol does not include a cyclic prefix.
    *
