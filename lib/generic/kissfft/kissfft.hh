@@ -264,7 +264,8 @@ class kissfft
             cpx_type * twiddles = &_twiddles[0];
             cpx_type t;
             int Norig = _nfft;
-            cpx_type* scratchbuf = new cpx_type[p];
+            char charbuf[ p * sizeof( cpx_type ) ];
+            cpx_type * scratchbuf = reinterpret_cast<cpx_type *>(charbuf);
 
             for ( u=0; u<m; ++u ) {
                 k=u;
@@ -287,7 +288,6 @@ class kissfft
                     k += m;
                 }
             }
-            delete [] scratchbuf;
         }
 
         int _nfft;
