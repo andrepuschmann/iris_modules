@@ -39,6 +39,7 @@
 
 #include <complex>
 #include <vector>
+#include <cmath>
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
@@ -55,6 +56,8 @@ namespace iris
 class QamModulator
 {
  public:
+  typedef std::complex<float>   Cplx;
+  typedef std::vector<Cplx>     CplxVec;
 
   /** Modulate a sequence of uint8_t bytes to QAM complex<float>
    * symbols. Defaults to BPSK.
@@ -110,63 +113,63 @@ class QamModulator
   /// Convenience function for logging.
   static std::string getName(){ return "QamModulator"; }
 
-  static std::vector< std::complex<float> > createBpskLut()
+  static CplxVec createBpskLut()
   {
     using namespace std;
-    vector< complex<float> > vec;
-    vec.push_back(complex<float>(1,0));
-    vec.push_back(complex<float>(-1,0));
+    CplxVec vec;
+    vec.push_back(Cplx(1,0));
+    vec.push_back(Cplx(-1,0));
     return vec;
   }
 
-  static std::vector< std::complex<float> > createQpskLut()
+  static CplxVec createQpskLut()
   {
     using namespace std;
-    vector< complex<float> > vec;
-    vec.push_back(complex<float>(-1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
-    vec.push_back(complex<float>(-1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
-    vec.push_back(complex<float>( 1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
-    vec.push_back(complex<float>( 1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
+    CplxVec vec;
+    vec.push_back(Cplx(-1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
+    vec.push_back(Cplx(-1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
     return vec;
   }
 
-  static std::vector< std::complex<float> > createQam16Lut()
+  static CplxVec createQam16Lut()
   {
     using namespace std;
-    vector< complex<float> > vec;
-    vec.push_back(complex<float>(-1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    CplxVec vec;
+    vec.push_back(Cplx(-1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
 
-    vec.push_back(complex<float>(-1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>(-3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx(-3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
 
-    vec.push_back(complex<float>( 1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
 
-    vec.push_back(complex<float>( 1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(complex<float>( 3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    vec.push_back(Cplx( 3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
     return vec;
   }
 
  private:
   QamModulator(); // Disabled constructor
 
-  static const std::vector< std::complex<float> > BpskLut_;
-  static const std::vector< std::complex<float> > QpskLut_;
-  static const std::vector< std::complex<float> > Qam16Lut_;
+  static const CplxVec BpskLut_;
+  static const CplxVec QpskLut_;
+  static const CplxVec Qam16Lut_;
 };
 
-const std::vector< std::complex<float> > QamModulator::BpskLut_ = QamModulator::createBpskLut();
-const std::vector< std::complex<float> > QamModulator::QpskLut_ = QamModulator::createQpskLut();
-const std::vector< std::complex<float> > QamModulator::Qam16Lut_ = QamModulator::createQam16Lut();
+const QamModulator::CplxVec QamModulator::BpskLut_ = QamModulator::createBpskLut();
+const QamModulator::CplxVec QamModulator::QpskLut_ = QamModulator::createQpskLut();
+const QamModulator::CplxVec QamModulator::Qam16Lut_ = QamModulator::createQam16Lut();
 
 } // namespace iris
 

@@ -55,6 +55,9 @@ namespace iris
 class QamDemodulator
 {
  public:
+  typedef std::complex<float>   Cplx;
+  typedef std::vector<Cplx>     CplxVec;
+
   /** Demodulate a set of QAM complex<float> symbols to uint8_t bytes.
    * Defaults to BPSK.
    *
@@ -80,7 +83,7 @@ class QamDemodulator
 
     int count=0;
     int symIndex,pointsPerQuadrant;
-    std::complex<float> tempV;
+    Cplx tempV;
     float biasValues[2]={2.0f/sqrtf(10.0f),0.0f};
 
     switch (M)
@@ -119,11 +122,11 @@ class QamDemodulator
             {
               if (tempV.imag() > 0)
               {
-                tempV = tempV + std::complex<float>(-biasValues[j],-biasValues[j]);
+                tempV = tempV + Cplx(-biasValues[j],-biasValues[j]);
               }
               else
               {
-                tempV = tempV + std::complex<float>(-biasValues[j],biasValues[j]);
+                tempV = tempV + Cplx(-biasValues[j],biasValues[j]);
                 symIndex += 3*pointsPerQuadrant;
               }
             }
@@ -131,12 +134,12 @@ class QamDemodulator
             {
               if (tempV.imag() > 0)
               {
-                tempV = tempV + std::complex<float>(biasValues[j],-biasValues[j]);
+                tempV = tempV + Cplx(biasValues[j],-biasValues[j]);
                 symIndex += pointsPerQuadrant;
               }
               else
               {
-                tempV = tempV + std::complex<float>(biasValues[j],biasValues[j]);
+                tempV = tempV + Cplx(biasValues[j],biasValues[j]);
                 symIndex += 2*pointsPerQuadrant;
               }
             }

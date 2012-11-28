@@ -28,3 +28,4 @@
 # entire directory structure.
 ADD_SUBDIRECTORY(modulation)
 ADD_SUBDIRECTORY(tml)
+ADD_SUBDIRECTORY(kissfft)
