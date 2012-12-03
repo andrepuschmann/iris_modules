@@ -69,35 +69,34 @@ class OfdmPreambleGenerator
    * The DC carrier is null and carrier symbols are qpsk with average
    * energy sqrt(2). The symbol does not include a cyclic prefix.
    *
-   * @param numData   Number of data carriers.
+   * @param numData   Number of data carriers (not including pilots).
+   * @param numPilot  Number of pilot carriers.
    * @param numGuard  Number of guard carriers (not including DC).
    * @param outBegin  Iterator to first element of output vector.
    * @param outEnd    Iterator to one past last element of output.
    */
   static void generatePreamble(int numData,
+                               int numPilot,
                                int numGuard,
                                CplxVecIt outBegin,
                                CplxVecIt outEnd)
   {
     using namespace boost::lambda;
 
-    int numBins = numData + numGuard + 1;
+    int numActive = numData + numPilot;
+    int numBins = numData + numPilot + numGuard + 1;
 
     if(outEnd-outBegin < numBins)
       throw IrisException("Insufficient storage provided for generatePreamble output.");
 
     CplxVec bins(numBins);
-    for(int i=2; i<numData/2; i+=2)
+    for(int i=2; i<numActive/2; i+=2)
       bins[i] = posPreambleSequence_[i%100];
-    for(int i=1; i<numData/2; i+=2)
+    for(int i=1; i<numActive/2; i+=2)
       bins[numBins-1-i] = negPreambleSequence_[i%100];
-
-    //RawFileUtility::write(bins.begin(), bins.end(), "PreambleBins");
 
     kissfft<float> fft(numBins,true);
     fft.transform(&bins[0], &(*outBegin));
-
-    //RawFileUtility::write(outBegin, outEnd, "Preamble");
 
     transform(outBegin, outEnd, outBegin, _1/(float)numBins);
   }
