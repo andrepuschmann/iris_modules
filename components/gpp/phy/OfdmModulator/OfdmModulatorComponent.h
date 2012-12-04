@@ -95,33 +95,28 @@ class OfdmModulatorComponent
                        CplxVecIt outBegin, CplxVecIt outEnd);
 
 
-  int numDataCarriers_x;     ///< Data subcarriers (default = 192)
-  int numPilotCarriers_x;    ///< Pilot subcarriers (default = 8)
-  int numGuardCarriers_x;    ///< Guard subcarriers (default = 55+256)
-  int modulationDepth_x;     ///< 1=BPSK, 2=QPSK, 4=QAM16 (default = 1)
-  int cyclicPrefixLength_x;  ///< Length of cyclic prefix (default = 32)
-  int maxSymbolsPerFrame_x;  ///< Max OFDM symbols per frame (default = 32)
+  int numDataCarriers_x;      ///< Data subcarriers (default = 192)
+  int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
+  int numGuardCarriers_x;     ///< Guard subcarriers (default = 55+256)
+  int modulationDepth_x;      ///< 1=BPSK, 2=QPSK, 4=QAM16 (default = 1)
+  int cyclicPrefixLength_x;   ///< Length of cyclic prefix (default = 32)
+  int maxSymbolsPerFrame_x;   ///< Max OFDM data symbols per frame (default = 32)
 
-  int numBins_;              ///< Number of bins for our FFT.
-  int bytesPerSymbol_;       ///< Bytes per OFDM symbol.
+  int numBins_;               ///< Number of bins for our FFT.
+  int bytesPerSymbol_;        ///< Bytes per OFDM symbol.
+  const int headerBytes_;     ///< Number of bytes in our frame header (7).
 
-  IntVec pilotIndices_;      ///< Indices for our pilot carriers.
-  IntVec dataIndices_;       ///< Indices for our data carriers.
-  ByteVec header_;           ///< Contains the header data for each frame.
-  CplxVec fftBins_;          ///< The bins for our FFT.
-  CplxVec preamble_;         ///< Contains our frame preamble.
-  CplxVec modHeader_;        ///< Contains our modulated header data.
-  CplxVec modData_;          ///< Contains our modulated data.
-  CplxVec symbol_;           ///< Contains a single OFDM symbol.
-
-  const static CplxVec pilotSequence_;
-  static CplxVec generatePilotSequence()
-  {
-    typedef Cplx c;
-    c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
-    CplxVec vec(begin(seq),end(seq));
-    return vec;
-  }
+  IntVec pilotIndices_;       ///< Indices for our pilot carriers.
+  IntVec dataIndices_;        ///< Indices for our data carriers.
+  ByteVec header_;            ///< Contains the header data for each frame.
+  CplxVec fftBins_;           ///< The bins for our FFT.
+  CplxVec preamble_;          ///< Contains our frame preamble.
+  CplxVec pilotSequence_;     ///< Contains our pilot symbols.
+  CplxVec modHeader_;         ///< Contains our modulated header data.
+  CplxVec modData_;           ///< Contains our modulated data.
+  ByteVec pad_;               ///< Padding data.
+  CplxVec modPad_;            ///< Used to pad out the last symbol, if required.
+  CplxVec symbol_;            ///< Contains a single OFDM symbol.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }
@@ -129,9 +124,6 @@ class OfdmModulatorComponent
   static T* end(T(&arr)[N]) { return &arr[0]+N; }
 
 };
-
-const OfdmModulatorComponent::CplxVec OfdmModulatorComponent::pilotSequence_ =
-    OfdmModulatorComponent::generatePilotSequence();
 
 } // namespace phy
 } // namespace iris

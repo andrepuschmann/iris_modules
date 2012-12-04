@@ -63,21 +63,37 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
                 "An OFDM modulation component", // description
                 "Paul Sutton",                  // author
                 "1.0")                          // version
+    ,headerBytes_(7)
 {
-/*
   registerParameter(
-      "exampleparameter",                   // name
-      "An example parameter",               // description
-      "0",                                  // default value
-      true,                                 // dynamic?
-      example_x,                            // parameter
-      Interval<uint32_t>(0,5));             // allowed values
+    "numdatacarriers", "Number of data carriers (excluding pilots)",
+    "192", true, numDataCarriers_x, Interval<int>(1,65536));
 
-  registerEvent(
-      "exampleevent",                       // name
-      "An example event",                   // description
-      TypeInfo< uint32_t >::identifier);    // data type
-*/
+  registerParameter(
+    "numpilotcarriers", "Number of pilot carriers",
+    "8", true, numPilotCarriers_x, Interval<int>(1,65536));
+
+  registerParameter(
+    "numguardcarriers", "Number of guard carriers",
+    "311", true, numGuardCarriers_x, Interval<int>(1,65536));
+
+  int vals[] = {1,2,4};
+  registerParameter(
+    "modulationdepth", "Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)",
+    "1", true, modulationDepth_x, list<int>(begin(vals),end(vals)));
+
+  registerParameter(
+    "cyclicprefixlength", "Length of cyclic prefix",
+    "32", true, cyclicPrefixLength_x, Interval<int>(1,65536));
+
+  registerParameter(
+    "maxsymbolsperframe", "Maximum number of data symbols per frame",
+    "32", true, maxSymbolsPerFrame_x, Interval<int>(1,128));
+
+  // Create our pilot sequence
+  typedef Cplx c;
+  c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
+  pilotSequence_.assign(begin(seq), end(seq));
 }
 
 void OfdmModulatorComponent::registerPorts()
@@ -131,6 +147,7 @@ void OfdmModulatorComponent::process()
 /// Set up all our index vectors and containers.
 void OfdmModulatorComponent::setup()
 {
+  // Set up index vectors
   pilotIndices_.clear();
   pilotIndices_.resize(numPilotCarriers_x);
   dataIndices_.clear();
@@ -141,11 +158,8 @@ void OfdmModulatorComponent::setup()
                                       pilotIndices_.begin(), pilotIndices_.end(),
                                       dataIndices_.begin(), dataIndices_.end());
 
+  // Create preamble
   numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x;
-  fftBins_.clear();
-  fftBins_.resize(numBins_);
-  symbol_.clear();
-  symbol_.resize(numBins_);
   preamble_.clear();
   preamble_.resize(numBins_);
   OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
@@ -153,9 +167,27 @@ void OfdmModulatorComponent::setup()
                                           numGuardCarriers_x,
                                           preamble_.begin(), preamble_.end());
 
+  // Set up containers
+  fftBins_.clear();
+  fftBins_.resize(numBins_);
+  symbol_.clear();
+  symbol_.resize(numBins_);
   bytesPerSymbol_ = (numDataCarriers_x * modulationDepth_x)/8;
-  header_.resize(bytesPerSymbol_);  //TODO: Check that header can be contained in one symbol
+  if(headerBytes_ > bytesPerSymbol_)
+    header_.resize((int)ceil(headerBytes_/(float)bytesPerSymbol_));
+  else
+    header_.resize(bytesPerSymbol_);
   Whitener::whiten(header_.begin(), header_.end());
+  modHeader_.resize(header_.size()*numDataCarriers_x);
+
+  // Set up padding
+  pad_.resize(bytesPerSymbol_);
+  Whitener::whiten(pad_.begin(), pad_.end());
+  modPad_.resize(numDataCarriers_x);
+  QamModulator::modulate(pad_.begin(), pad_.end(),
+                         modPad_.begin(), modPad_.end(),
+                         modulationDepth_x);
+
 }
 
 /** Create a header for the current frame.
@@ -192,8 +224,8 @@ void OfdmModulatorComponent::createHeader(ByteVecIt begin, ByteVecIt end)
  *
  * The frame structure is as follows:                                     <br>
  *          --------------------------------------------------------      <br>
- * symbols  |        1 |       1|           variable |           1 |      <br>
- * data     | Preamble | Header |       Data Symbols | Frame Guard |      <br>
+ * symbols  |        1 |     >=1 |           variable |           1 |     <br>
+ * data     | Preamble |  Header |       Data Symbols | Frame Guard |     <br>
  *          --------------------------------------------------------      <br>
  *
  * @param begin   Iterator to first input data byte.
@@ -201,7 +233,6 @@ void OfdmModulatorComponent::createHeader(ByteVecIt begin, ByteVecIt end)
  */
 void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
 {
-  int numQamSymbols = (end-begin)*8/modulationDepth_x;
   int numOfdmSymbols = ceil((end-begin)/(float)bytesPerSymbol_);
   int ofdmSymLength = numBins_+cyclicPrefixLength_x;
 
@@ -209,13 +240,16 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
   Whitener::whiten(header_.begin(), header_.end());
   Whitener::whiten(begin, end);
 
-  // Modulate
-  modHeader_.resize(bytesPerSymbol_);
-  modData_.resize(numQamSymbols);
+  // Modulate and pad
   QamModulator::modulate(header_.begin(), header_.end(),
                          modHeader_.begin(), modHeader_.end(),1);
-  QamModulator::modulate(begin, end,
-                         modData_.begin(), modData_.end(), modulationDepth_x);
+  modData_.resize(numOfdmSymbols*numDataCarriers_x);
+  CplxVecIt modIt = QamModulator::modulate(begin, end,
+                                           modData_.begin(), modData_.end(),
+                                           modulationDepth_x);
+  CplxVecIt padIt = modPad_.begin();
+  for(; modIt!=modData_.end(); modIt++,padIt++)
+    *modIt = *padIt;
 
   // Get a DataSet
   int frameLength = (1+1+numOfdmSymbols+1) * (ofdmSymLength);
@@ -226,16 +260,19 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
   // Copy preamble
   it = copyWithCp(preamble_.begin(), preamble_.end(), it, it+ofdmSymLength);
 
-  // Create and copy header symbol
-  createSymbol(modHeader_.begin(), modHeader_.end(), symbol_.begin(),symbol_.end());
-  it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
+  // Create and copy header symbol(s)
+  CplxVecIt headIt = modHeader_.begin();
+  for(; headIt != modHeader_.end(); headIt += numDataCarriers_x)
+  {
+    createSymbol(headIt, headIt+numDataCarriers_x, symbol_.begin(),symbol_.end());
+    it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
+  }
 
   // Create and copy data symbols
   CplxVecIt inIt = modData_.begin();
-  for(int i=0;i<numOfdmSymbols;i++)
+  for(int i=0; i<numOfdmSymbols; i++, inIt += numDataCarriers_x)
   {
     createSymbol(inIt, inIt+numDataCarriers_x, symbol_.begin(), symbol_.end());
-    inIt += numDataCarriers_x;
     it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
   }
 }
@@ -255,7 +292,6 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
 {
   if(outEnd-outBegin < numBins_)
     throw IrisException("Insufficient storage provided for createSymbol output.");
-  //TODO: Check we have enough input symbols, pad if not.
 
   int i = 0;
   IntVecIt it = pilotIndices_.begin();

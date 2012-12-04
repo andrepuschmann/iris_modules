@@ -67,20 +67,18 @@ class QamModulator
    * @param outBegin  Iterator to first output QAM symbol.
    * @param outEnd    Iterator to one past last output QAM symbol.
    * @param M         Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)
+   * @return          Iterator to end of written range
    */
   template <class InputInterator, class OutputIterator>
-  static void modulate(InputInterator inBegin,
-                       InputInterator inEnd,
-                       OutputIterator outBegin,
-                       OutputIterator outEnd,
-                       unsigned int M)
+  static OutputIterator modulate(InputInterator inBegin,
+                                 InputInterator inEnd,
+                                 OutputIterator outBegin,
+                                 OutputIterator outEnd,
+                                 unsigned int M)
   {
     // Check for sufficient output size
     if(outEnd-outBegin < (inEnd-inBegin)*8/M)
       throw IrisException("Insufficient storage provided for modulate output.");
-
-    if(outEnd-outBegin > (inEnd-inBegin)*8/M)
-      LOG(LWARNING) << "Output size larger than required for modulate.";
 
     switch (M)
     {
@@ -108,6 +106,8 @@ class QamModulator
         }
         break;
     }
+
+    return outBegin;
   }
 
   /// Convenience function for logging.

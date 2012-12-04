@@ -68,11 +68,11 @@ class QamDemodulator
    * @param M         Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)
    */
   template <class InputInterator, class OutputIterator>
-  static void demodulate(InputInterator inBegin,
-                         InputInterator inEnd,
-                         OutputIterator outBegin,
-                         OutputIterator outEnd,
-                         unsigned int M)
+  static OutputIterator demodulate(InputInterator inBegin,
+                                   InputInterator inEnd,
+                                   OutputIterator outBegin,
+                                   OutputIterator outEnd,
+                                   unsigned int M)
   {
     // Check for sufficient output size
     if((outEnd-outBegin)*8/M < inEnd-inBegin)
@@ -159,6 +159,8 @@ class QamDemodulator
         }
         break;
     }
+
+    return outBegin;
   }
 
   /// Convenience function for logging.

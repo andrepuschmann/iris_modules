@@ -21,25 +21,9 @@
 #
 
 ########################################################################
-# Build executables, register as tests, and install
+# Build executable, register as test
 ########################################################################
-# Build each test and link to libraries
-SET(test_sources
-    Crc_test.cpp
-    OfdmIndexGenerator_test.cpp
-    OfdmPreambleGenerator_test.cpp
-    QamDemodulator_test.cpp
-    QamModulator_test.cpp
-    Whitener_test.cpp
-)
-
-#turn each test cpp file into an executable with an int main() function
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-
-#for each source: build an executable, register it as a test, and install
-FOREACH(test_source ${test_sources})
-    GET_FILENAME_COMPONENT(test_name ${test_source} NAME_WE)
-    ADD_EXECUTABLE(${test_name} ${test_source})
-    TARGET_LINK_LIBRARIES(${test_name} ${Boost_LIBRARIES})
-    ADD_TEST(${test_name} ${test_name})
-ENDFOREACH(test_source)
+ADD_EXECUTABLE(OfdmModulatorComponent_test OfdmModulatorComponent_test.cpp)
+TARGET_LINK_LIBRARIES(OfdmModulatorComponent_test ${Boost_LIBRARIES} comp_gpp_phy_ofdmmodulator)
+ADD_TEST(OfdmModulatorComponent_test OfdmModulatorComponent_test)
