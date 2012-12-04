@@ -50,8 +50,6 @@
 #ifndef PHY_OFDMMODULATORCOMPONENT_H_
 #define PHY_OFDMMODULATORCOMPONENT_H_
 
-#include <fftw3.h>
-
 #include "irisapi/PhyComponent.h"
 
 namespace iris
@@ -70,6 +68,14 @@ class OfdmModulatorComponent
   : public PhyComponent
 {
  public:
+  typedef std::complex<float>   Cplx;
+  typedef std::vector<Cplx>     CplxVec;
+  typedef CplxVec::iterator     CplxVecIt;
+  typedef std::vector<int>      IntVec;
+  typedef IntVec::iterator      IntVecIt;
+  typedef std::vector<uint8_t>  ByteVec;
+  typedef ByteVec::iterator     ByteVecIt;
+
   OfdmModulatorComponent(std::string name);
   virtual void calculateOutputTypes(
         const std::map<std::string, int>& inputTypes,
@@ -80,15 +86,14 @@ class OfdmModulatorComponent
 
  private:
 
-  typedef std::vector< std::complex<float> > ComplexVector;
+  void setup();
+  void createHeader(ByteVecIt begin, ByteVecIt end);
+  void createFrame(ByteVecIt begin, ByteVecIt end);
+  void createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
+                    CplxVecIt outBegin, CplxVecIt outEnd);
+  CplxVecIt copyWithCp(CplxVecIt inBegin, CplxVecIt inEnd,
+                       CplxVecIt outBegin, CplxVecIt outEnd);
 
-  void generatePreamble();
-  void generatePilotIndices();
-  void generateDataIndices();
-
-  void createFrame();
-  void createHeader();
-  void createSymbol();
 
   int numDataCarriers_x;     ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;    ///< Pilot subcarriers (default = 8)
@@ -97,11 +102,36 @@ class OfdmModulatorComponent
   int cyclicPrefixLength_x;  ///< Length of cyclic prefix (default = 32)
   int maxSymbolsPerFrame_x;  ///< Max OFDM symbols per frame (default = 32)
 
-  ComplexVector fftBins_;
-  ComplexVector preamble_;
-  fftwf_plan fftPlan_;
+  int numBins_;              ///< Number of bins for our FFT.
+  int bytesPerSymbol_;       ///< Bytes per OFDM symbol.
+
+  IntVec pilotIndices_;      ///< Indices for our pilot carriers.
+  IntVec dataIndices_;       ///< Indices for our data carriers.
+  ByteVec header_;           ///< Contains the header data for each frame.
+  CplxVec fftBins_;          ///< The bins for our FFT.
+  CplxVec preamble_;         ///< Contains our frame preamble.
+  CplxVec modHeader_;        ///< Contains our modulated header data.
+  CplxVec modData_;          ///< Contains our modulated data.
+  CplxVec symbol_;           ///< Contains a single OFDM symbol.
+
+  const static CplxVec pilotSequence_;
+  static CplxVec generatePilotSequence()
+  {
+    typedef Cplx c;
+    c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
+    CplxVec vec(begin(seq),end(seq));
+    return vec;
+  }
+
+  template <typename T, size_t N>
+  static T* begin(T(&arr)[N]) { return &arr[0]; }
+  template <typename T, size_t N>
+  static T* end(T(&arr)[N]) { return &arr[0]+N; }
 
 };
+
+const OfdmModulatorComponent::CplxVec OfdmModulatorComponent::pilotSequence_ =
+    OfdmModulatorComponent::generatePilotSequence();
 
 } // namespace phy
 } // namespace iris

@@ -26,6 +26,7 @@
 # Build each test and link to libraries
 SET(test_sources
     Crc_test.cpp
+    OfdmIndexGenerator_test.cpp
     OfdmPreambleGenerator_test.cpp
     QamDemodulator_test.cpp
     QamModulator_test.cpp

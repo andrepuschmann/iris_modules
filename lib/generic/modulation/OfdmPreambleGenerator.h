@@ -97,7 +97,6 @@ class OfdmPreambleGenerator
 
     kissfft<float> fft(numBins,true);
     fft.transform(&bins[0], &(*outBegin));
-
     transform(outBegin, outEnd, outBegin, _1/(float)numBins);
   }
 

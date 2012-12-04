@@ -25,8 +25,6 @@ MESSAGE(STATUS "  Processing ofdmmodulator.")
 ########################################################################
 # Add includes and dependencies
 ########################################################################
-FIND_PACKAGE( FFTW3F )
-INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
 
 ########################################################################
 # Build the library from source files
@@ -35,11 +33,8 @@ SET(sources
 	OfdmModulatorComponent.cpp
 )
 
-IF (FFTW3F_FOUND)
-  ADD_LIBRARY(comp_gpp_phy_ofdmmodulator SHARED ${sources})
-  SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmmodulator PROPERTIES OUTPUT_NAME "ofdmmodulator")
-  IRIS_INSTALL(comp_gpp_phy_ofdmmodulator)
-  IRIS_APPEND_INSTALL_LIST(ofdmmodulator)
-ELSE (FFTW3F_FOUND)
-  IRIS_APPEND_NOINSTALL_LIST(ofdmmodulator)
-ENDIF (FFTW3F_FOUND)
+
+ADD_LIBRARY(comp_gpp_phy_ofdmmodulator SHARED ${sources})
+SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmmodulator PROPERTIES OUTPUT_NAME "ofdmmodulator")
+IRIS_INSTALL(comp_gpp_phy_ofdmmodulator)
+IRIS_APPEND_INSTALL_LIST(ofdmmodulator)
