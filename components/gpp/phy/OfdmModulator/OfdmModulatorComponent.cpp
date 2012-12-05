@@ -37,9 +37,9 @@
 #include <algorithm>
 #include <boost/lambda/lambda.hpp>
 
-#include "kissfft/kissfft.hh"
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
+#include "kissfft/kissfft.hh"
 #include "modulation/OfdmIndexGenerator.h"
 #include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
@@ -106,7 +106,6 @@ void OfdmModulatorComponent::calculateOutputTypes(
     const std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
-  //One output type - always complex<float>
   outputTypes["output1"] = TypeInfo< complex<float> >::identifier;
 }
 
