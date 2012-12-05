@@ -21,7 +21,16 @@
 #
 
 ########################################################################
-# Build executables, register as tests, and install
+# Build libraries and tests
+########################################################################
+ADD_LIBRARY(ofdmpreambledetector STATIC OfdmPreambleDetector.cpp)
+TARGET_LINK_LIBRARIES(ofdmpreambledetector ${Boost_LIBRARIES})
+IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+  SET_TARGET_PROPERTIES(ofdmpreambledetector PROPERTIES COMPILE_FLAGS -fPIC)
+ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+
+########################################################################
+# Build header-only tests
 ########################################################################
 # Build each test and link to libraries
 SET(test_sources

@@ -49,11 +49,7 @@
 namespace iris
 {
 
-/** An OFDM preamble generator.
- *
- * Objects of this class can be used to generate OFDM preambles
- * with half-symbol repetitions.
- */
+/// Generate OFDM preambles with half-symbol repetitions.
 class OfdmPreambleGenerator
 {
  public:

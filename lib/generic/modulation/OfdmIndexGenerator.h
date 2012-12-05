@@ -47,9 +47,7 @@
 namespace iris
 {
 
-/**
- *
- */
+/// Generate pilot and data carrier indices for OFDM symbols.
 class OfdmIndexGenerator
 {
  public:
