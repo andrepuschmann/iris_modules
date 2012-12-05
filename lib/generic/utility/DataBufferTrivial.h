@@ -41,25 +41,24 @@
 namespace iris
 {
 
-/*!
-*   \brief The DataBufferTrivial class implements a buffer between Iris components for testing.
+/** The DataBufferTrivial class implements a buffer between Iris components
+ * for testing.
 *
-*	The buffer consists of a number of DataSet objects which can be written and read by the components.
-*	Components can get a DataSet to write to by calling GetWriteSet(). When finished writing, the component
-*	releases the DataSet by calling ReleaseWriteSet().
-*	Components can get a DataSet to read from by calling GetReadSet(). When finished reading, the component
-*	releases the DataSet by calling ReleaseReadSet().
-*	The DataBufferTrivial is not thread-safe. It does not block, and keeps growing if new DataSets are
+*	The buffer consists of a number of DataSet objects which can be written and
+*	read by the components.	Components can get a DataSet to write to by calling
+*	GetWriteSet(). When finished writing, the component	releases the DataSet by
+*	calling ReleaseWriteSet(). Components can get a DataSet to read from by
+*	calling GetReadSet(). When finished reading, the component releases the
+*	DataSet by calling ReleaseReadSet().	The DataBufferTrivial is not
+*	thread-safe. It does not block, and keeps growing if new DataSets are
 *	requested.
 */
 template <typename T>
-class DataBufferTrivial : public ReadBuffer<T>, public WriteBuffer<T>
+class DataBufferTrivial
+  : public ReadBuffer<T>, public WriteBuffer<T>
 {
 public:
 
-  /*!
-  *   \brief Constructor
-  */
   explicit DataBufferTrivial(std::size_t buffer_size = 3) throw (InvalidDataTypeException)
     :buffer_(buffer_size) ,
     isReadLocked_(false),
@@ -77,21 +76,20 @@ public:
 
   virtual ~DataBufferTrivial(){};
 
-  //! Get the identifier for the data type of this buffer
+  /// Get the identifier for the data type of this buffer
   virtual int getTypeIdentifier() const   {  return typeIdentifier; }
 
-  //! Is there any data in this buffer?
+  /// Is there any data in this buffer?
   virtual bool hasData() const { return is_not_empty(); }
 
   // empty implementation - not needed for tests
   virtual void setLinkDescription(LinkDescription) {};
   virtual LinkDescription getLinkDescription() const { return LinkDescription(); }
 
-  /*!
-  *   \brief Get the next DataSet to read
-  *
-  *   \param setPtr   A DataSet pointer which will be set by the buffer
-  */
+  /** Get the next DataSet to read
+   *
+   * @param setPtr   A DataSet pointer which will be set by the buffer
+   */
   virtual void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException)
   {
     if(isReadLocked_)
@@ -100,12 +98,11 @@ public:
     setPtr = &buffer_[readIndex_];
   };
 
-  /*!
-  *   \brief Get the next DataSet to be written
-  *
-  *   \param setPtr   A DataSet pointer which will be set by the buffer
-  *   \param size   The number of elements required in the DataSet
-  */
+  /** Get the next DataSet to be written
+   *
+   * @param setPtr   A DataSet pointer which will be set by the buffer
+   * @param size   The number of elements required in the DataSet
+   */
   virtual void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException)
   {
     if(isWriteLocked_)
@@ -116,11 +113,10 @@ public:
     setPtr = &buffer_[writeIndex_];
   };
 
-  /*!
-  *   \brief Release a read DataSet
-  *
-  *   \param setPtr   A pointer to the DataSet to be released
-  */
+  /** Release a read DataSet
+   *
+   * @param setPtr   A pointer to the DataSet to be released
+   */
   virtual void releaseReadData(DataSet<T>*& setPtr)
   {
     if(++readIndex_ == buffer_.size())
@@ -134,11 +130,10 @@ public:
     setPtr = NULL;
   };
 
-  /*!
-  *   \brief Release a write DataSet
-  *
-  *   \param setPtr   A pointer to the DataSet to be released
-  */
+  /** Release a write DataSet
+   *
+   * @param setPtr   A pointer to the DataSet to be released
+   */
   virtual void releaseWriteData(DataSet<T>*& setPtr)
   {
     if(++writeIndex_ == buffer_.size())
@@ -155,10 +150,10 @@ public:
   std::vector< DataSet<T> > getBuffer() { return buffer_; }
 
 private:
-  //! The data type of this buffer
+  /// The data type of this buffer
   int typeIdentifier;
 
-  //! The vector of DataSets
+  /// The vector of DataSets
   std::vector< DataSet<T> > buffer_;
 
   bool isReadLocked_;
@@ -175,7 +170,6 @@ private:
 
 };
 
-} /* namespace iris */
+} // namespace iris
 
-
-#endif /* DATABUFFERTRIVIAL_H_ */
+#endif // DATABUFFERTRIVIAL_H_
