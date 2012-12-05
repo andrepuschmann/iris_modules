@@ -63,7 +63,7 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
                 "An OFDM modulation component", // description
                 "Paul Sutton",                  // author
                 "1.0")                          // version
-    ,headerBytes_(7)
+    ,numHeaderBytes_(7)
 {
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -159,7 +159,7 @@ void OfdmModulatorComponent::setup()
                                       dataIndices_.begin(), dataIndices_.end());
 
   // Create preamble
-  numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x;
+  numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x + 1;
   preamble_.clear();
   preamble_.resize(numBins_);
   OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
@@ -172,15 +172,14 @@ void OfdmModulatorComponent::setup()
   fftBins_.resize(numBins_);
   symbol_.clear();
   symbol_.resize(numBins_);
-  bytesPerSymbol_ = (numDataCarriers_x * modulationDepth_x)/8;
-  if(headerBytes_ > bytesPerSymbol_)
-    header_.resize((int)ceil(headerBytes_/(float)bytesPerSymbol_));
-  else
-    header_.resize(bytesPerSymbol_);
+  int numHeaderSymbolBytes = numDataCarriers_x/8;
+  int numHeaderSymbols = (int)ceil(numHeaderBytes_/(float)numHeaderSymbolBytes);
+  header_.resize(numHeaderSymbols*numHeaderSymbolBytes);
   Whitener::whiten(header_.begin(), header_.end());
-  modHeader_.resize(header_.size()*numDataCarriers_x);
+  modHeader_.resize(numHeaderSymbols*numDataCarriers_x);
 
   // Set up padding
+  bytesPerSymbol_ = (numDataCarriers_x * modulationDepth_x)/8;
   pad_.resize(bytesPerSymbol_);
   Whitener::whiten(pad_.begin(), pad_.end());
   modPad_.resize(numDataCarriers_x);

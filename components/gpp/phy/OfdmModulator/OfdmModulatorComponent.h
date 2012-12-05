@@ -104,7 +104,7 @@ class OfdmModulatorComponent
 
   int numBins_;               ///< Number of bins for our FFT.
   int bytesPerSymbol_;        ///< Bytes per OFDM symbol.
-  const int headerBytes_;     ///< Number of bytes in our frame header (7).
+  const int numHeaderBytes_;  ///< Number of bytes in our frame header (7).
 
   IntVec pilotIndices_;       ///< Indices for our pilot carriers.
   IntVec dataIndices_;        ///< Indices for our data carriers.
