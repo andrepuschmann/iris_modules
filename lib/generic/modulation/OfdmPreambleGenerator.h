@@ -106,6 +106,7 @@ class OfdmPreambleGenerator
   /// Static function used to build up posPreambleSequence_ vector.
   static CplxVec createPosPreambleSequence()
   {
+    using namespace boost::lambda;
     typedef Cplx c;
 
     //Preamble sequence for positive frequency carriers defined in the IEEE 802.16 standard
@@ -124,12 +125,14 @@ class OfdmPreambleGenerator
     };
 
     CplxVec vec(begin(posSeq), end(posSeq));
+    transform(vec.begin(), vec.end(), vec.begin(), _1/sqrtf(2.0f));
     return vec;
   }
 
   /// Static function used to build up negPreambleSequence_ vector.
   static CplxVec createNegPreambleSequence()
   {
+    using namespace boost::lambda;
     typedef Cplx c;
 
     //Preamble sequence for negative frequency carriers defined in the IEEE 802.16 standard
@@ -148,6 +151,7 @@ class OfdmPreambleGenerator
     };
 
     CplxVec vec(begin(negSeq), end(negSeq));
+    transform(vec.begin(), vec.end(), vec.begin(), _1/sqrtf(2.0f));
     return vec;
   }
 
