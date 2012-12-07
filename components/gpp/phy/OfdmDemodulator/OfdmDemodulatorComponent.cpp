@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/phy/Example/ExampleComponent.cpp
+ * \file components/gpp/phy/OfdmDemodulator/OfdmDemodulatorComponent.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,14 +28,23 @@
  *
  * \section DESCRIPTION
  *
- * Implementation of an example PhyComponent to be used as a template
- * for new PhyComponents.
+ * Implementation of the OfdmDemodulator component.
  */
 
-#include "ExampleComponent.h"
+#include "OfdmDemodulatorComponent.h"
+
+#include <cmath>
+#include <algorithm>
+#include <boost/lambda/lambda.hpp>
 
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
+#include "kissfft/kissfft.hh"
+#include "modulation/OfdmIndexGenerator.h"
+#include "modulation/OfdmPreambleGenerator.h"
+#include "modulation/Crc.h"
+#include "modulation/Whitener.h"
+#include "modulation/QamDemodulator.h"
 
 using namespace std;
 
@@ -45,77 +54,88 @@ namespace phy
 {
 
 // export library symbols
-IRIS_COMPONENT_EXPORTS(PhyComponent, ExampleComponent);
+IRIS_COMPONENT_EXPORTS(PhyComponent, OfdmDemodulatorComponent);
 
-ExampleComponent::ExampleComponent(std::string name)
-  : PhyComponent(name,                       // component name
-                "example",                  // component type
-                "An example Phy component",  // description
-                "Paul Sutton",              // author
-                "0.1")                      // version
+OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
+  : PhyComponent(name,                            // component name
+                "ofdmdemodulator",                // component type
+                "An OFDM demodulation component", // description
+                "Paul Sutton",                    // author
+                "1.0")                            // version
 {
   registerParameter(
-      "exampleparameter",                   // name
-      "An example parameter",               // description
-      "0",                                  // default value
-      true,                                 // dynamic?
-      example_x,                            // parameter
-      Interval<uint32_t>(0,5));             // allowed values
+    "numdatacarriers", "Number of data carriers (excluding pilots)",
+    "192", true, numDataCarriers_x, Interval<int>(1,65536));
 
-  registerEvent(
-      "exampleevent",                       // name
-      "An example event",                   // description
-      TypeInfo< uint32_t >::identifier);    // data type
+  registerParameter(
+    "numpilotcarriers", "Number of pilot carriers",
+    "8", true, numPilotCarriers_x, Interval<int>(1,65536));
+
+  registerParameter(
+    "numguardcarriers", "Number of guard carriers",
+    "311", true, numGuardCarriers_x, Interval<int>(1,65536));
+
+  registerParameter(
+    "cyclicprefixlength", "Length of cyclic prefix",
+    "32", true, cyclicPrefixLength_x, Interval<int>(1,65536));
+
+  registerParameter(
+    "threshold", "Frame detection threshold",
+    "0.827", true, threshold_x, Interval<float>(0.0,1.0));
+
+  // Create our pilot sequence
+  typedef Cplx c;
+  c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
+  pilotSequence_.assign(begin(seq), end(seq));
 }
 
-void ExampleComponent::registerPorts()
+void OfdmDemodulatorComponent::registerPorts()
 {
-  //Create a vector of the valid types for each port
-  vector<int> validTypes;
-  validTypes.push_back(TypeInfo< uint32_t >::identifier);
-
-  //format:        (name, vector of valid types)
-  registerInputPort("input1", validTypes);
-  registerOutputPort("output1", validTypes);
+  registerInputPort("input1", TypeInfo< complex<float> >::identifier);
+  registerOutputPort("output1", TypeInfo< uint8_t >::identifier);
 }
 
-void ExampleComponent::calculateOutputTypes(
+void OfdmDemodulatorComponent::calculateOutputTypes(
     const std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
-  //One output type - always uint32_t
-  outputTypes["output1"] = TypeInfo< uint32_t >::identifier;
+  outputTypes["output1"] = TypeInfo< uint8_t >::identifier;
 }
 
-void ExampleComponent::initialize()
+void OfdmDemodulatorComponent::initialize()
 {
-  // Set up the input and output DataBuffers
-  inBuf_ = castToType<uint32_t>(inputBuffers.at(0));
-  outBuf_ = castToType<uint32_t>(outputBuffers.at(0));
+  setup();
 }
 
-void ExampleComponent::process()
+void OfdmDemodulatorComponent::process()
 {
-  //Get a DataSet from the input DataBuffer
-  DataSet<uint32_t>* readDataSet = NULL;
-  inBuf_->getReadData(readDataSet);
 
-  std::size_t size = readDataSet->data.size();
+}
 
-  //Get a DataSet from the output DataBuffer
-  DataSet<uint32_t>* writeDataSet = NULL;
-  outBuf_->getWriteData(writeDataSet, size);
+void OfdmDemodulatorComponent::setup()
+{
+  // Set up index vectors
+  pilotIndices_.clear();
+  pilotIndices_.resize(numPilotCarriers_x);
+  dataIndices_.clear();
+  dataIndices_.resize(numDataCarriers_x);
+  OfdmIndexGenerator::generateIndices(numDataCarriers_x,
+                                      numPilotCarriers_x,
+                                      numGuardCarriers_x,
+                                      pilotIndices_.begin(), pilotIndices_.end(),
+                                      dataIndices_.begin(), dataIndices_.end());
 
-  //Copy the input DataSet to the output DataSet
-  copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
+  // Create preamble
+  numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x + 1;
+  preamble_.clear();
+  preamble_.resize(numBins_);
+  OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
+                                          numPilotCarriers_x,
+                                          numGuardCarriers_x,
+                                          preamble_.begin(), preamble_.end());
 
-  //Copy the timestamp and sample rate for the DataSets
-  writeDataSet->timeStamp = readDataSet->timeStamp;
-  writeDataSet->sampleRate = readDataSet->sampleRate;
-
-  //Release the DataSets
-  inBuf_->releaseReadData(readDataSet);
-  outBuf_->releaseWriteData(writeDataSet);
+  // Set up our frame detector
+  detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
 }
 
 } // namesapce phy

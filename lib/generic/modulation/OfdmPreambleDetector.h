@@ -40,10 +40,12 @@
 #include <complex>
 #include <boost/noncopyable.hpp>
 #include <boost/circular_buffer.hpp>
+#include <algorithm>
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
+#include "utility/MathDefines.h"
 
 namespace iris
 {
@@ -67,7 +69,21 @@ public:
    */
   OfdmPreambleDetector(int symbolLen = 256,
                        int cyclicPrefixLen = 16,
-                       float threshold = 0.827);
+                       float threshold = 0.827)
+    :sLen_(symbolLen)
+    ,cpLen_(cyclicPrefixLen)
+    ,thresh_(threshold*cyclicPrefixLen)
+    ,symbolBuffer_(symbolLen+cyclicPrefixLen)
+    ,halfBuffer_(symbolLen/2, Cplx(0,0))
+    ,eBuffer_(symbolLen, Cplx(0,0))
+    ,pBuffer_(symbolLen/2, Cplx(0,0))
+    ,vBuffer_(cyclicPrefixLen, 0.0)
+    ,vDebugBuffer_(symbolLen, 0.0)
+    ,currentP_(0,0)
+    ,currentE_(0,0)
+    ,vMovingAve_(0.0)
+    ,lastVma_(0.0)
+  {}
 
   /** Search for a preamble in the range [inBegin, inEnd).
    *
@@ -87,13 +103,28 @@ public:
   template <class Iterator>
   Iterator search(Iterator inBegin, Iterator inEnd,
                   Iterator preambleBegin, Iterator preambleEnd,
-                  float &freqOffset, float &snr);
-
-  /// Reset the detector.
-  void reset(int symbolLen, int cyclicPrefixLen, float threshold);
+                  bool &detected, float &freqOffset, float &snr);
 
   /// Reset the detector (keep current parameters).
-  void reset(){reset(sLen_,cpLen_,thresh_);}
+  void reset()
+  {reset(sLen_,cpLen_,thresh_);}
+
+  /// Reset the detector.
+  void reset(int symbolLen, int cyclicPrefixLen, float threshold)
+  {
+    sLen_ = symbolLen;
+    cpLen_ = cyclicPrefixLen;
+    thresh_ = threshold;
+    symbolBuffer_.assign(sLen_+cpLen_, Cplx(0,0));
+    halfBuffer_.assign(sLen_/2, Cplx(0,0));
+    eBuffer_.assign(sLen_, Cplx(0,0));
+    pBuffer_.assign(sLen_/2, Cplx(0,0));
+    vBuffer_.assign(cpLen_, 0);
+    vDebugBuffer_.assign(sLen_, 0);
+    currentP_ = Cplx(0,0);
+    currentE_ = Cplx(0,0);
+    vMovingAve_ = 0;
+  }
 
   /// Convenience function for logging.
   static std::string getName(){ return "OfdmPreambleDetector"; }
@@ -114,6 +145,79 @@ private:
   float thresh_;                ///< Detection threshold.
 
 };
+
+template <class Iterator>
+Iterator OfdmPreambleDetector::search(Iterator inBegin,
+                                      Iterator inEnd,
+                                      Iterator preambleBegin,
+                                      Iterator preambleEnd,
+                                      bool &detected,
+                                      float &freqOffset,
+                                      float &snr)
+{
+  int counter=-1;
+
+  for(; inBegin != inEnd; ++inBegin)
+  {
+    counter++;
+
+    //Add current sample to symbolBuffer_
+    symbolBuffer_.push_back(*inBegin);
+
+    Cplx  nextSymbol = *inBegin;
+    Cplx  midSymbol = halfBuffer_.front();
+
+    //Add current sample to the halfBuffer_
+    halfBuffer_.push_back(*inBegin);
+
+    //Iterate for P
+    Cplx  nextP = conj(nextSymbol)*midSymbol;
+    Cplx  tailP = pBuffer_.front();
+    currentP_ += (nextP - tailP);
+    pBuffer_.push_back(nextP);
+
+    //Iterate for E
+    Cplx  nextE = conj(nextSymbol)*nextSymbol;
+    Cplx  tailE = eBuffer_.front();
+    currentE_ += (nextE - tailE);
+    eBuffer_.push_back(nextE);
+
+    //Use P and E values to calculate V
+    float magP = abs(currentP_);
+    float magE = abs(currentE_);
+    float den = magE*magE;
+    float v = (den == 0) ? 0 : ((2*magP)*(2*magP))/den;
+
+    //Estimate the SNR
+    snr = 10*log10(sqrtf(v)/(1-sqrtf(v)));
+
+    //Iterate for the moving average value of V
+    lastVma_ = vMovingAve_;
+    vMovingAve_ += (v - vBuffer_.front());
+    vBuffer_.push_back(v);
+    vDebugBuffer_.push_back(v);
+
+    //Check the moving average V value for threshold and peak
+    if(vMovingAve_ > thresh_ && vMovingAve_ < lastVma_)
+    {
+      detected = true;
+
+      //We've detected the peak - copy the preamble into output vector
+      if((preambleEnd-preambleBegin) < sLen_+cpLen_)
+        throw IrisException("Insufficient storage provided for preamble output");
+      std::copy(symbolBuffer_.begin(), symbolBuffer_.end(), preambleBegin);
+
+      //Phase of P gives the fractional frequency offset
+      freqOffset = arg(currentP_);
+      freqOffset = -(freqOffset)/(float)IRIS_PI;
+
+      reset();
+      return ++inBegin;
+    }
+  }
+
+  return inBegin;
+}
 
 } // namespace iris
 

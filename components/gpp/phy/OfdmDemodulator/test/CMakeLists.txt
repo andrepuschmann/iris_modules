@@ -21,10 +21,9 @@
 #
 
 ########################################################################
-# Build any libraries
+# Build executable, register as test
 ########################################################################
-
-########################################################################
-# Add the test directory
-########################################################################
-ADD_SUBDIRECTORY(test)
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+ADD_EXECUTABLE(OfdmDemodulatorComponent_test OfdmDemodulatorComponent_test.cpp)
+TARGET_LINK_LIBRARIES(OfdmDemodulatorComponent_test ${Boost_LIBRARIES} comp_gpp_phy_ofdmdemodulator)
+ADD_TEST(OfdmDemodulatorComponent_test OfdmDemodulatorComponent_test)

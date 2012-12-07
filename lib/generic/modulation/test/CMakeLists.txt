@@ -21,10 +21,31 @@
 #
 
 ########################################################################
-# Build any libraries
+# Build header-only tests
 ########################################################################
+# Build each test and link to libraries
+SET(test_sources
+    Crc_test.cpp
+    OfdmIndexGenerator_test.cpp
+    OfdmPreambleDetector_test.cpp
+    OfdmPreambleGenerator_test.cpp
+    QamDemodulator_test.cpp
+    QamModulator_test.cpp
+    Whitener_test.cpp
+)
+
+#turn each test cpp file into an executable with an int main() function
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+
+#for each source: build an executable, register it as a test, and install
+INCLUDE_DIRECTORIES(..)
+FOREACH(test_source ${test_sources})
+    GET_FILENAME_COMPONENT(test_name ${test_source} NAME_WE)
+    ADD_EXECUTABLE(${test_name} ${test_source})
+    TARGET_LINK_LIBRARIES(${test_name} ${Boost_LIBRARIES})
+    ADD_TEST(${test_name} ${test_name})
+ENDFOREACH(test_source)
 
 ########################################################################
-# Add the test directory
+# Build any lib-dependent tests
 ########################################################################
-ADD_SUBDIRECTORY(test)

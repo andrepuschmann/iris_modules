@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/phy/Example/ExampleComponent.h
+ * \file components/gpp/phy/OfdmDemodulator/OfdmDemodulatorComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,47 +28,82 @@
  *
  * \section DESCRIPTION
  *
- * An example PhyComponent to be used as a template for new PhyComponents.
+ * An OFDM demodulation component. Takes blocks of received complex<float>
+ * data and detects and demodulates OFDM frames. Received data is output
+ * in blocks of uint8_t bytes. There is one output block for each received
+ * frame. The demodulator expects frames with the following structure:     <br>                                           <br>
+ *             -----------------------------------                         <br>
+ *             | Preamble | Header | Data ...... |                         <br>
+ *             -----------------------------------                         <br>
+ *
+ * The default parameter values expect the following spectral shape:
+ *
+ *  _______________||||||||||||||||____||||||||||||||||________________    <br>
+ *  <  23 guards  >< 100 carriers ><DC>< 100 carriers ><  22 guards  >     <br>
+ *
+ * This corresponds to the default shape generated with the OfdmModulator
+ * component when receiving with bandwidth X/2 where X is the transmit
+ * bandwidth. See OfdmModulatorComponent.h for more information.
  */
 
-#ifndef PHY_EXAMPLECOMPONENT_H_
-#define PHY_EXAMPLECOMPONENT_H_
+#ifndef PHY_OFDMDEMODULATORCOMPONENT_H_
+#define PHY_OFDMDEMODULATORCOMPONENT_H_
 
 #include "irisapi/PhyComponent.h"
+#include "modulation/OfdmPreambleDetector.h"
 
 namespace iris
 {
 namespace phy
 {
 
-/** An example PhyComponent to be used as a template for new PhyComponents.
- *
- * Copy this component, rename folder, .h and .cpp files.
- * Edit all files for your new component and build.
+/**
  */
-class ExampleComponent
+class OfdmDemodulatorComponent
   : public PhyComponent
 {
- public:
-  ExampleComponent(std::string name);
+public:
+  typedef std::complex<float>   Cplx;
+  typedef std::vector<Cplx>     CplxVec;
+  typedef CplxVec::iterator     CplxVecIt;
+  typedef std::vector<int>      IntVec;
+  typedef IntVec::iterator      IntVecIt;
+  typedef std::vector<uint8_t>  ByteVec;
+  typedef ByteVec::iterator     ByteVecIt;
+
+  OfdmDemodulatorComponent(std::string name);
   virtual void calculateOutputTypes(
-        const std::map<std::string, int>& inputTypes,
-        std::map<std::string, int>& outputTypes);
+      const std::map<std::string, int>& inputTypes,
+      std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();
 
- private:
-   /// Convenience pointer for incoming DataSet buffer
-   ReadBuffer<uint32_t>* inBuf_;
-   /// Convenience pointer for outgoing DataSet buffer
-   WriteBuffer< uint32_t >* outBuf_;
+private:
+  void setup();
 
-   /// Example of a parameter which will be exposed by this component
-   uint32_t example_x;
+  int numDataCarriers_x;      ///< Data subcarriers (default = 192)
+  int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
+  int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
+  int cyclicPrefixLength_x;   ///< Length of cyclic prefix (default = 32)
+  float threshold_x;          ///< Frame detection threshold (default = 0.827)
+
+  int numBins_;               ///< Number of bins for our FFT.
+
+  IntVec pilotIndices_;       ///< Indices for our pilot carriers.
+  IntVec dataIndices_;        ///< Indices for our data carriers.
+  CplxVec preamble_;          ///< Contains our frame preamble.
+  CplxVec pilotSequence_;     ///< Contains our pilot symbols.
+
+  OfdmPreambleDetector detector_;
+
+  template <typename T, size_t N>
+  static T* begin(T(&arr)[N]) { return &arr[0]; }
+  template <typename T, size_t N>
+  static T* end(T(&arr)[N]) { return &arr[0]+N; }
 };
 
 } // namespace phy
 } // namespace iris
 
-#endif // PHY_EXAMPLECOMPONENT_H_
+#endif // PHY_OFDMDEMODULATORCOMPONENT_H_

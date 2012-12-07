@@ -273,6 +273,8 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
     createSymbol(inIt, inIt+numDataCarriers_x, symbol_.begin(), symbol_.end());
     it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
   }
+
+  releaseOutputDataSet("output1", out);
 }
 
 /** Create a single OFDM symbol.
@@ -300,7 +302,8 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
 
   kissfft<float> fft(numBins_,true);  // Precreate this for speed?
   fft.transform(&fftBins_[0], &(*outBegin));
-  transform(outBegin, outEnd, outBegin, _1/(float)numBins_);
+  float scaleFactor = numPilotCarriers_x + numDataCarriers_x;
+  transform(outBegin, outEnd, outBegin, _1/scaleFactor);
 }
 
 OfdmModulatorComponent::CplxVecIt

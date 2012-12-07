@@ -37,3 +37,6 @@ ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator SHARED ${sources})
 SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmdemodulator PROPERTIES OUTPUT_NAME "ofdmdemodulator")
 IRIS_INSTALL(comp_gpp_phy_ofdmdemodulator)
 IRIS_APPEND_INSTALL_LIST(ofdmdemodulator)
+
+# Add the test directory
+ADD_SUBDIRECTORY(test)

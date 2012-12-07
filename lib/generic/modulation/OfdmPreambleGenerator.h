@@ -93,7 +93,8 @@ class OfdmPreambleGenerator
 
     kissfft<float> fft(numBins,true);
     fft.transform(&bins[0], &(*outBegin));
-    transform(outBegin, outEnd, outBegin, _1/(float)numBins);
+    float scaleFactor = numActive/2.0;
+    transform(outBegin, outEnd, outBegin, _1/scaleFactor);
   }
 
   /// Convenience function for logging.
