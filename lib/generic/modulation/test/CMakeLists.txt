@@ -31,6 +31,7 @@ SET(test_sources
     OfdmPreambleGenerator_test.cpp
     QamDemodulator_test.cpp
     QamModulator_test.cpp
+    ToneGenerator_test.cpp
     Whitener_test.cpp
 )
 
