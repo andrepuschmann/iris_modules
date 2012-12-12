@@ -37,6 +37,7 @@
 
 #include "../OfdmModulatorComponent.h"
 #include "utility/DataBufferTrivial.h"
+#include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace iris;
@@ -122,6 +123,43 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
   DataSet< complex<float> >* oSet = NULL;
   out.getReadData(oSet);
   BOOST_CHECK(oSet->data.size() == 35*544); // #symbols * #samplesPerSymbol
+}
+
+BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
+{
+  OfdmModulatorComponent mod("test");
+  mod.setValue("numdatacarriers", 40);
+  mod.setValue("numpilotcarriers", 8);
+  mod.setValue("numguardcarriers", 15);
+  mod.setValue("cyclicprefixlength", 8);
+  mod.setValue("maxsymbolsperframe", 4);
+
+  mod.registerPorts();
+
+  map<string, int> iTypes,oTypes;
+  iTypes["input1"] = TypeInfo< uint8_t >::identifier;
+  mod.calculateOutputTypes(iTypes,oTypes);
+
+  DataBufferTrivial<uint8_t> in;
+  DataBufferTrivial< complex<float> > out;
+
+  // Create enough data for one full frame
+  DataSet<uint8_t>* iSet = NULL;
+  in.getWriteData(iSet, 4*5); // #dataSymbols * #bytesPerSymbol
+  for(int i=0;i<4*5;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  mod.setBuffers(&in,&out);
+  mod.initialize();
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  DataSet< complex<float> >* oSet = NULL;
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 8*72); // #symbols * #samplesPerSymbol
+
+  RawFileUtility::write(oSet->data.begin(), oSet->data.end(), "Frame");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

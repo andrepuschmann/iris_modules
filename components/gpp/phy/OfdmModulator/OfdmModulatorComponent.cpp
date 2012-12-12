@@ -64,6 +64,9 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
                 "Paul Sutton",                  // author
                 "1.0")                          // version
     ,numHeaderBytes_(7)
+    ,numHeaderSymbols_(0)
+    ,sampleRate_(0)
+    ,timeStamp_(0)
 {
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -118,7 +121,8 @@ void OfdmModulatorComponent::process()
 {
   DataSet< uint8_t >* in = NULL;
   getInputDataSet("input1", in);
-  double time = in->timeStamp;
+  timeStamp_ = in->timeStamp;
+  sampleRate_ = in->sampleRate;
   int size = (int)in->data.size();
   int numSymbols = ceil(size/(float)bytesPerSymbol_);
 
@@ -171,11 +175,11 @@ void OfdmModulatorComponent::setup()
   fftBins_.resize(numBins_);
   symbol_.clear();
   symbol_.resize(numBins_);
-  int numHeaderSymbolBytes = numDataCarriers_x/8;
-  int numHeaderSymbols = (int)ceil(numHeaderBytes_/(float)numHeaderSymbolBytes);
-  header_.resize(numHeaderSymbols*numHeaderSymbolBytes);
-  Whitener::whiten(header_.begin(), header_.end());
-  modHeader_.resize(numHeaderSymbols*numDataCarriers_x);
+  int bytesPerSymbol = numDataCarriers_x/8;
+  numHeaderSymbols_ = (int)ceil(numHeaderBytes_/(float)bytesPerSymbol);
+  header_.resize(numHeaderSymbols_*bytesPerSymbol);
+  //Whitener::whiten(header_.begin(), header_.end());
+  modHeader_.resize(numHeaderSymbols_*numDataCarriers_x);
 
   // Set up padding
   bytesPerSymbol_ = (numDataCarriers_x * modulationDepth_x)/8;
@@ -210,12 +214,16 @@ void OfdmModulatorComponent::createHeader(ByteVecIt begin, ByteVecIt end)
   header_[3] = crc & 0xFF;
 
   //Add frame size
-  int size = end-begin;
+  uint16_t size = end-begin;
   header_[4] = (size>>8) & 0xFF;
   header_[5] = size & 0xFF;
 
   //Add the QAM encoding
   header_[6] = modulationDepth_x & 0xFF;
+
+  //Pad the header with dummy data
+  for(int i=7; i<header_.size(); i++)
+    header_[i] = i;
 }
 
 /** Create an OFDM frame and write it to the output.
@@ -250,9 +258,11 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
     *modIt = *padIt;
 
   // Get a DataSet
-  int frameLength = (1+1+numOfdmSymbols+1) * (ofdmSymLength);
+  int frameLength = (1+numHeaderSymbols_+numOfdmSymbols+1) * (ofdmSymLength);
   DataSet< complex<float> >* out = NULL;
   getOutputDataSet("output1", out, frameLength);
+  out->sampleRate = sampleRate_;
+  out->timeStamp = timeStamp_;
   CplxVecIt it = out->data.begin();
 
   // Copy preamble
