@@ -43,6 +43,7 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
+#include "utility/MathDefines.h"
 
 namespace iris
 {
@@ -88,7 +89,7 @@ class QamDemodulator
 
     switch (M)
     {
-      case 2: //QPSK
+      case QPSK: //QPSK
         for(;inBegin!=inEnd;inBegin++)
         {
           if(count%4 == 0 && count!=0)
@@ -107,7 +108,7 @@ class QamDemodulator
           count++;
         }
         break;
-      case 4: //16 QAM
+      case QAM16: //16 QAM
         for(;inBegin!=inEnd;inBegin++)
         {
           if(count%2 == 0 && count!=0)

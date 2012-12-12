@@ -44,6 +44,7 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
+#include "utility/MathDefines.h"
 
 namespace iris
 {
@@ -82,7 +83,7 @@ class QamModulator
 
     switch (M)
     {
-      case 2: //QPSK
+      case QPSK: //QPSK
         //Convert bytes into bit-sequences and use LUT
         for(; inBegin != inEnd; inBegin++)
         {
@@ -90,7 +91,7 @@ class QamModulator
             *outBegin++ = QpskLut_[(int)((*inBegin >> (j*2)) & 0x3)];
         }
         break;
-      case 4: //16 QAM
+      case QAM16: //16 QAM
         //Convert bytes into bit-sequences and use LUT
         for(; inBegin != inEnd; inBegin++)
         {
