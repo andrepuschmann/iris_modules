@@ -48,5 +48,15 @@
 #define IRIS_SQRT2  1.41421356237309504880
 #define IRIS_SQRT1_2  0.707106781186547524401
 
+namespace iris
+{
+enum QAM
+{
+  BPSK=1,
+  QPSK=2,
+  QAM16=4
+};
+} // namespace iris
+
 #endif
 
