@@ -83,6 +83,7 @@ class OfdmModulatorComponent
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();
+  virtual void parameterHasChanged(std::string name);
 
  private:
 

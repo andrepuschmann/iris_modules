@@ -144,6 +144,16 @@ void OfdmDemodulatorComponent::process()
   releaseInputDataSet("input1", in_);
 }
 
+void OfdmDemodulatorComponent::parameterHasChanged(std::string name)
+{
+  if(name == "numdatacarriers" || name == "numpilotcarriers" ||
+     name == "numguardcarriers" || name == "cyclicprefixlength")
+    setup();
+
+  if(name == "threshold")
+    detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
+}
+
 void OfdmDemodulatorComponent::setup()
 {
   // Set up index vectors

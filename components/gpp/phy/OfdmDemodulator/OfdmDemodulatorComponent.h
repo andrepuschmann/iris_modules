@@ -58,7 +58,13 @@ namespace iris
 namespace phy
 {
 
-/**
+/** An OFDM demodulation component. Takes a block of samples in
+ * complex<float> format and outputs a block of uint8_t bytes each
+ * time an OFDM frame is demodulated. The demodulator expects frames
+ * with the following structure:                                           <br>
+ *             -----------------------------------                         <br>
+ *             | Preamble | Header | Data ...... |                         <br>
+ *             -----------------------------------                         <br>
  */
 class OfdmDemodulatorComponent
   : public PhyComponent
@@ -81,6 +87,7 @@ public:
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();
+  virtual void parameterHasChanged(std::string name);
 
 private:
   void setup();
@@ -128,7 +135,7 @@ private:
   IntVec dataIndices_;        ///< Indices for our data carriers.
   CplxVec preamble_;          ///< Contains our known frame preamble.
   CplxVec preambleBins_;      ///< Contains bins of our known preamble.
-  CplxVec pilotSequence_;     ///< Contains our pilot symbols.
+  CplxVec pilotSequence_;     ///< Contains our known pilot symbols.
   CplxVec rxPreamble_;        ///< Container for received preamble.
   CplxVec rxHeader_;          ///< Container for received header.
   CplxVec rxFrame_;           ///< Container for received frame.

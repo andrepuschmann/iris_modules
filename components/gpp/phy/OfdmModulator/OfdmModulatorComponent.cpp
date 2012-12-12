@@ -147,6 +147,14 @@ void OfdmModulatorComponent::process()
   releaseInputDataSet("input1", in);
 }
 
+void OfdmModulatorComponent::parameterHasChanged(std::string name)
+{
+  if(name == "numdatacarriers" || name == "numpilotcarriers" ||
+     name == "numguardcarriers" || name == "cyclicprefixlength" ||
+     name == "modulationdepth")
+    setup();
+}
+
 /// Set up all our index vectors and containers.
 void OfdmModulatorComponent::setup()
 {
