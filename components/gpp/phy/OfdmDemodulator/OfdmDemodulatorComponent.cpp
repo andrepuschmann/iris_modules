@@ -139,6 +139,7 @@ void OfdmDemodulatorComponent::process()
   catch(IrisException& e)
   {
     LOG(LWARNING) << e.what();
+    frameDetected_ = false;
   }
 
   releaseInputDataSet("input1", in_);
