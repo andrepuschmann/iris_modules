@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
   out.getReadData(oSet);
   BOOST_CHECK(oSet->data.size() == 35*544); // #symbols * #samplesPerSymbol
 }
-
+/*
 BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
 {
   OfdmModulatorComponent mod("test");
@@ -161,5 +161,5 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
 
   RawFileUtility::write(oSet->data.begin(), oSet->data.end(), "Frame");
 }
-
+*/
 BOOST_AUTO_TEST_SUITE_END()
