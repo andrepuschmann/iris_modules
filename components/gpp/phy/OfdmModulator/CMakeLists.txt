@@ -33,6 +33,10 @@ SET(sources
 	OfdmModulatorComponent.cpp
 )
 
+# Static library to be used in tests
+ADD_LIBRARY(comp_gpp_phy_ofdmmodulator_static STATIC ${sources})
+
+# Shared library to be used in radios
 ADD_LIBRARY(comp_gpp_phy_ofdmmodulator SHARED ${sources})
 SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmmodulator PROPERTIES OUTPUT_NAME "ofdmmodulator")
 IRIS_INSTALL(comp_gpp_phy_ofdmmodulator)

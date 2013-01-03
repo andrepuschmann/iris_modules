@@ -25,5 +25,5 @@
 ########################################################################
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
 ADD_EXECUTABLE(OfdmModulatorComponent_test OfdmModulatorComponent_test.cpp)
-TARGET_LINK_LIBRARIES(OfdmModulatorComponent_test ${Boost_LIBRARIES} comp_gpp_phy_ofdmmodulator)
+TARGET_LINK_LIBRARIES(OfdmModulatorComponent_test ${Boost_LIBRARIES} comp_gpp_phy_ofdmmodulator_static)
 ADD_TEST(OfdmModulatorComponent_test OfdmModulatorComponent_test)
