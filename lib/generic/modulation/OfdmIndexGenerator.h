@@ -39,6 +39,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <boost/math/special_functions/round.hpp>
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
@@ -46,6 +47,8 @@
 
 namespace iris
 {
+
+namespace bm = boost::math;
 
 /// Generate pilot and data carrier indices for OFDM symbols.
 class OfdmIndexGenerator
@@ -89,7 +92,7 @@ class OfdmIndexGenerator
     {
       float space = numActive/(float)numPilot;
       for(int i=1;i<=numPilot;i++)
-        scratch.push_back((int)round(space*i)-(int)round(space/2)+1);
+        scratch.push_back((int)bm::round(space*i)-(int)bm::round(space/2)+1);
 
       for(int i=numPilot/2;i<numPilot;i++)
         scratch2.push_back(scratch[i]-numActive/2);
