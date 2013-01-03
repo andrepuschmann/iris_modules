@@ -36,7 +36,7 @@
 #include "MultiportExampleComponent.h"
 
 using namespace std;
-using namespace boost;
+namespace b = boost;
 
 namespace iris
 {
@@ -87,7 +87,7 @@ void MultiportExampleComponent::initialize()
 void MultiportExampleComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
 {
   //Create a second StackDataSet and copy the set into it
-  shared_ptr<StackDataSet> cpy(new StackDataSet);
+  b::shared_ptr<StackDataSet> cpy(new StackDataSet);
   *cpy = *set;
 
   sendDownwards("bottomport1", set);

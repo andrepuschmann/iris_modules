@@ -42,7 +42,6 @@
 #include "irisapi/TypeInfo.h"
 #include "utility/RawFileUtility.h"
 
-using namespace std;
 using namespace iris;
 
 template <typename T, size_t N>
