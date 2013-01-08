@@ -12,6 +12,17 @@ Iris was originally developed by CTVR, The Telecommunications Research Centre, b
 
 The installation guide can be found here: http://www.softwareradiosystems.com/redmine/projects/iris/wiki/Installing_Iris
 
+## Requirements
+
+Required:
+* CMake 2.6 or later - http://www.cmake.org/
+* Boost 1.46 or later - http://www.boost.org/
+* Iris_Core
+
+Optional:
+* UHD - http://code.ettus.com/redmine/ettus/projects/uhd/wiki
+* Matlab
+
 ## Where To Get Help
 
 * Redmine: http://www.softwareradiosystems.com/redmine/projects/iris
