@@ -232,13 +232,8 @@ OfdmDemodulatorComponent::processFrame(CplxVecIt begin, CplxVecIt end)
 
 void OfdmDemodulatorComponent::extractPreamble()
 {
-  //RawFileUtility::write(rxPreamble_.begin(), rxPreamble_.end(), "rxPreamble_");
-
   generateFractionalOffsetCorrector(fracFreqOffset_);
   correctFractionalOffset(rxPreamble_.begin(), rxPreamble_.end());
-
-  //RawFileUtility::write(rxPreamble_.begin(), rxPreamble_.end(),
-  //                      "rxPreamble_corrected");
 
   int off = cyclicPrefixLength_x-4;
   CplxVecIt begin = rxPreamble_.begin() + off;
@@ -346,12 +341,7 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
 
   int shift = (numBins_+intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
-
-  //RawFileUtility::write(bins.begin(), bins.end(), "bins");
-
   equalizeSymbol(bins.begin(), bins.end());
-
-  //RawFileUtility::write(bins.begin(), bins.end(), "bins_equalized");
 
   CplxVec qamSymbols;
   for(int i=0; i<numDataCarriers_x; i++)
@@ -365,8 +355,6 @@ void OfdmDemodulatorComponent::generateFractionalOffsetCorrector(float offset)
 {
   float relFreq = -offset/numBins_;
   ToneGenerator::generate(corrector_.begin(), corrector_.end(), relFreq);
-
-  //RawFileUtility::write(corrector_.begin(), corrector_.end(), "corrector_");
 }
 
 void OfdmDemodulatorComponent::correctFractionalOffset(CplxVecIt begin,
@@ -414,16 +402,12 @@ void OfdmDemodulatorComponent::generateEqualizer(CplxVecIt begin, CplxVecIt end)
   CplxVec shortEq(numBins_/2);
   transform(begin, end, preambleBins_.begin(), shortEq.begin(), _2/_1);
 
-  //RawFileUtility::write(shortEq.begin(), shortEq.end(), "shortEq");
-
   shortEq[0] = (shortEq[(numBins_/2)-1] + shortEq[1])/Cplx(2,0);
   for(int i=0; i<numBins_/2; i++)
     equalizer_[i*2] = shortEq[i];
   for(int i=1; i<numBins_; i+=2)
     equalizer_[i] = (equalizer_[i-1] + equalizer_[(i+1)%numBins_])/Cplx(2,0);
   equalizer_[0] = Cplx(0,0);
-
-  //RawFileUtility::write(equalizer_.begin(), equalizer_.end(), "equalizer_");
 }
 
 void OfdmDemodulatorComponent::equalizeSymbol(CplxVecIt begin, CplxVecIt end)

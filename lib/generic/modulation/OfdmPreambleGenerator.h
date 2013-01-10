@@ -86,7 +86,7 @@ class OfdmPreambleGenerator
       throw IrisException("Insufficient storage provided for generatePreamble output.");
 
     CplxVec bins(numBins);
-    for(int i=2; i<numActive/2; i+=2)
+    for(int i=2; i<=numActive/2; i+=2)
       bins[i] = posPreambleSequence_[i%100];
     for(int i=1; i<numActive/2; i+=2)
       bins[numBins-1-i] = negPreambleSequence_[i%100];
