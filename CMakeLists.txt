@@ -166,3 +166,4 @@ INSTALL(FILES ${DOC_FILES}
 ########################################################################
 MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "Building for version: ${VERSION}") 
+
