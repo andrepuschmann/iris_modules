@@ -323,6 +323,7 @@ void OfdmDemodulatorComponent::demodFrame()
   headerIndex_ = 0;
   frameIndex_ = 0;
   frameDetected_ = false;
+  haveHeader_ = false;
 }
 
 void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
