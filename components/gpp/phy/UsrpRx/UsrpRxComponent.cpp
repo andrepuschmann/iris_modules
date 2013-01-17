@@ -59,10 +59,10 @@ IRIS_COMPONENT_EXPORTS(PhyComponent, UsrpRxComponent);
 
 /*! Constructor
 *
-*	Call the constructor on PhyComponent and pass in all details about the component.
-*	Register all parameters and events in the constructor.
+*  Call the constructor on PhyComponent and pass in all details about the component.
+*  Register all parameters and events in the constructor.
 *
-*   \param  name	The name assigned to this component when loaded
+*   \param  name  The name assigned to this component when loaded
 */
 UsrpRxComponent::UsrpRxComponent(std::string name)
   : PhyComponent(name,
@@ -147,8 +147,8 @@ UsrpRxComponent::~UsrpRxComponent()
 
 /*! Register the ports of this component
 *
-*	Ports are registered by name with a vector of valid data types permitted on those ports.
-*	This receiver has one output port
+*  Ports are registered by name with a vector of valid data types permitted on those ports.
+*  This receiver has one output port
 */
 void UsrpRxComponent::registerPorts()
 {
@@ -162,8 +162,8 @@ void UsrpRxComponent::registerPorts()
 
 /*! Calculate output data types
 *
-*	Based on the input data types, tell the system what output data types will be provided.
-*	\param	inputTypes	The data types of the inputs which will be passed to this component
+*  Based on the input data types, tell the system what output data types will be provided.
+*  \param  inputTypes  The data types of the inputs which will be passed to this component
 */
 void UsrpRxComponent::calculateOutputTypes(
     std::map<std::string,int>& inputTypes,
@@ -200,7 +200,7 @@ void UsrpRxComponent::initialize()
     LOG(LINFO) << "Actual RX Rate: " << (usrp_->get_rx_rate()/1e6) << "Msps...";
 
     LOG(LINFO) << "Setting RX Frequency: " << (frequency_x/1e6) << "MHz...";
-    double lo_offset = 2*rate_x;	//Set LO offset to twice signal rate by default
+    double lo_offset = 2*rate_x;  //Set LO offset to twice signal rate by default
     if(fixLoOffset_x >= 0)
       lo_offset = fixLoOffset_x;
     usrp_->set_rx_freq(tune_request_t(frequency_x, lo_offset));
@@ -289,7 +289,7 @@ void UsrpRxComponent::initialize()
 
 /*! The main work of the component is carried out here
 *
-*	This UsrpRx receives data from the usrp and writes it to an output buffer.
+*  This UsrpRx receives data from the usrp and writes it to an output buffer.
 */
 void UsrpRxComponent::process()
 {
@@ -370,7 +370,7 @@ void UsrpRxComponent::parameterHasChanged(std::string name)
     if(name == "frequency")
     {
       LOG(LINFO) << "Setting RX Frequency: " << (frequency_x/1e6) << "MHz...";
-      double lo_offset = 2*rate_x;	//Set LO offset to twice signal rate by default
+      double lo_offset = 2*rate_x;  //Set LO offset to twice signal rate by default
       if(fixLoOffset_x >= 0)
         lo_offset = fixLoOffset_x;
       usrp_->set_rx_freq(tune_request_t(frequency_x, lo_offset));

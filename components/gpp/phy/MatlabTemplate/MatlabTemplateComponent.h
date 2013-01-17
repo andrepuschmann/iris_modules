@@ -59,31 +59,31 @@ class MatlabTemplateComponent
   : public TemplatePhyComponent<MatlabTemplateComponent>
 {
  public:
-	/** Supported types at the input port.
-	 *
-	 * Can be a boost::mpl::vector of types, or of other
-	 * mpl vectors if multiple inputs are present.
-	 */
+  /** Supported types at the input port.
+   *
+   * Can be a boost::mpl::vector of types, or of other
+   * mpl vectors if multiple inputs are present.
+   */
   typedef IrisDataTypes supportedInputTypes;
 
   /// supported types at the output port
   typedef IrisDataTypes supportedOutputTypes;
 
   MatlabTemplateComponent(std::string name);
-	virtual ~MatlabTemplateComponent();
-	virtual void calculateOutputTypes(
-	      std::map<std::string, int>& inputTypes,
-	      std::map<std::string, int>& outputTypes);
+  virtual ~MatlabTemplateComponent();
+  virtual void calculateOutputTypes(
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
 
   /** Create a new instance of the implementation class,
-	 * with the correct template parameters.
-	 *
-	 * Also copies all values of the parameters to the newly
-	 * created instance.
-	 * \param comp The component used to create the instance.
-	 * \return The created component instance.
-	 */
+   * with the correct template parameters.
+   *
+   * Also copies all values of the parameters to the newly
+   * created instance.
+   * \param comp The component used to create the instance.
+   * \return The created component instance.
+   */
   template <typename Tin, typename Tout>
   static PhyComponent* createInstance(const PhyComponent* comp)
   {
@@ -112,11 +112,11 @@ class MatlabTemplateComponentImpl
   : public MatlabTemplateComponent
 {
  public:
-	/** Constructor - call the constructor on parent
-	 * and assign all values from other.
-	 *
-	 * \param other the PhyComponent with correct i/o datatypes
-	 */
+  /** Constructor - call the constructor on parent
+   * and assign all values from other.
+   *
+   * \param other the PhyComponent with correct i/o datatypes
+   */
   MatlabTemplateComponentImpl(const PhyComponent& other)
     : MatlabTemplateComponent(other.getName())
   {
@@ -124,7 +124,7 @@ class MatlabTemplateComponentImpl
     assign(other);
   }
 
-	~MatlabTemplateComponentImpl();
+  ~MatlabTemplateComponentImpl();
   virtual void initialize();
   virtual void process();
 
@@ -223,6 +223,6 @@ class MatlabTemplateComponentImpl
 };
 
 } // namespace phy
-}	// namepace iris
+} // namepace iris
 
-#endif	// PHY_MATLABTEMPLATECOMPONENT_H_
+#endif  // PHY_MATLABTEMPLATECOMPONENT_H_

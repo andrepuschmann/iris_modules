@@ -54,10 +54,10 @@ class UdpSocketTxComponent
 {
 public:
   UdpSocketTxComponent(std::string name);
-	~UdpSocketTxComponent();
-	virtual void calculateOutputTypes(
-	      std::map<std::string, int>& inputTypes,
-	      std::map<std::string, int>& outputTypes);
+  ~UdpSocketTxComponent();
+  virtual void calculateOutputTypes(
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();

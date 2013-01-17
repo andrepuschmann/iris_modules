@@ -74,20 +74,20 @@ class FileRawWriterTemplateComponent
 
 
   FileRawWriterTemplateComponent(std::string name);
-	virtual ~FileRawWriterTemplateComponent(){};
-	virtual void calculateOutputTypes(
-	      std::map<std::string, int>& inputTypes,
-	      std::map<std::string, int>& outputTypes);
+  virtual ~FileRawWriterTemplateComponent(){};
+  virtual void calculateOutputTypes(
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
 
   /** Creates a new instance of the implementation class,
-	 * with the correct template parameters.
-	 *
-	 * Also copies all values of the parameters to the newly
-	 * created instance.
-	 * \param comp The component used to create the instance
-	 * \return The created component instance
-	 */
+   * with the correct template parameters.
+   *
+   * Also copies all values of the parameters to the newly
+   * created instance.
+   * \param comp The component used to create the instance
+   * \return The created component instance
+   */
   template <typename Tin, typename Tout>
   static PhyComponent* createInstance(const PhyComponent* comp)
   {

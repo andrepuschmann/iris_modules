@@ -52,10 +52,10 @@ class FileRawWriterComponent: public PhyComponent
 {
  public:
   FileRawWriterComponent(std::string name);
-	~FileRawWriterComponent();
-	virtual void calculateOutputTypes(
-	      std::map<std::string, int>& inputTypes,
-	      std::map<std::string, int>& outputTypes);
+  ~FileRawWriterComponent();
+  virtual void calculateOutputTypes(
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();

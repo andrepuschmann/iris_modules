@@ -60,8 +60,8 @@ public:
   UsrpTxComponent(std::string name);
   virtual ~UsrpTxComponent();
   virtual void calculateOutputTypes(
-        std::map<std::string, int>& inputTypes,
-        std::map<std::string, int>& outputTypes);
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
   virtual void process();

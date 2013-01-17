@@ -58,10 +58,10 @@ IRIS_COMPONENT_EXPORTS(PhyComponent, UsrpTxComponent);
 
 /*! Constructor
 *
-*	Call the constructor on PhyComponent and pass in all details about the component.
-*	Register all parameters and events in the constructor.
+*  Call the constructor on PhyComponent and pass in all details about the component.
+*  Register all parameters and events in the constructor.
 *
-* \param  name	The name assigned to this component when loaded
+* \param  name  The name assigned to this component when loaded
 */
 UsrpTxComponent::UsrpTxComponent(std::string name)
   : PhyComponent(name,
@@ -138,7 +138,7 @@ UsrpTxComponent::UsrpTxComponent(std::string name)
 
 /*! Destructor
 *
-*	Send an EOB packet to stop the Usrp
+*  Send an EOB packet to stop the Usrp
 */
 UsrpTxComponent::~UsrpTxComponent()
 {
@@ -155,8 +155,8 @@ UsrpTxComponent::~UsrpTxComponent()
 
 /*! Register the ports of this component
 *
-*	Ports are registered by name with a vector of valid data types permitted on those ports.
-*	This example has one input port with a single valid data type - complex<float>.
+*  Ports are registered by name with a vector of valid data types permitted on those ports.
+*  This example has one input port with a single valid data type - complex<float>.
 */
 void UsrpTxComponent::registerPorts()
 {
@@ -170,8 +170,8 @@ void UsrpTxComponent::registerPorts()
 
 /*! Calculate output data types
 *
-*	Based on the input data types, tell the system what output data types will be provided.
-*	\param	inputTypes	The data types of the inputs which will be passed to this component
+*  Based on the input data types, tell the system what output data types will be provided.
+*  \param  inputTypes  The data types of the inputs which will be passed to this component
 */
 void UsrpTxComponent::calculateOutputTypes(
     std::map<std::string,int>& inputTypes,
@@ -208,7 +208,7 @@ void UsrpTxComponent::initialize()
 
     //Set frequency
     LOG(LINFO) << "Setting TX Frequency: " << (frequency_x/1e6) << "MHz...";
-    double lo_offset = 2*rate_x;	//Set LO offset to twice signal rate by default
+    double lo_offset = 2*rate_x;  //Set LO offset to twice signal rate by default
     if(fixLoOffset_x >= 0)
       lo_offset = fixLoOffset_x;
     usrp_->set_tx_freq(tune_request_t(frequency_x, lo_offset));
@@ -287,7 +287,7 @@ void UsrpTxComponent::initialize()
 
 /*! The main work of the component is carried out here
 *
-*	Take a DataSet from the input buffer and send to the usrp
+*  Take a DataSet from the input buffer and send to the usrp
 */
 void UsrpTxComponent::process()
 {

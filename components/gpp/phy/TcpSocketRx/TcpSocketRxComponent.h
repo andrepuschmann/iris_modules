@@ -54,10 +54,10 @@ class TcpSocketRxComponent
 {
  public:
   TcpSocketRxComponent(std::string name);
-	~TcpSocketRxComponent();
-	virtual void calculateOutputTypes(
-	      std::map<std::string, int>& inputTypes,
-	      std::map<std::string, int>& outputTypes);
+  ~TcpSocketRxComponent();
+  virtual void calculateOutputTypes(
+    std::map<std::string, int>& inputTypes,
+    std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
   virtual void start();
