@@ -102,7 +102,7 @@ void UdpSocketTxComponent::registerPorts()
 }
 
 void UdpSocketTxComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //No output

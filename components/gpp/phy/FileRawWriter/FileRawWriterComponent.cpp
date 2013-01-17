@@ -89,7 +89,7 @@ void FileRawWriterComponent::registerPorts()
 }
 
 void FileRawWriterComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //No output

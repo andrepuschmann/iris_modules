@@ -75,7 +75,7 @@ void ExampleComponent::registerPorts()
 }
 
 void ExampleComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //One output type - always uint32_t

@@ -106,7 +106,7 @@ void UdpSocketRxComponent::registerPorts()
 }
 
 void UdpSocketRxComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //Output type is set in the parameters

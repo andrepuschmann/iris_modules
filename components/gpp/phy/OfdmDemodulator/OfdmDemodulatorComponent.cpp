@@ -107,7 +107,7 @@ void OfdmDemodulatorComponent::registerPorts()
 }
 
 void OfdmDemodulatorComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   outputTypes["output1"] = TypeInfo< uint8_t >::identifier;

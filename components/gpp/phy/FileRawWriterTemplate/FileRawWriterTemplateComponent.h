@@ -76,7 +76,7 @@ class FileRawWriterTemplateComponent
   FileRawWriterTemplateComponent(std::string name);
 	virtual ~FileRawWriterTemplateComponent(){};
 	virtual void calculateOutputTypes(
-	      const std::map<std::string, int>& inputTypes,
+	      std::map<std::string, int>& inputTypes,
 	      std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
 

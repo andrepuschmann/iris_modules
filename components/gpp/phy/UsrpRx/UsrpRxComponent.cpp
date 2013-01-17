@@ -166,7 +166,7 @@ void UsrpRxComponent::registerPorts()
 *	\param	inputTypes	The data types of the inputs which will be passed to this component
 */
 void UsrpRxComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //One output type - complex<float>

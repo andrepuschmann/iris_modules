@@ -97,7 +97,7 @@ void TcpSocketRxComponent::registerPorts()
 }
 
 void TcpSocketRxComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   LOG(LINFO) << TypeInfo< complex<float> >::name();

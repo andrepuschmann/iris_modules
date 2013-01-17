@@ -129,7 +129,7 @@ void FileRawReaderComponent::registerPorts()
 }
 
 void FileRawReaderComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //Set output type

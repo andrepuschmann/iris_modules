@@ -105,7 +105,7 @@ void MatlabTemplateComponent::registerPorts()
 }
 
 void MatlabTemplateComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   //Output type is the same as input type

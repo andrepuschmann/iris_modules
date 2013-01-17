@@ -66,7 +66,7 @@ class ExampleComponent
 	 * \param outputTypes Map of output port names and data-type identifiers
 	 */
   virtual void calculateOutputTypes(
-      const std::map<std::string, int>& inputTypes,
+      std::map<std::string, int>& inputTypes,
       std::map<std::string, int>& outputTypes);
 
   /** Register the ports of this component.

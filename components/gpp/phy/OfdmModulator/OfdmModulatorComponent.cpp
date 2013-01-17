@@ -106,7 +106,7 @@ void OfdmModulatorComponent::registerPorts()
 }
 
 void OfdmModulatorComponent::calculateOutputTypes(
-    const std::map<std::string,int>& inputTypes,
+    std::map<std::string,int>& inputTypes,
     std::map<std::string,int>& outputTypes)
 {
   outputTypes["output1"] = TypeInfo< complex<float> >::identifier;

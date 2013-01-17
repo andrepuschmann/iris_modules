@@ -82,7 +82,7 @@ public:
 
   OfdmDemodulatorComponent(std::string name);
   virtual void calculateOutputTypes(
-      const std::map<std::string, int>& inputTypes,
+      std::map<std::string, int>& inputTypes,
       std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();

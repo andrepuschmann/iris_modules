@@ -56,7 +56,7 @@ public:
   UdpSocketRxComponent(std::string name);
 	~UdpSocketRxComponent();
 	virtual void calculateOutputTypes(
-	      const std::map<std::string, int>& inputTypes,
+	      std::map<std::string, int>& inputTypes,
 	      std::map<std::string, int>& outputTypes);
   virtual void registerPorts();
   virtual void initialize();
