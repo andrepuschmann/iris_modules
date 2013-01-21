@@ -123,6 +123,7 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
   DataSet< complex<float> >* oSet = NULL;
   out.getReadData(oSet);
   BOOST_CHECK(oSet->data.size() == 35*544); // #symbols * #samplesPerSymbol
+  out.releaseReadData(oSet);
 }
 /*
 BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
