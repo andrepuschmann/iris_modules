@@ -53,7 +53,7 @@ IRIS_COMPONENT_EXPORTS(PhyComponent, SignalScalerComponent);
 
 SignalScalerComponent::SignalScalerComponent(string name)
   : PhyComponent(name,
-                 "signalscalerpncomponent",
+                 "signalscaler",
                  "A signal scaler",
                  "Paul Sutton",
                  "0.1")
