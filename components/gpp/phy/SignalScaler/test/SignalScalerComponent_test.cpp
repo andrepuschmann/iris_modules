@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(SignalScalerComponent_Process_Test)
   BOOST_CHECK(oSet->data.size() == 128);
   float maxVal = abs(*max_element(oSet->data.begin(), oSet->data.end(),
                                   bind(norm<float>, _1) < bind(norm<float>, _2) ));
-  BOOST_CHECK(maxVal - 16384 < 0.0001);
+  BOOST_CHECK(maxVal - 16384 < 0.1);
   out.releaseReadData(oSet);
 }
 
