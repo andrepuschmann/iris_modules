@@ -63,7 +63,7 @@ SignalScalerComponent::SignalScalerComponent(string name)
     "16384", true, maximum_x);
 
   registerParameter(
-    "factor", "Multiply the input with this value (0 means max is applied",
+    "factor", "Multiply the input with this value (0 means max is applied)",
     "0", true, factor_x, Interval<float>(0, 1e32f));
 }
 
@@ -86,59 +86,59 @@ void SignalScalerComponent::initialize()
 
 void SignalScalerComponent::process()
 {
-    DataSet<complex<float> >* readDataSet = NULL;
-    DataSet<complex<float> >* writeDataSet = NULL;
+  DataSet<complex<float> >* readDataSet = NULL;
+  DataSet<complex<float> >* writeDataSet = NULL;
 
-    getInputDataSet("input1", readDataSet);
-    size_t size = readDataSet->data.size();
-    getOutputDataSet("output1", writeDataSet, size);
+  getInputDataSet("input1", readDataSet);
+  size_t size = readDataSet->data.size();
+  getOutputDataSet("output1", writeDataSet, size);
 
-    writeDataSet->timeStamp = readDataSet->timeStamp;
+  writeDataSet->timeStamp = readDataSet->timeStamp;
 
-    if (factor_x == 0)
-    {
-      // this is equalent to:
-      // complex<float>* it = readDataSet->data.begin();
-      // complex<float>* maxIt = it;
-      // while (it != readDataSet->data.end())
-      // {
-      //   if (!(norm(*it) < norm(*maxIt))) maxIt = it;
-      //   it++;
-      // }
-      // float maxVal = abs(*maxIt);
-      //
-      // * First, it finds the maximum element in the readDataSet using norm<float>(_1) < norm<float>(_2) as
-      //   comparison predicate, where _1 and _2 are placeholders for the two predicate arguments (i.e., it compares
-      //   the squared magnitudes of both complex numbers).
-      //   - 'norm' is an STL template for computing the squared magnitude of complex numbers, parameterised with the complex
-      //     element type (template <class T> norm(const complex<T>& x); )
-      //   - 'bind' creates a functor given a function and an argument, here a placeholder, i.e., it creates a
-      //     functor class with 'operator()(complex<float>)' which applies the norm<float> function to its argument.
-      //     (see http://www.boost.org/doc/libs/1_40_0/doc/html/lambda/using_library.html#lambda.introductory_examples)
-      // * Then, it computes the absolute value of that maximum (complex number)
-      float maxVal = abs(*max_element(readDataSet->data.begin(), readDataSet->data.end(),
-              bind(norm<float>, _1) < bind(norm<float>, _2) ));
+  if (factor_x == 0)
+  {
+    // this is equalent to:
+    // complex<float>* it = readDataSet->data.begin();
+    // complex<float>* maxIt = it;
+    // while (it != readDataSet->data.end())
+    // {
+    //   if (!(norm(*it) < norm(*maxIt))) maxIt = it;
+    //   it++;
+    // }
+    // float maxVal = abs(*maxIt);
+    //
+    // * First, it finds the maximum element in the readDataSet using norm<float>(_1) < norm<float>(_2) as
+    //   comparison predicate, where _1 and _2 are placeholders for the two predicate arguments (i.e., it compares
+    //   the squared magnitudes of both complex numbers).
+    //   - 'norm' is an STL template for computing the squared magnitude of complex numbers, parameterised with the complex
+    //     element type (template <class T> norm(const complex<T>& x); )
+    //   - 'bind' creates a functor given a function and an argument, here a placeholder, i.e., it creates a
+    //     functor class with 'operator()(complex<float>)' which applies the norm<float> function to its argument.
+    //     (see http://www.boost.org/doc/libs/1_40_0/doc/html/lambda/using_library.html#lambda.introductory_examples)
+    // * Then, it computes the absolute value of that maximum (complex number)
+    float maxVal = abs(*max_element(readDataSet->data.begin(), readDataSet->data.end(),
+            bind(norm<float>, _1) < bind(norm<float>, _2) ));
 
-      // this is equivalent to:
-      // complex<float>* outit = writeDataSet->data.begin();
-      // for (complex<float>* it = readDataSet->data.begin(); it != readDataSet->data.end(); ++it)
-      //     *outit++ = *it / maxVal * x_maximum;
-      // it applies x / maxVal * x_maximum for each element x
-      // in the readDataSet and writes the result into the writeDataSet (using boost::lambda)
-      // (see http://www.boost.org/doc/libs/1_40_0/doc/html/lambda/using_library.html#lambda.introductory_examples)
-      std::transform(readDataSet->data.begin(), readDataSet->data.end(),
-              writeDataSet->data.begin(), _1 / maxVal * maximum_x);
-    }
-    else
-    {
-        // this applies x * x_factor for each element x in the readDataSet and writes the result to the
-        // writeDataSet
-        std::transform(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin(),
-                _1 * factor_x);
-    }
+    // this is equivalent to:
+    // complex<float>* outit = writeDataSet->data.begin();
+    // for (complex<float>* it = readDataSet->data.begin(); it != readDataSet->data.end(); ++it)
+    //     *outit++ = *it / maxVal * x_maximum;
+    // it applies x / maxVal * x_maximum for each element x
+    // in the readDataSet and writes the result into the writeDataSet (using boost::lambda)
+    // (see http://www.boost.org/doc/libs/1_40_0/doc/html/lambda/using_library.html#lambda.introductory_examples)
+    std::transform(readDataSet->data.begin(), readDataSet->data.end(),
+            writeDataSet->data.begin(), _1 / maxVal * maximum_x);
+  }
+  else
+  {
+    // this applies x * x_factor for each element x in the readDataSet and writes the result to the
+    // writeDataSet
+    std::transform(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin(),
+            _1 * factor_x);
+  }
 
-    releaseInputDataSet("input1", readDataSet);
-    releaseOutputDataSet("output1", writeDataSet);
+  releaseInputDataSet("input1", readDataSet);
+  releaseOutputDataSet("output1", writeDataSet);
 }
 
 } // namespace phy
