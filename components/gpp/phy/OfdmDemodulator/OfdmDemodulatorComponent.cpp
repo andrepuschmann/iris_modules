@@ -84,11 +84,11 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
 
   registerParameter(
     "numguardcarriers", "Number of guard carriers",
-    "311", true, numGuardCarriers_x, Interval<int>(1,65536));
+    "55", true, numGuardCarriers_x, Interval<int>(1,65536));
 
   registerParameter(
     "cyclicprefixlength", "Length of cyclic prefix",
-    "32", true, cyclicPrefixLength_x, Interval<int>(1,65536));
+    "16", true, cyclicPrefixLength_x, Interval<int>(1,65536));
 
   registerParameter(
     "threshold", "Frame detection threshold",
@@ -139,7 +139,10 @@ void OfdmDemodulatorComponent::process()
   catch(IrisException& e)
   {
     LOG(LWARNING) << e.what();
+    headerIndex_ = 0;
+    frameIndex_ = 0;
     frameDetected_ = false;
+    haveHeader_ = false;
   }
 
   releaseInputDataSet("input1", in_);

@@ -110,7 +110,7 @@ private:
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
-  int cyclicPrefixLength_x;   ///< Length of cyclic prefix (default = 32)
+  int cyclicPrefixLength_x;   ///< Length of cyclic prefix (default = 16)
   float threshold_x;          ///< Frame detection threshold (default = 0.827)
 
   int symbolLength_;          ///< Length of each OFDM symbol including prefix.
