@@ -55,8 +55,8 @@ BOOST_AUTO_TEST_CASE(OfdmDemodulatorComponent_Parm_Test)
   OfdmDemodulatorComponent mod("test");
   BOOST_CHECK(mod.getParameterDefaultValue("numdatacarriers") == "192");
   BOOST_CHECK(mod.getParameterDefaultValue("numpilotcarriers") == "8");
-  BOOST_CHECK(mod.getParameterDefaultValue("numguardcarriers") == "311");
-  BOOST_CHECK(mod.getParameterDefaultValue("cyclicprefixlength") == "32");
+  BOOST_CHECK(mod.getParameterDefaultValue("numguardcarriers") == "55");
+  BOOST_CHECK(mod.getParameterDefaultValue("cyclicprefixlength") == "16");
   BOOST_CHECK(mod.getParameterDefaultValue("threshold") == "0.827");
 }
 
