@@ -249,7 +249,7 @@ void OfdmDemodulatorComponent::extractPreamble()
   transform(bins.begin(), bins.end(), bins.begin(), _1*Cplx(2,0));
 
   intFreqOffset_ = findIntegerOffset(bins.begin(), bins.end());
-  int shift = (halfBins+intFreqOffset_)%halfBins;
+  int shift = (halfBins-intFreqOffset_)%halfBins;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
 
   generateEqualizer(bins.begin(), bins.end());
@@ -343,7 +343,7 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   kissfft<float> fft(numBins_, false);
   fft.transform(&(*begin), &bins[0]);
 
-  int shift = (numBins_+intFreqOffset_*2)%numBins_;
+  int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
   equalizeSymbol(bins.begin(), bins.end());
 
