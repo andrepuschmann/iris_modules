@@ -69,7 +69,7 @@ public:
 
 private:
     //Exposed parameters
-  std::string args_x;   //!< See http://www.ettus.com/uhd_docs/manual/html/identification.html
+  std::string args_x;   //!< See http://files.ettus.com/uhd_docs/manual/html/identification.html
   double rate_x;        //!< Rate of outgoing samples
   double frequency_x;   //!< Tx frequency
   double fixLoOffset_x; //!< Fix the local oscillator offset (defaults to 2*rate)

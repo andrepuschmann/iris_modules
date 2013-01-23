@@ -73,7 +73,7 @@ private:
   void setStreaming(bool s);
 
   //Exposed parameters
-  std::string args_x;     //!< See http://files.ettus.com/uhd_docs/manual/html/index.html
+  std::string args_x;     //!< See http://files.ettus.com/uhd_docs/manual/html/identification.html
   double frequency_x;     //!< Receive frequency
   double rate_x;          //!< Receive rate
   double fixLoOffset_x;   //!< Local oscillator offset
