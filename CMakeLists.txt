@@ -133,6 +133,22 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    
+########################################################################
+# Create benchmark targets
+########################################################################
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_benchmark.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_benchmark.cmake"
+    IMMEDIATE @ONLY)
+
+ADD_CUSTOM_TARGET(benchmark
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_benchmark.cmake)
+    
+FILE(WRITE ${CMAKE_BINARY_DIR}/benchmarks)    
+MACRO(ADD_BENCHMARK)
+    FILE(APPEND ${CMAKE_BINARY_DIR}/benchmarks "\n[${ARGV}]${CMAKE_CURRENT_BINARY_DIR}/${ARGV}")
+ENDMACRO(ADD_BENCHMARK)
 
 ########################################################################
 # Macro to add -fPIC property to static libs 

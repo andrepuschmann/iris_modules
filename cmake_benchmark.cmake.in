@@ -1,0 +1,29 @@
+if(POLICY CMP0007)
+    cmake_policy(SET CMP0007 OLD)
+endif(POLICY CMP0007)
+
+if (NOT EXISTS "@CMAKE_CURRENT_BINARY_DIR@/benchmarks")
+    message(FATAL_ERROR "Cannot find benchmarks: \"@CMAKE_CURRENT_BINARY_DIR@/benchmarks\"")
+endif(NOT EXISTS "@CMAKE_CURRENT_BINARY_DIR@/benchmarks")
+
+file(READ "@CMAKE_CURRENT_BINARY_DIR@/benchmarks" files)
+string(REGEX REPLACE "\n" ";" files "${files}")
+list(REVERSE files)
+foreach (file ${files})
+    string(REGEX MATCH \\[.*\\] filename ${file})
+    message(STATUS "Running benchmark ${filename}")
+    string(REGEX REPLACE \\[.*\\] "" file "${file}")
+    if (EXISTS "${file}")
+        execute_process(
+            COMMAND "${file}"
+            OUTPUT_VARIABLE rm_out
+            RESULT_VARIABLE rm_retval
+        )
+        if(NOT ${rm_retval} EQUAL 0)
+            message(FATAL_ERROR "Error running \"${file}\"")
+        endif (NOT ${rm_retval} EQUAL 0)
+    else (EXISTS "${file}")
+        message(STATUS "Benchmark \"${file}\" does not exist.")
+    endif (EXISTS "${file}")
+endforeach(file)
+
