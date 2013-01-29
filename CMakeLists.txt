@@ -146,9 +146,9 @@ ADD_CUSTOM_TARGET(benchmark
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_benchmark.cmake)
     
 FILE(WRITE ${CMAKE_BINARY_DIR}/benchmarks)    
-MACRO(ADD_BENCHMARK)
+MACRO(IRIS_ADD_BENCHMARK)
     FILE(APPEND ${CMAKE_BINARY_DIR}/benchmarks "\n[${ARGV}]${CMAKE_CURRENT_BINARY_DIR}/${ARGV}")
-ENDMACRO(ADD_BENCHMARK)
+ENDMACRO(IRIS_ADD_BENCHMARK)
 
 ########################################################################
 # Macro to add -fPIC property to static libs 
