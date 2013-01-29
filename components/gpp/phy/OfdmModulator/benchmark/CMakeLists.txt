@@ -20,27 +20,9 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-MESSAGE(STATUS "  Processing signalscaler.")
-
 ########################################################################
-# Add includes and dependencies
+# Build executable, register as benchmark
 ########################################################################
-
-########################################################################
-# Build the library from source files
-########################################################################
-SET(sources
-	SignalScalerComponent.cpp
-)
-
-# Static library to be used in tests
-ADD_LIBRARY(comp_gpp_phy_signalscaler_static STATIC ${sources})
-
-ADD_LIBRARY(comp_gpp_phy_signalscaler SHARED ${sources})
-SET_TARGET_PROPERTIES(comp_gpp_phy_signalscaler PROPERTIES OUTPUT_NAME "signalscaler")
-IRIS_INSTALL(comp_gpp_phy_signalscaler)
-IRIS_APPEND_INSTALL_LIST(signalscaler)
-
-# Add the test and benchmark directories
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+ADD_EXECUTABLE(OfdmModulatorComponent_benchmark OfdmModulatorComponent_benchmark.cpp)
+TARGET_LINK_LIBRARIES(OfdmModulatorComponent_benchmark ${Boost_LIBRARIES} comp_gpp_phy_ofdmmodulator_static)
+IRIS_ADD_BENCHMARK(OfdmModulatorComponent_benchmark)

@@ -42,5 +42,6 @@ SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmdemodulator PROPERTIES OUTPUT_NAME "ofdmd
 IRIS_INSTALL(comp_gpp_phy_ofdmdemodulator)
 IRIS_APPEND_INSTALL_LIST(ofdmdemodulator)
 
-# Add the test directory
+# Add the test and benchmark directories
 ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(benchmark)
