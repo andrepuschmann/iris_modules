@@ -216,7 +216,7 @@ void UsrpRxComponent::initialize()
 
     //Set the antenna
     if(antenna_x != "")
-      usrp_->set_rx_antenna(antenna_x);
+      usrp_->set_rx_antenna(boost::to_upper_copy(antenna_x));
     LOG(LINFO) << "Using RX Antenna: " << usrp_->get_rx_antenna();
 
     //Set gain
