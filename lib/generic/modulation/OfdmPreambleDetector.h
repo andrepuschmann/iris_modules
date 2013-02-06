@@ -46,6 +46,7 @@
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
 #include "utility/MathDefines.h"
+#include "utility/Dsp.h"
 
 namespace iris
 {
@@ -183,8 +184,10 @@ Iterator OfdmPreambleDetector::search(Iterator inBegin,
     eBuffer_.push_back(nextE);
 
     //Use P and E values to calculate V
-    float magP = abs(currentP_);
-    float magE = abs(currentE_);
+    //float magP = abs(currentP_);
+    //float magE = abs(currentE_);
+    float magP = fastMag(currentP_);
+    float magE = fastMag(currentE_);
     float den = magE*magE;
     float v = (den == 0) ? 0 : ((2*magP)*(2*magP))/den;
 
