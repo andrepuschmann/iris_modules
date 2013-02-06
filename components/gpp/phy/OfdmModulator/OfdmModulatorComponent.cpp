@@ -39,7 +39,6 @@
 
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
-#include "kissfft/kissfft.hh"
 #include "modulation/OfdmIndexGenerator.h"
 #include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
@@ -179,6 +178,7 @@ void OfdmModulatorComponent::setup()
                                           preamble_.begin(), preamble_.end());
 
   // Set up containers
+  fft_.reset(new kissfft<float>(numBins_, true));
   fftBins_.clear();
   fftBins_.resize(numBins_);
   symbol_.clear();
@@ -318,8 +318,7 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   for(it=dataIndices_.begin(); it!= dataIndices_.end(); it++)
     fftBins_[*it] = *inBegin++;
 
-  kissfft<float> fft(numBins_,true);  // Precreate this for speed?
-  fft.transform(&fftBins_[0], &(*outBegin));
+  fft_->transform(&fftBins_[0], &(*outBegin));
   float scaleFactor = numPilotCarriers_x + numDataCarriers_x;
   transform(outBegin, outEnd, outBegin, _1/scaleFactor);
 }

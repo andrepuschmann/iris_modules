@@ -50,7 +50,9 @@
 #ifndef PHY_OFDMMODULATORCOMPONENT_H_
 #define PHY_OFDMMODULATORCOMPONENT_H_
 
+#include <boost/scoped_ptr.hpp>
 #include "irisapi/PhyComponent.h"
+#include "kissfft/kissfft.hh"
 
 namespace iris
 {
@@ -121,6 +123,8 @@ class OfdmModulatorComponent
   ByteVec pad_;               ///< Padding data.
   CplxVec modPad_;            ///< Used to pad out the last symbol, if required.
   CplxVec symbol_;            ///< Contains a single OFDM symbol.
+
+  boost::scoped_ptr<kissfft<float> > fft_;  ///< Our FFT object pointer.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }
