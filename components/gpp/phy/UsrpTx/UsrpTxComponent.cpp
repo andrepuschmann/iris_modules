@@ -213,6 +213,7 @@ void UsrpTxComponent::initialize()
       lo_offset = fixLoOffset_x;
     usrp_->set_tx_freq(tune_request_t(frequency_x, lo_offset));
     LOG(LINFO) << "Actual TX Frequency: " << (usrp_->get_tx_freq()/1e6) << "MHz";
+    LOG(LINFO) << "RX LO offset: " << (lo_offset/1e6) << "MHz...";
 
     //We can only set the time on usrp2 devices
     if(usrp_->get_mboard_name().find("usrp1") == string::npos)
