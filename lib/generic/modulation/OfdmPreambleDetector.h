@@ -46,6 +46,7 @@
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
 #include "utility/MathDefines.h"
+#include "utility/Dsp.h"
 
 namespace iris
 {
@@ -107,14 +108,14 @@ public:
 
   /// Reset the detector (keep current parameters).
   void reset()
-  {reset(sLen_,cpLen_,thresh_);}
+  {reset(sLen_,cpLen_,thresh_/cpLen_);}
 
   /// Reset the detector.
   void reset(int symbolLen, int cyclicPrefixLen, float threshold)
   {
     sLen_ = symbolLen;
     cpLen_ = cyclicPrefixLen;
-    thresh_ = threshold;
+    thresh_ = threshold*cyclicPrefixLen;
     symbolBuffer_.assign(sLen_+cpLen_, Cplx(0,0));
     halfBuffer_.assign(sLen_/2, Cplx(0,0));
     eBuffer_.assign(sLen_, Cplx(0,0));
@@ -183,8 +184,10 @@ Iterator OfdmPreambleDetector::search(Iterator inBegin,
     eBuffer_.push_back(nextE);
 
     //Use P and E values to calculate V
-    float magP = abs(currentP_);
-    float magE = abs(currentE_);
+    //float magP = abs(currentP_);
+    //float magE = abs(currentE_);
+    float magP = fastMag(currentP_);
+    float magE = fastMag(currentE_);
     float den = magE*magE;
     float v = (den == 0) ? 0 : ((2*magP)*(2*magP))/den;
 

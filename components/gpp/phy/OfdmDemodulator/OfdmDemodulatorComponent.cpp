@@ -40,7 +40,6 @@
 
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
-#include "kissfft/kissfft.hh"
 #include "modulation/OfdmIndexGenerator.h"
 #include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
@@ -175,6 +174,9 @@ void OfdmDemodulatorComponent::setup()
   symbolLength_ = numBins_ + cyclicPrefixLength_x;
   numHeaderSymbols_ = (int)ceil(numHeaderBytes_/((float)numDataCarriers_x/8));
 
+  halfFft_.reset(new kissfft<float>(numBins_/2, false));
+  fullFft_.reset(new kissfft<float>(numBins_, false));
+
   preamble_.clear();
   preamble_.resize(numBins_);
   OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
@@ -182,8 +184,7 @@ void OfdmDemodulatorComponent::setup()
                                           numGuardCarriers_x,
                                           preamble_.begin(), preamble_.end());
   preambleBins_.resize(numBins_/2);
-  kissfft<float> fft(numBins_/2, false);
-  fft.transform(&preamble_[0], &preambleBins_[0]);
+  halfFft_->transform(&preamble_[0], &preambleBins_[0]);
 
   rxPreamble_.resize(symbolLength_);
   corrector_.resize(symbolLength_);
@@ -244,8 +245,7 @@ void OfdmDemodulatorComponent::extractPreamble()
 
   int halfBins = numBins_/2;
   CplxVec bins(halfBins);
-  kissfft<float> fft(halfBins, false);
-  fft.transform(&(*begin), &bins[0]);
+  halfFft_->transform(&(*begin), &bins[0]);
   transform(bins.begin(), bins.end(), bins.begin(), _1*Cplx(2,0));
 
   intFreqOffset_ = findIntegerOffset(bins.begin(), bins.end());
@@ -340,8 +340,7 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   CplxVecIt end = inBegin + off + numBins_;
 
   CplxVec bins(numBins_);
-  kissfft<float> fft(numBins_, false);
-  fft.transform(&(*begin), &bins[0]);
+  fullFft_->transform(&(*begin), &bins[0]);
 
   int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
