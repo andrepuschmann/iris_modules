@@ -25,7 +25,9 @@
 ########################################################################
 INCLUDE_DIRECTORIES(..)
 
-ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
-TARGET_LINK_LIBRARIES(matlabplotter_test ${Boost_LIBRARIES} matlabplotter)
-ADD_TEST(matlabplotter_test matlabplotter_test)
+IF (MATLAB_FOUND)
+    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+    ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
+    TARGET_LINK_LIBRARIES(matlabplotter_test ${Boost_LIBRARIES} matlabplotter)
+    ADD_TEST(matlabplotter_test matlabplotter_test)
+ENDIF (MATLAB_FOUND)
