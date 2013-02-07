@@ -69,6 +69,7 @@ class FileRawReaderComponent
   std::string fileName_x;   ///< Name of file to read
   std::string dataType_x;   ///< Interpret the data as this data type
   std::string endian_x;     ///< Endianness of the data
+  uint32_t delay_x;         ///< Time to wait between blocks.
 
   std::ifstream hInFile_;   ///< The file stream
 };
