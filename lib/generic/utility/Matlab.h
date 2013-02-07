@@ -41,68 +41,67 @@ class Matlab
 public:
 	Matlab()
 	{
-		pEng=NULL;
-	};
+	  pEng_=NULL;
+	}
 	
 	virtual ~Matlab()
 	{
-		if (pEng!=NULL)
-			Close();
-	};
+		if (pEng_!=NULL)
+			close();
+	}
 	
-	bool Open(const char* StartCmd)
+	bool open(const char* StartCmd)
 	{
-		pEng=engOpen(StartCmd);
-		return (pEng != NULL);
-	};
+	  pEng_=engOpen(StartCmd);
+		return (pEng_ != NULL);
+	}
 	
-	int Close()
+	int close()
 	{
-		int Result=engClose(pEng);
+		int Result=engClose(pEng_);
 		if (Result==0)	
-			pEng=NULL;
+		  pEng_=NULL;
 
 		return Result;
-	};
+	}
 	
-	int EvalString(const char* string)
+	int evalString(const char* string)
 	{
-		return (engEvalString(pEng, string));
-	};
+		return (engEvalString(pEng_, string));
+	}
 	
-	mxArray* GetVariable(const char* name)
+	mxArray* getVariable(const char* name)
 	{
-		return (engGetVariable(pEng, name));
-	};
+		return (engGetVariable(pEng_, name));
+	}
 	
-	int GetVisible(bool* value)
+	int getVisible(bool* value)
 	{
-		return (engGetVisible(pEng, value));
-	};
+		return (engGetVisible(pEng_, value));
+	}
 	
-	void OpenSingleUse(const char *startcmd, void *dcom, int *retstatus)
+	void openSingleUse(const char *startcmd, void *dcom, int *retstatus)
 	{
-		pEng=engOpenSingleUse(startcmd, dcom, retstatus);
-	};
+	  pEng_=engOpenSingleUse(startcmd, dcom, retstatus);
+	}
 	
-	int OutputBuffer(char *p, int n)
+	int outputBuffer(char *p, int n)
 	{
-		return (engOutputBuffer(pEng, p, n));
-	};
+		return (engOutputBuffer(pEng_, p, n));
+	}
 	
-	
-	int SetVisible(bool value)
+	int setVisible(bool value)
 	{
-		return (engSetVisible(pEng, value));
-	};
+		return (engSetVisible(pEng_, value));
+	}
 	
-	int PutVariable(const char *name, const mxArray *mp)
+	int putVariable(const char *name, const mxArray *mp)
 	{
-		return (engPutVariable(pEng, name, mp));
-	};
+		return (engPutVariable(pEng_, name, mp));
+	}
 
 protected:
-	Engine* pEng;
+	Engine* pEng_;
 	
 }; /* class Matlab */
 
