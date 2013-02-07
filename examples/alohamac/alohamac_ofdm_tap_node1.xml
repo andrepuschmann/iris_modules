@@ -14,7 +14,7 @@
     <component name="alohamac0" class="alohamac">
       <parameter name="localaddress" value="aabbcc111111"/>
       <parameter name="destinationaddress" value="aabbcc222222"/>     
-      <parameter name="acktimeout" value="500"/>
+      <parameter name="acktimeout" value="1000"/>
       <parameter name="maxretry" value="3"/>
       <port name="topinputport" class="io"/>
       <port name="topoutputport" class="io"/>
@@ -30,6 +30,7 @@
       <parameter name="frequency" value="5010000000"/>
       <parameter name="rate" value="500000"/>
       <parameter name="antenna" value="J1"/>
+      <parameter name="fixlooffset" value="2000000"/>
       <port name="output1" class="output"/>
     </component>
 
@@ -58,6 +59,8 @@
       <parameter name="rate" value="1000000"/>
       <parameter name="antenna" value="J1"/>
       <parameter name="streaming" value="false"/>
+      <parameter name="gain" value="32"/>
+      <parameter name="fixlooffset" value="2000000"/>
       <port name="input1" class="input"/>
     </component>
 
