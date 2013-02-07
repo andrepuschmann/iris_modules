@@ -21,12 +21,11 @@
 #
 
 ########################################################################
-# Add the subdirectories
+# Add includes and dependencies
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(modulation)
-ADD_SUBDIRECTORY(tml)
-ADD_SUBDIRECTORY(kissfft)
-ADD_SUBDIRECTORY(utility)
+INCLUDE_DIRECTORIES(..)
+
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
+TARGET_LINK_LIBRARIES(matlabplotter_test ${Boost_LIBRARIES} matlabplotter)
+ADD_TEST(matlabplotter_test matlabplotter_test)
