@@ -43,6 +43,22 @@ ELSE (MATLAB_FOUND)
 ENDIF (MATLAB_FOUND)
 
 ########################################################################
+# Build the PythonPlotter lib
+########################################################################
+MESSAGE(STATUS "Building PythonPlotter utility.")
+FIND_PACKAGE( PythonLibs )
+
+IF (PYTHONLIBS_FOUND)
+    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+    ADD_LIBRARY(pythonplotter STATIC PythonPlotter.cpp)
+    TARGET_LINK_LIBRARIES(pythonplotter ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+    SET(IRIS_HAVE_PYTHONPLOTTER ON CACHE INTERNAL "Has PythonPlotter been built?")
+    IRIS_SET_PIC(pythonplotter)
+ELSE (PYTHONLIBS_FOUND)
+    SET(IRIS_HAVE_PYTHONPLOTTER OFF CACHE INTERNAL "Has PythonPlotter been built?")
+ENDIF (PYTHONLIBS_FOUND)
+
+########################################################################
 # Add the subdirectories
 ########################################################################
 # Recurse into subdirectories. This does not actually cause another cmake 
