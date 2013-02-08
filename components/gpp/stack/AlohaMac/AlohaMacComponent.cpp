@@ -56,11 +56,12 @@ AlohaMacComponent::AlohaMacComponent(std::string name)
   ,rxPktBuffer_(100)
   ,txPktBuffer_(100)
 {
-	//Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-	registerParameter("localaddress", "Address of this client", "f009e090e90e", false, localAddress_x);
-	registerParameter("destinationaddress", "Address of the destination client", "00f0f0f0f0f0", false, destinationAddress_x);
-	registerParameter("acktimeout", "Time to wait for ACK packets in ms", "500", false, ackTimeout_x);
-	registerParameter("maxretry", "Number of retransmissions", "100", false, maxRetry_x);
+  //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
+  registerParameter("localaddress", "Address of this client", "f009e090e90e", false, localAddress_x);
+  registerParameter("destinationaddress", "Address of the destination client", "00f0f0f0f0f0", false, destinationAddress_x);
+  registerParameter("acktimeout", "Time to wait for ACK packets in ms", "100", false, ackTimeout_x);
+  registerParameter("maxretry", "Number of retransmissions", "100", false, maxRetry_x);
+
 }
 
 
@@ -71,6 +72,7 @@ AlohaMacComponent::~AlohaMacComponent()
 
 void AlohaMacComponent::initialize()
 {
+  maxRetry_x++; // first attempt does not count as retransmission
 }
 
 
@@ -123,7 +125,7 @@ void AlohaMacComponent::rxThreadFunction()
 {
   boost::this_thread::sleep(boost::posix_time::seconds(1));
   LOG(LINFO) << "Rx thread started.";
-  
+
   try
   {
     while(true)
@@ -135,11 +137,10 @@ void AlohaMacComponent::rxThreadFunction()
       AlohaPacket newPacket;
       StackHelper::deserializeAndStripDataset(frame, newPacket);
 
-      switch(newPacket.type()) {
-      case AlohaPacket::DATA:
-      {
-        // only handle DATA packets for us
-        if (localAddress_x.compare(newPacket.destination()) == 0) {
+      if (localAddress_x == newPacket.destination()) {
+        switch(newPacket.type()) {
+        case AlohaPacket::DATA:
+        {
           LOG(LINFO) << "Got DATA " << newPacket.seqno() << " from " << newPacket.source();
           sendAckPacket(newPacket.source(), newPacket.seqno());
 
@@ -150,30 +151,29 @@ void AlohaMacComponent::rxThreadFunction()
             rxSeqNo_ = newPacket.seqno(); // update seqno
             if (newPacket.seqno() == 1) LOG(LINFO) << "Receiver restart detected.";
           }
-        } else {
-            LOG(LINFO) << "Got DATA " << newPacket.seqno() << " for " << newPacket.destination();
+          break;
         }
-        break;
-      }
-      case AlohaPacket::ACK:
-      {
-        LOG(LINFO) << "Got ACK  " << newPacket.seqno();
-        boost::unique_lock<boost::mutex> lock(seqNoMutex_);
-        if (newPacket.seqno() == txSeqNo_) {
-          // received right ACK
-          ackArrivedCond_.notify_one();
-        } else if (newPacket.seqno() > txSeqNo_) {
-          LOG(LERROR) << "Received future ACK.";
-        } else {
-          LOG(LERROR) << "Received too old ACK";
+        case AlohaPacket::ACK:
+        {
+          LOG(LINFO) << "Got ACK  " << newPacket.seqno();
+          boost::unique_lock<boost::mutex> lock(seqNoMutex_);
+          if (newPacket.seqno() == txSeqNo_) {
+            // received right ACK
+            lock.unlock();
+            ackArrivedCond_.notify_one();
+          } else if (newPacket.seqno() > txSeqNo_) {
+            LOG(LERROR) << "Received future ACK.";
+          } else {
+            LOG(LERROR) << "Received too old ACK";
+          }
+          break;
         }
-        break;
+        default:
+          LOG(LERROR) << "Undefined packet type.";
+          break;
+        }
       }
-      default:
-        LOG(LERROR) << "Undefined packet type.";
-        break;
-      }
-    }
+    } // while
   }
   catch(IrisException& ex)
   {
@@ -199,28 +199,25 @@ void AlohaMacComponent::txThreadFunction()
 
       shared_ptr<StackDataSet> frame = txPktBuffer_.popDataSet();
 
+      boost::unique_lock<boost::mutex> lock(seqNoMutex_);
       AlohaPacket dataPacket;
       dataPacket.set_source(localAddress_x);
       dataPacket.set_destination(destinationAddress_x);
       dataPacket.set_type(AlohaPacket::DATA);
-      {
-        boost::unique_lock<boost::mutex> lock(seqNoMutex_);
-        dataPacket.set_seqno(txSeqNo_);
-      }
+      dataPacket.set_seqno(txSeqNo_);
       StackHelper::mergeAndSerializeDataset(frame, dataPacket);
 
       bool stop_signal = false;
-      int retryCounter = maxRetry_x - 1;
+      int txCounter = 1;
       while (not stop_signal) {
         // send packet to PHY
         LOG(LINFO) << "Tx DATA  " << txSeqNo_;
         sendDownwards(frame);
 
         // wait for ACK
-        boost::unique_lock<boost::mutex> lock(seqNoMutex_);
         if (ackArrivedCond_.timed_wait(lock, boost::posix_time::milliseconds(ackTimeout_x)) == false) {
           // returns false if timeout was reached
-          LOG(LINFO) << "ACK time out, " << maxRetry_x - retryCounter << ". retransmission for " << txSeqNo_;
+          LOG(LINFO) << "ACK time out for " << txCounter << ". transmission of " << txSeqNo_;
           // wait random time before trying again, here between ackTimeout and 2*ackTimeout
           int collisionTimeout = rand() % ackTimeout_x;
           collisionTimeout = std::min(ackTimeout_x + collisionTimeout, 2 * ackTimeout_x);
@@ -230,15 +227,13 @@ void AlohaMacComponent::txThreadFunction()
           stop_signal = true;
         }
 
-        if (not retryCounter--) stop_signal = true;
+        if (++txCounter > maxRetry_x) stop_signal = true;
       }
 
-      // increment seqno for next data packet
-      {
-        boost::unique_lock<boost::mutex> lock(seqNoMutex_);
-        txSeqNo_++;
-        if (txSeqNo_ == std::numeric_limits<uint32_t>::max()) txSeqNo_ = 1;
-      }
+      // increment seqno for next data packet and release lock
+      txSeqNo_++;
+      if (txSeqNo_ == std::numeric_limits<uint32_t>::max()) txSeqNo_ = 1;
+      lock.unlock();
     }
   }
   catch(IrisException& ex)
