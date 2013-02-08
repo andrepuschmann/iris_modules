@@ -29,15 +29,14 @@
  * \section DESCRIPTION
  *
  * This utility class uses the matlab engine to plot sets of data.
- * MatlabPlotter is built as a static library - this allows us to
+ * MatlabPlotter is built as a shared library - this allows us to
  * use an rpath to specify the directory containing matlab-specific
- * libraries and avoid clashes with system libraries.
+ * libraries.
  */
 
 #ifndef MATLABPLOTTER_H_
 #define MATLABPLOTTER_H_
 
-#include "Matlab.h"
 #include <iterator>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
@@ -55,6 +54,7 @@ class MatlabPlotter
 {
 public:
   MatlabPlotter();
+  ~MatlabPlotter();
 
   /** Plot a set of complex data.
    *
@@ -63,39 +63,25 @@ public:
    *
    * @param begin Iterator to first data element.
    * @param end   Iterator to one past last data element.
+   * @param title Optional title string for figure.
+   * @param id    Optional figure id number.
    */
   template <class It>
-  void plot(It begin, It end,
+  void plot(It begin, It end, std::string title = "Data", int id=0,
             typename boost::enable_if_c< boost::is_complex<
               typename std::iterator_traits<It>::value_type
             >::value >::type* dummy=0)
   {
+    double *pR, *pI;
     int s = end-begin;
-    mxArray* input = mxCreateDoubleMatrix(1, s, mxCOMPLEX);
-
-    double* pR = mxGetPr(input);
-    double* pI = mxGetPi(input);
+    void *array = createMxArray(s, pR, pI);
     for(size_t i=0;i<s;i++,begin++)
     {
       pR[i] = (double)begin->real();
       pI[i] = (double)begin->imag();
     }
-
-    //Send data to matlab
-    matlab_.putVariable("data", input);
-
-    //Use OutputBuffer to capture MATLAB output
-    memset(buffer_, 0, 256 * sizeof(char));
-    matlab_.outputBuffer(buffer_, 256);
-
-    //Process in Matlab
-    matlab_.evalString(complexCommand_.c_str());
-
-    //The evaluate string returns the result into the output buffer
-    if (buffer_[0] != 0)
-    {
-      std::cout << "[WARNING} MatlabPlotter: " << buffer_ <<std::endl;
-    }
+    plot(array, title, id);
+    destroyMxArray(array);
   }
 
   /** Plot a set of scalar data.
@@ -105,45 +91,37 @@ public:
    *
    * @param begin Iterator to first data element.
    * @param end   Iterator to one past last data element.
+   * @param title Optional title string for figure.
+   * @param id    Optional figure id number.
    */
   template <class It>
-  void plot(It begin, It end,
+  void plot(It begin, It end, std::string title = "Data", int id=0,
             typename boost::disable_if_c< boost::is_complex<
               typename std::iterator_traits<It>::value_type
             >::value >::type* dummy=0)
   {
+    double *pR;
     int s = end-begin;
-    mxArray* input = mxCreateDoubleMatrix(1, s, mxREAL);
-
-    double* pR = mxGetPr(input);
-
+    void* array = createMxArray(s, pR);
     for(size_t i=0;i<s;i++,begin++)
     {
       pR[i] = (double)*begin;
     }
-
-    //Send data to matlab
-    matlab_.putVariable("data", input);
-
-    //Use OutputBuffer to capture MATLAB output
-    memset(buffer_, 0, 256 * sizeof(char));
-    matlab_.outputBuffer(buffer_, 256);
-
-    //Process in Matlab
-    matlab_.evalString(scalarCommand_.c_str());
-
-    //The evaluate string returns the result into the output buffer
-    if (buffer_[0] != 0)
-    {
-      std::cout << "[WARNING} MatlabPlotter: " << buffer_ <<std::endl;
-    }
+    plot(array, title, id);
+    destroyMxArray(array);
   }
 
 private:
-  Matlab matlab_;               ///< Our matlab engine.
+
+  void* createMxArray(int s, double*& pR, double*& pI);
+  void* createMxArray(int s, double*& pR);
+  void destroyMxArray(void* array);
+  void plot(void* array, std::string title, int id);
+  std::string buildScalarCommand(std::string title, int id);
+  std::string buildComplexCommand(std::string title, int id);
+
+  void* engine_;                ///< Our matlab engine.
   char buffer_[256];            ///< Buffer to capture messages from matlab.
-  std::string complexCommand_;  ///< String containing matlab command (complex)
-  std::string scalarCommand_;   ///< String containing matlab command (scalar).
 
 }; // class MatlabPlotter
 

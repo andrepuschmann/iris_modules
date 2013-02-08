@@ -22,19 +22,23 @@
 
 ########################################################################
 # Build the MatlabPlotter lib
-# We build this as a static lib so that we can add the rpath here
+# We build this as a shared lib so that we can add the rpath here
 # and don't have to worry about it elsewhere.
 ########################################################################
+MESSAGE(STATUS "Building MatlabPlotter utility.")
 FIND_PACKAGE( MATLAB )
 
 IF (MATLAB_FOUND)
     INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
-    ADD_LIBRARY(matlabplotter STATIC MatlabPlotter.cpp)
+    ADD_LIBRARY(matlabplotter SHARED MatlabPlotter.cpp)
     TARGET_LINK_LIBRARIES(matlabplotter ${Boost_LIBRARIES} ${MATLAB_LIBRARIES})
     # We add an rpath to the library so matlab dependencies will be found
     # while avoiding clashes with system libraries
     SET_TARGET_PROPERTIES(matlabplotter PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
     SET_TARGET_PROPERTIES(matlabplotter PROPERTIES INSTALL_RPATH ${MATLAB_LIB_DIR})
+    SET(IRIS_HAVE_MATLABPLOTTER ON CACHE INTERNAL "Has MatlabPlotter been built?")
+ELSE (MATLAB_FOUND)
+    SET(IRIS_HAVE_MATLABPLOTTER OFF CACHE INTERNAL "Has MatlabPlotter been built?")
 ENDIF (MATLAB_FOUND)
 
 ########################################################################
