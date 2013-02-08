@@ -36,6 +36,7 @@
 #include "MatlabPlotter.h"
 #include <vector>
 #include <boost/test/unit_test.hpp>
+#include <boost/thread/thread.hpp>
 
 using namespace std;
 
@@ -47,10 +48,14 @@ BOOST_AUTO_TEST_CASE(MatlabPlotter_Test_Scalar)
   for(size_t i=0;i<100;i++)
     v[i] = i;
 
-  MatlabPlotter *plotter;
-  BOOST_CHECK_NO_THROW(plotter = new MatlabPlotter);
+  MatlabPlotter *plotter,*plotter2;
+  BOOST_REQUIRE_NO_THROW(plotter = new MatlabPlotter);
+  BOOST_REQUIRE_NO_THROW(plotter2 = new MatlabPlotter);
   BOOST_CHECK_NO_THROW(plotter->plot(v.begin(), v.end()));
+  BOOST_CHECK_NO_THROW(plotter2->plot(v.begin(), v.end()));
   delete plotter;
+  delete plotter2;
+  boost::this_thread::sleep(boost::posix_time::milliseconds(1000)); // Give the engine some time to close
 }
 
 BOOST_AUTO_TEST_CASE(MatlabPlotter_Test_Complex)
@@ -59,10 +64,13 @@ BOOST_AUTO_TEST_CASE(MatlabPlotter_Test_Complex)
   for(size_t i=0;i<100;i++)
     v[i] = complex<float>(i,i);
 
-  MatlabPlotter *plotter;
-  BOOST_CHECK_NO_THROW(plotter = new MatlabPlotter);
+  MatlabPlotter *plotter,*plotter2;
+  BOOST_REQUIRE_NO_THROW(plotter = new MatlabPlotter);
+  BOOST_REQUIRE_NO_THROW(plotter2 = new MatlabPlotter);
   BOOST_CHECK_NO_THROW(plotter->plot(v.begin(), v.end()));
+  BOOST_CHECK_NO_THROW(plotter2->plot(v.begin(), v.end()));
   delete plotter;
+  delete plotter2;
 
 }
 

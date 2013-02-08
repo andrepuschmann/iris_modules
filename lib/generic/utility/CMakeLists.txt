@@ -30,7 +30,7 @@ FIND_PACKAGE( MATLAB )
 
 IF (MATLAB_FOUND)
     INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
-    ADD_LIBRARY(matlabplotter SHARED MatlabPlotter.cpp)
+    ADD_LIBRARY(matlabplotter STATIC MatlabPlotter.cpp)
     TARGET_LINK_LIBRARIES(matlabplotter ${Boost_LIBRARIES} ${MATLAB_LIBRARIES})
     # We add an rpath to the library so matlab dependencies will be found
     # while avoiding clashes with system libraries
