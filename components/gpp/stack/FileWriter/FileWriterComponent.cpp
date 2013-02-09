@@ -55,7 +55,7 @@ FileWriterComponent::FileWriterComponent(std::string name)
                    "0.1")
 {
   registerParameter("filename",
-                    "The file to read",
+                    "The file to write",
                     "temp.bin",
                     false,
                     fileName_x);
