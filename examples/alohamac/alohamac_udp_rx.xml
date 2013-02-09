@@ -6,6 +6,7 @@
 
         <component name="filewriter0" class="filewriter">
             <parameter name="filename" value="output.bin"/>
+            <parameter name="frombelow" value="false"/>
             <port name="topport1" class="io"/>
             <port name="bottomport1" class="io"/>
         </component>
