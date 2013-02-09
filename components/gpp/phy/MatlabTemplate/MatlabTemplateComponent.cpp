@@ -125,13 +125,13 @@ void MatlabTemplateComponentImpl<Tin,Tout>::initialize()
   }
 
   //Open Matlab Engine
-  if(!matlab_.Open(""))
+  if(!matlab_.open(""))
   {
     throw ResourceNotFoundException("Failed to start Matlab engine");
   }
 
   //Clear Matlab WorkSpace
-  matlab_.EvalString("clear all;");
+  matlab_.evalString("clear all;");
 
   //Write the matlab command
   command_ = "matlab_output = ";
@@ -169,21 +169,21 @@ void MatlabTemplateComponentImpl<Tin,Tout>::process()
 
 //bug in matlab windows - has to be reopened every time
 #ifdef _WIN32 // _WIN32 is defined by all Windows 32 compilers, but not by others.
-  if(!matlab_.Open(""))
+  if(!matlab_.open(""))
   {
     throw ResourceNotFoundException("Failed to start Matlab engine");
   }
 #endif
 
   //Send data to matlab
-  matlab_.PutVariable("matlab_input", matlabInput_);
+  matlab_.putVariable("matlab_input", matlabInput_);
 
   //Use OutputBuffer to capture MATLAB output
   memset(buffer_, 0, 256 * sizeof(char));
-  matlab_.OutputBuffer(buffer_, 256);
+  matlab_.outputBuffer(buffer_, 256);
 
   //Process in Matlab
-  matlab_.EvalString(command_.c_str());
+  matlab_.evalString(command_.c_str());
 
   //The evaluate string returns the result into the output buffer
   if (buffer_[0] != 0)
@@ -206,7 +206,7 @@ void MatlabTemplateComponentImpl<Tin,Tout>::process()
     else
     {
       //Get the matlab output
-      mxArray* matlab_output = matlab_.GetVariable("matlab_output");
+      mxArray* matlab_output = matlab_.getVariable("matlab_output");
       size_t m = mxGetM(matlab_output);
       size_t n = mxGetN(matlab_output);
       //Get a write data set of the correct size and copy data

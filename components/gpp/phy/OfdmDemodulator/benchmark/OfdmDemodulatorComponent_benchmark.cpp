@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
   DataBufferTrivial< uint8_t > out;
 
   // Create enough data for "numFrames" full frames
-  int numFrames = 100;
+  int numFrames = 10000;
   int frameSize = OfdmDemodulatorBenchmarkData::testFrame1.size();
   DataSet< Cplx >* iSet = NULL;
   in.getWriteData(iSet, frameSize*numFrames);

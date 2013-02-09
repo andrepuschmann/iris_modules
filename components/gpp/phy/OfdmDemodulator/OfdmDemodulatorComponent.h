@@ -49,8 +49,11 @@
 #ifndef PHY_OFDMDEMODULATORCOMPONENT_H_
 #define PHY_OFDMDEMODULATORCOMPONENT_H_
 
+#include <boost/scoped_ptr.hpp>
+
 #include "irisapi/PhyComponent.h"
 #include "modulation/OfdmPreambleDetector.h"
+#include "kissfft/kissfft.hh"
 #include "utility/MathDefines.h"
 
 namespace iris
@@ -142,6 +145,9 @@ private:
   CplxVec equalizer_;         ///< The equalizer for the current frame.
   CplxVec corrector_;         ///< Fractional frequency offset corrector.
   ByteVec frameData_;         ///< Container for received frame data.
+
+  boost::scoped_ptr<kissfft<float> > halfFft_;
+  boost::scoped_ptr<kissfft<float> > fullFft_;
 
   OfdmPreambleDetector detector_;   ///< Our preamble detector.
 
