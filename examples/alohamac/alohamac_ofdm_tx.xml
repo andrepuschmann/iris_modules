@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 
-<softwareradio name="alohamac_upd_tx">
+<softwareradio name="alohamac_ofdm_tx">
 
   <engine name="stackengine1" class="stackengine">
-    
-    <component name="filewriter0" class="filewriter">
-      <parameter name="filename" value="output.bin"/>
-      <port name="topport1" class="io"/>
-      <port name="bottomport1" class="io"/>
-    </component>
+
+        <component name="filereader0" class="filereader">
+            <parameter name="filename" value="testdata.bin"/>
+            <parameter name="blocksize" value="32"/>
+            <parameter name="delay" value="1000000"/>
+            <parameter name="sendbelow" value="true"/>
+            <parameter name="packets" value="-1"/> <!-- -1 == never kill the thread -->
+            <port name="topport1" class="io"/>
+            <port name="bottomport1" class="io"/>
+        </component>
 
     <component name="alohamac0" class="alohamac">
        <parameter name="localaddress" value="aabbcc111111"/>
@@ -40,7 +44,7 @@
       <parameter name="frequency" value="5010000000"/>
       <parameter name="rate" value="1000000"/>
       <parameter name="antenna" value="J1"/>
-      <parameter name="gain" value="32"/>
+      <parameter name="gain" value="5"/>
       <parameter name="streaming" value="false"/>
       <port name="input1" class="input"/>
     </component>
