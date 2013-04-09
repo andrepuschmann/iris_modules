@@ -205,6 +205,7 @@ void UsrpRxComponent::initialize()
       lo_offset = fixLoOffset_x;
     usrp_->set_rx_freq(tune_request_t(frequency_x, lo_offset));
     LOG(LINFO) << "Actual RX Frequency: " << (usrp_->get_rx_freq()/1e6) << "MHz...";
+    LOG(LINFO) << "RX LO offset: " << (lo_offset/1e6) << "MHz...";
 
     //We can only set the time on usrp2 devices
     if(usrp_->get_mboard_name().find("usrp1") == string::npos)
@@ -216,7 +217,7 @@ void UsrpRxComponent::initialize()
 
     //Set the antenna
     if(antenna_x != "")
-      usrp_->set_rx_antenna(antenna_x);
+      usrp_->set_rx_antenna(boost::to_upper_copy(antenna_x));
     LOG(LINFO) << "Using RX Antenna: " << usrp_->get_rx_antenna();
 
     //Set gain

@@ -51,10 +51,12 @@ ENDMACRO(IRIS_APPEND_NOINSTALL_LIST)
 # Recurse into subdirectories. This does not actually cause another cmake 
 # executable to run. The same process will walk through the project's 
 # entire directory structure.
+ADD_SUBDIRECTORY(AlohaMac)
 ADD_SUBDIRECTORY(Example)
 ADD_SUBDIRECTORY(FileReader)
 ADD_SUBDIRECTORY(FileWriter)
 ADD_SUBDIRECTORY(MultiportExample)
+ADD_SUBDIRECTORY(TunTap)
 
 ########################################################################
 # List components to be installed/not installed
