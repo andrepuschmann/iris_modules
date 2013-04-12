@@ -148,12 +148,10 @@ private:
   CplxVec corrector_;         ///< Fractional frequency offset corrector.
   ByteVec frameData_;         ///< Container for received frame data.
 
-  //boost::scoped_ptr<kissfft<float> > halfFft_;
-  //boost::scoped_ptr<kissfft<float> > fullFft_;
-  Cplx* halfFftData_;
-  fftwf_plan halfFft_;
-  Cplx* fullFftData_;
-  fftwf_plan fullFft_;
+  Cplx* halfFftData_;         ///< Input/output array for half-length fft
+  fftwf_plan halfFft_;        ///< Half-length fft plan
+  Cplx* fullFftData_;         ///< Input/output array for full-length fft
+  fftwf_plan fullFft_;        ///< Full-length fft plan
 
   OfdmPreambleDetector detector_;   ///< Our preamble detector.
 
