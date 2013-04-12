@@ -41,7 +41,7 @@
 
 #include "irisapi/TypeInfo.h"
 #include "utility/RawFileUtility.h"
-#include "kissfft/kissfft.hh"
+#include "math/kissfft/kissfft.hh"
 
 using namespace std;
 using namespace iris;

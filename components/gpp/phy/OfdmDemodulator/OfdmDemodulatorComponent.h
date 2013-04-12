@@ -53,8 +53,8 @@
 
 #include "irisapi/PhyComponent.h"
 #include "modulation/OfdmPreambleDetector.h"
-#include "kissfft/kissfft.hh"
-#include "utility/MathDefines.h"
+#include "math/kissfft/kissfft.hh"
+#include "math/MathDefines.h"
 
 namespace iris
 {

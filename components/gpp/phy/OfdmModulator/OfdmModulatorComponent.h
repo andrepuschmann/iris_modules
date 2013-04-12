@@ -52,7 +52,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include "irisapi/PhyComponent.h"
-#include "kissfft/kissfft.hh"
+#include "math/kissfft/kissfft.hh"
 
 namespace iris
 {

@@ -43,7 +43,7 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "kissfft/kissfft.hh"
+#include "math/kissfft/kissfft.hh"
 #include "utility/RawFileUtility.h"
 
 namespace iris
