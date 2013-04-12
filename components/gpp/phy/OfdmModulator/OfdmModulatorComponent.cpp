@@ -66,6 +66,8 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
     ,numHeaderSymbols_(0)
     ,sampleRate_(0)
     ,timeStamp_(0)
+    ,fft_(NULL)
+    ,fftBins_(NULL)
 {
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -96,6 +98,11 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
   typedef Cplx c;
   c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
   pilotSequence_.assign(begin(seq), end(seq));
+}
+
+OfdmModulatorComponent::~OfdmModulatorComponent()
+{
+  destroy();
 }
 
 void OfdmModulatorComponent::registerPorts()
@@ -151,7 +158,10 @@ void OfdmModulatorComponent::parameterHasChanged(std::string name)
   if(name == "numdatacarriers" || name == "numpilotcarriers" ||
      name == "numguardcarriers" || name == "cyclicprefixlength" ||
      name == "modulationdepth")
+  {
+    destroy();
     setup();
+  }
 }
 
 /// Set up all our index vectors and containers.
@@ -178,9 +188,14 @@ void OfdmModulatorComponent::setup()
                                           preamble_.begin(), preamble_.end());
 
   // Set up containers
-  fft_.reset(new kissfft<float>(numBins_, true));
-  fftBins_.clear();
-  fftBins_.resize(numBins_);
+  fftBins_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_));
+  fill(&fftBins_[0], &fftBins_[numBins_], Cplx(0,0));
+  fft_ = fftwf_plan_dft_1d(numBins_,
+                           (fftwf_complex*)fftBins_,
+                           (fftwf_complex*)fftBins_,
+                           FFTW_BACKWARD,
+                           FFTW_MEASURE);
   symbol_.clear();
   symbol_.resize(numBins_);
   int bytesPerSymbol = numDataCarriers_x/8;
@@ -198,6 +213,14 @@ void OfdmModulatorComponent::setup()
                          modPad_.begin(), modPad_.end(),
                          modulationDepth_x);
 
+}
+
+void OfdmModulatorComponent::destroy()
+{
+  if(fftBins_ != NULL)
+    fftwf_free(fftBins_);
+  if(fft_ != NULL)
+    fftwf_destroy_plan(fft_);
 }
 
 /** Create a header for the current frame.
@@ -317,8 +340,8 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
     fftBins_[*it] = pilotSequence_[i%pilotSequence_.size()];
   for(it=dataIndices_.begin(); it!= dataIndices_.end(); it++)
     fftBins_[*it] = *inBegin++;
-
-  fft_->transform(&fftBins_[0], &(*outBegin));
+  fftwf_execute(fft_);
+  copy(&fftBins_[0], &fftBins_[numBins_], outBegin);
   float scaleFactor = numPilotCarriers_x + numDataCarriers_x;
   transform(outBegin, outEnd, outBegin, _1/scaleFactor);
 }

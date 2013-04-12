@@ -72,6 +72,10 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     ,rxNumSymbols_(0)
     ,headerIndex_(0)
     ,frameIndex_(0)
+    ,halfFft_(NULL)
+    ,halfFftData_(NULL)
+    ,fullFft_(NULL)
+    ,fullFftData_(NULL)
 {
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -97,6 +101,11 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
   typedef Cplx c;
   c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
   pilotSequence_.assign(begin(seq), end(seq));
+}
+
+OfdmDemodulatorComponent::~OfdmDemodulatorComponent()
+{
+  destroy();
 }
 
 void OfdmDemodulatorComponent::registerPorts()
@@ -151,7 +160,10 @@ void OfdmDemodulatorComponent::parameterHasChanged(std::string name)
 {
   if(name == "numdatacarriers" || name == "numpilotcarriers" ||
      name == "numguardcarriers" || name == "cyclicprefixlength")
+  {
+    destroy();
     setup();
+  }
 
   if(name == "threshold")
     detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
@@ -174,17 +186,36 @@ void OfdmDemodulatorComponent::setup()
   symbolLength_ = numBins_ + cyclicPrefixLength_x;
   numHeaderSymbols_ = (int)ceil(numHeaderBytes_/((float)numDataCarriers_x/8));
 
-  halfFft_.reset(new kissfft<float>(numBins_/2, false));
-  fullFft_.reset(new kissfft<float>(numBins_, false));
-
   preamble_.clear();
   preamble_.resize(numBins_);
+  preambleBins_.resize(numBins_/2);
+
   OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
                                           numPilotCarriers_x,
                                           numGuardCarriers_x,
-                                          preamble_.begin(), preamble_.end());
-  preambleBins_.resize(numBins_/2);
-  halfFft_->transform(&preamble_[0], &preambleBins_[0]);
+                                          preamble_.begin(),
+                                          preamble_.end());
+
+  halfFftData_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_/2));
+  fill(&halfFftData_[0], &halfFftData_[numBins_/2], Cplx(0,0));
+  fullFftData_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_));
+  fill(&fullFftData_[0], &fullFftData_[numBins_], Cplx(0,0));
+  halfFft_ = fftwf_plan_dft_1d(numBins_/2,
+                               (fftwf_complex*)halfFftData_,
+                               (fftwf_complex*)halfFftData_,
+                               FFTW_FORWARD,
+                               FFTW_MEASURE);
+  fullFft_ = fftwf_plan_dft_1d(numBins_,
+                               (fftwf_complex*)fullFftData_,
+                               (fftwf_complex*)fullFftData_,
+                               FFTW_FORWARD,
+                               FFTW_MEASURE);
+
+  copy(preamble_.begin(), preamble_.begin()+numBins_/2, halfFftData_);
+  fftwf_execute(halfFft_);
+  copy(halfFftData_, halfFftData_+numBins_/2, preambleBins_.begin());
 
   rxPreamble_.resize(symbolLength_);
   corrector_.resize(symbolLength_);
@@ -192,6 +223,18 @@ void OfdmDemodulatorComponent::setup()
   equalizer_.resize(numBins_);
 
   detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
+}
+
+void OfdmDemodulatorComponent::destroy()
+{
+  if(halfFft_ != NULL)
+    fftwf_destroy_plan(halfFft_);
+  if(fullFft_ != NULL)
+    fftwf_destroy_plan(fullFft_);
+  if(halfFftData_ != NULL)
+    fftwf_free(halfFftData_);
+  if(fullFftData_ != NULL)
+    fftwf_free(fullFftData_);
 }
 
 OfdmDemodulatorComponent::CplxVecIt
@@ -245,7 +288,9 @@ void OfdmDemodulatorComponent::extractPreamble()
 
   int halfBins = numBins_/2;
   CplxVec bins(halfBins);
-  halfFft_->transform(&(*begin), &bins[0]);
+  copy(begin, end, halfFftData_);
+  fftwf_execute(halfFft_);
+  copy(halfFftData_, halfFftData_+halfBins, bins.begin());
   transform(bins.begin(), bins.end(), bins.begin(), _1*Cplx(2,0));
 
   intFreqOffset_ = findIntegerOffset(bins.begin(), bins.end());
@@ -340,7 +385,9 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   CplxVecIt end = inBegin + off + numBins_;
 
   CplxVec bins(numBins_);
-  fullFft_->transform(&(*begin), &bins[0]);
+  copy(begin, end, fullFftData_);
+  fftwf_execute(fullFft_);
+  copy(fullFftData_, fullFftData_+numBins_, bins.begin());
 
   int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());

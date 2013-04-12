@@ -50,10 +50,10 @@
 #define PHY_OFDMDEMODULATORCOMPONENT_H_
 
 #include <boost/scoped_ptr.hpp>
+#include "fftw3.h"
 
 #include "irisapi/PhyComponent.h"
 #include "modulation/OfdmPreambleDetector.h"
-#include "math/kissfft/kissfft.hh"
 #include "math/MathDefines.h"
 
 namespace iris
@@ -84,6 +84,7 @@ public:
   typedef CplxVec::iterator     CplxVecIt;
 
   OfdmDemodulatorComponent(std::string name);
+  ~OfdmDemodulatorComponent();
   virtual void calculateOutputTypes(
       std::map<std::string, int>& inputTypes,
       std::map<std::string, int>& outputTypes);
@@ -94,6 +95,7 @@ public:
 
 private:
   void setup();
+  void destroy();
   CplxVecIt searchInput(CplxVecIt begin, CplxVecIt end);
   CplxVecIt processFrame(CplxVecIt begin, CplxVecIt end);
   void extractPreamble();
@@ -146,8 +148,12 @@ private:
   CplxVec corrector_;         ///< Fractional frequency offset corrector.
   ByteVec frameData_;         ///< Container for received frame data.
 
-  boost::scoped_ptr<kissfft<float> > halfFft_;
-  boost::scoped_ptr<kissfft<float> > fullFft_;
+  //boost::scoped_ptr<kissfft<float> > halfFft_;
+  //boost::scoped_ptr<kissfft<float> > fullFft_;
+  Cplx* halfFftData_;
+  fftwf_plan halfFft_;
+  Cplx* fullFftData_;
+  fftwf_plan fullFft_;
 
   OfdmPreambleDetector detector_;   ///< Our preamble detector.
 

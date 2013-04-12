@@ -51,8 +51,8 @@
 #define PHY_OFDMMODULATORCOMPONENT_H_
 
 #include <boost/scoped_ptr.hpp>
+#include "fftw3.h"
 #include "irisapi/PhyComponent.h"
-#include "math/kissfft/kissfft.hh"
 
 namespace iris
 {
@@ -79,6 +79,7 @@ class OfdmModulatorComponent
   typedef ByteVec::iterator     ByteVecIt;
 
   OfdmModulatorComponent(std::string name);
+  ~OfdmModulatorComponent();
   virtual void calculateOutputTypes(
       std::map<std::string, int>& inputTypes,
       std::map<std::string, int>& outputTypes);
@@ -90,6 +91,7 @@ class OfdmModulatorComponent
  private:
 
   void setup();
+  void destroy();
   void createHeader(ByteVecIt begin, ByteVecIt end);
   void createFrame(ByteVecIt begin, ByteVecIt end);
   void createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
@@ -115,7 +117,7 @@ class OfdmModulatorComponent
   IntVec pilotIndices_;       ///< Indices for our pilot carriers.
   IntVec dataIndices_;        ///< Indices for our data carriers.
   ByteVec header_;            ///< Contains the header data for each frame.
-  CplxVec fftBins_;           ///< The bins for our FFT.
+  Cplx* fftBins_;             ///< Allocated using fftwf_malloc (SIMD aligned)
   CplxVec preamble_;          ///< Contains our frame preamble.
   CplxVec pilotSequence_;     ///< Contains our pilot symbols.
   CplxVec modHeader_;         ///< Contains our modulated header data.
@@ -124,7 +126,7 @@ class OfdmModulatorComponent
   CplxVec modPad_;            ///< Used to pad out the last symbol, if required.
   CplxVec symbol_;            ///< Contains a single OFDM symbol.
 
-  boost::scoped_ptr<kissfft<float> > fft_;  ///< Our FFT object pointer.
+  fftwf_plan fft_;            ///< Our FFT object pointer.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }

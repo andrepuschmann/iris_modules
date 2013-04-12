@@ -39,11 +39,11 @@
 #include <vector>
 #include <algorithm>
 #include <boost/lambda/lambda.hpp>
+#include "fftw3.h"
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "math/kissfft/kissfft.hh"
 #include "utility/RawFileUtility.h"
 
 namespace iris
@@ -85,16 +85,28 @@ class OfdmPreambleGenerator
     if(outEnd-outBegin < numBins)
       throw IrisException("Insufficient storage provided for generatePreamble output.");
 
-    CplxVec bins(numBins);
+    Cplx* bins = reinterpret_cast<Cplx*>(
+          fftwf_malloc(sizeof(fftwf_complex) * numBins));
+    fill(&bins[0], &bins[numBins], Cplx(0,0));
+
     for(int i=2; i<=numActive/2; i+=2)
       bins[i] = posPreambleSequence_[i%100];
     for(int i=1; i<numActive/2; i+=2)
       bins[numBins-1-i] = negPreambleSequence_[i%100];
 
-    kissfft<float> fft(numBins,true);
-    fft.transform(&bins[0], &(*outBegin));
+    fftwf_plan fft = fftwf_plan_dft_1d(numBins,
+                                       (fftwf_complex*)bins,
+                                       (fftwf_complex*)bins,
+                                       FFTW_BACKWARD,
+                                       FFTW_ESTIMATE);
+
+    fftwf_execute(fft);
+    copy(&bins[0], &bins[numBins], outBegin);
     float scaleFactor = numActive/2.0;
     transform(outBegin, outEnd, outBegin, _1/scaleFactor);
+
+    fftwf_free(bins);
+    fftwf_destroy_plan(fft);
   }
 
   /// Convenience function for logging.
