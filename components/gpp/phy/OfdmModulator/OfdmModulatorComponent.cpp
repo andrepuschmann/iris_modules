@@ -44,6 +44,7 @@
 #include "modulation/Crc.h"
 #include "modulation/Whitener.h"
 #include "modulation/QamModulator.h"
+#include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace boost::lambda;
@@ -69,6 +70,10 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
     ,fft_(NULL)
     ,fftBins_(NULL)
 {
+  registerParameter(
+    "debug", "Whether to output debug data.",
+    "false", true, debug_x);
+
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
     "192", true, numDataCarriers_x, Interval<int>(1,65536));
@@ -315,6 +320,10 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
     it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
   }
 
+  if(debug_x)
+    RawFileUtility::write(out->data.begin(), out->data.end(),
+                          "OutputData/TxFrame");
+
   releaseOutputDataSet("output1", out);
 }
 
@@ -334,16 +343,27 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   if(outEnd-outBegin < numBins_)
     throw IrisException("Insufficient storage provided for createSymbol output.");
 
+  fill(&fftBins_[0], &fftBins_[numBins_], Cplx(0,0));
+
   int i = 0;
   IntVecIt it = pilotIndices_.begin();
   for(; it!=pilotIndices_.end(); it++, i++)
     fftBins_[*it] = pilotSequence_[i%pilotSequence_.size()];
   for(it=dataIndices_.begin(); it!= dataIndices_.end(); it++)
     fftBins_[*it] = *inBegin++;
+
+  if(debug_x)
+    RawFileUtility::write(&fftBins_[0], &fftBins_[numBins_],
+                          "OutputData/TxSymbolBins");
+
   fftwf_execute(fft_);
   copy(&fftBins_[0], &fftBins_[numBins_], outBegin);
   float scaleFactor = numPilotCarriers_x + numDataCarriers_x;
   transform(outBegin, outEnd, outBegin, _1/scaleFactor);
+
+  if(debug_x)
+    RawFileUtility::write(outBegin, outEnd,
+                          "OutputData/TxSymbol");
 }
 
 OfdmModulatorComponent::CplxVecIt

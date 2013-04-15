@@ -99,7 +99,7 @@ class OfdmModulatorComponent
   CplxVecIt copyWithCp(CplxVecIt inBegin, CplxVecIt inEnd,
                        CplxVecIt outBegin, CplxVecIt outEnd);
 
-
+  bool debug_x;               ///< Debug flag
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55+256)

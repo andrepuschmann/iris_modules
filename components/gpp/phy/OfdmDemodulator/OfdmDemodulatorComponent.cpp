@@ -46,6 +46,7 @@
 #include "modulation/Whitener.h"
 #include "modulation/QamDemodulator.h"
 #include "modulation/ToneGenerator.h"
+#include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace boost::lambda;
@@ -77,6 +78,10 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     ,fullFft_(NULL)
     ,fullFftData_(NULL)
 {
+  registerParameter(
+    "debug", "Whether to write debug data to file.",
+    "false", true, debug_x);
+
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
     "192", true, numDataCarriers_x, Interval<int>(1,65536));
@@ -196,6 +201,10 @@ void OfdmDemodulatorComponent::setup()
                                           preamble_.begin(),
                                           preamble_.end());
 
+  if(debug_x)
+    RawFileUtility::write(preamble_.begin(), preamble_.end(),
+                          "OutputData/TxPreambleBins");
+
   halfFftData_ = reinterpret_cast<Cplx*>(
       fftwf_malloc(sizeof(fftwf_complex) * numBins_/2));
   fill(&halfFftData_[0], &halfFftData_[numBins_/2], Cplx(0,0));
@@ -286,6 +295,9 @@ void OfdmDemodulatorComponent::extractPreamble()
   CplxVecIt begin = rxPreamble_.begin() + off;
   CplxVecIt end = rxPreamble_.begin() + off + (numBins_/2);
 
+  if(debug_x)
+    RawFileUtility::write(begin, end, "OutputData/RxPreamble");
+
   int halfBins = numBins_/2;
   CplxVec bins(halfBins);
   copy(begin, end, halfFftData_);
@@ -293,9 +305,17 @@ void OfdmDemodulatorComponent::extractPreamble()
   copy(halfFftData_, halfFftData_+halfBins, bins.begin());
   transform(bins.begin(), bins.end(), bins.begin(), _1*Cplx(2,0));
 
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxPreambleHalfBins");
+
   intFreqOffset_ = findIntegerOffset(bins.begin(), bins.end());
   int shift = (halfBins-intFreqOffset_)%halfBins;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
+
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxPreambleHalfBinsRotated");
 
   generateEqualizer(bins.begin(), bins.end());
 }
@@ -389,13 +409,30 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   fftwf_execute(fullFft_);
   copy(fullFftData_, fullFftData_+numBins_, bins.begin());
 
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxSymbolBins");
+
   int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
+
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxSymbolBinsRotated");
+
   equalizeSymbol(bins.begin(), bins.end());
+
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxSymbolBinsEqualized");
 
   CplxVec qamSymbols;
   for(int i=0; i<numDataCarriers_x; i++)
     qamSymbols.push_back(bins[dataIndices_[i]]);
+
+  if(debug_x)
+    RawFileUtility::write(qamSymbols.begin(), qamSymbols.end(),
+                          "OutputData/RxSymbol");
 
   QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
                              outBegin, outEnd, 1);
@@ -452,12 +489,20 @@ void OfdmDemodulatorComponent::generateEqualizer(CplxVecIt begin, CplxVecIt end)
   CplxVec shortEq(numBins_/2);
   transform(begin, end, preambleBins_.begin(), shortEq.begin(), _2/_1);
 
+  if(debug_x)
+    RawFileUtility::write(shortEq.begin(), shortEq.end(),
+                          "OutputData/ShortEqualizer");
+
   shortEq[0] = (shortEq[(numBins_/2)-1] + shortEq[1])/Cplx(2,0);
   for(int i=0; i<numBins_/2; i++)
     equalizer_[i*2] = shortEq[i];
   for(int i=1; i<numBins_; i+=2)
     equalizer_[i] = (equalizer_[i-1] + equalizer_[(i+1)%numBins_])/Cplx(2,0);
   equalizer_[0] = Cplx(0,0);
+
+  if(debug_x)
+    RawFileUtility::write(equalizer_.begin(), equalizer_.end(),
+                          "OutputData/Equalizer");
 }
 
 void OfdmDemodulatorComponent::equalizeSymbol(CplxVecIt begin, CplxVecIt end)

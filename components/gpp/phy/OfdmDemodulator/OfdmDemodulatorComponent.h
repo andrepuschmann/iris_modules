@@ -112,6 +112,7 @@ private:
 
   struct opAbs{float operator()(Cplx i) const{return abs(i);};};
 
+  bool debug_x;               ///< Debug flag
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
