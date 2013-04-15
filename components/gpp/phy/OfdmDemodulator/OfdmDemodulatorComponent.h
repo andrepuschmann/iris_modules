@@ -113,6 +113,7 @@ private:
   struct opAbs{float operator()(Cplx i) const{return abs(i);};};
 
   bool debug_x;               ///< Debug flag
+  int reportRate_x;           ///< Report performance every reportRate_x frames
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
@@ -135,6 +136,8 @@ private:
   uint16_t rxNumBytes_;       ///< Number of bytes of data in received frame.
   uint8_t rxModulation_;      ///< Modulation depth of received frame.
   int rxNumSymbols_;          ///< Number of OFDM symbols in received frame.
+  int numRxFrames_;           ///< Count of total detected frames.
+  int numRxFails_;            ///< Count of frames we failed to demod.
 
   DataSet< Cplx >* in_;       ///< Pointer to an input DataSet.
   IntVec pilotIndices_;       ///< Indices for our pilot carriers.

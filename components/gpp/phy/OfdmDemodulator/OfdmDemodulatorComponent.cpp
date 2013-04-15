@@ -77,10 +77,16 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     ,halfFftData_(NULL)
     ,fullFft_(NULL)
     ,fullFftData_(NULL)
+    ,numRxFrames_(0)
+    ,numRxFails_(0)
 {
   registerParameter(
     "debug", "Whether to write debug data to file.",
     "false", true, debug_x);
+
+  registerParameter(
+    "reportrate", "Report performance stats every reportrate frames.",
+    "1000", true, reportRate_x);
 
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -156,9 +162,18 @@ void OfdmDemodulatorComponent::process()
     frameIndex_ = 0;
     frameDetected_ = false;
     haveHeader_ = false;
+    numRxFails_++;
   }
 
   releaseInputDataSet("input1", in_);
+
+  if(numRxFrames_ >= reportRate_x)
+  {
+    float successRate = 1-((float)numRxFails_/numRxFrames_);
+    LOG(LINFO) << "Frame succcess rate: " << successRate*100 << "%";
+    numRxFrames_ = 0;
+    numRxFails_ = 0;
+  }
 }
 
 void OfdmDemodulatorComponent::parameterHasChanged(std::string name)
@@ -322,6 +337,7 @@ void OfdmDemodulatorComponent::extractPreamble()
 
 void OfdmDemodulatorComponent::extractHeader()
 {
+  numRxFrames_++;
   int bytesPerSymbol = numDataCarriers_x/8;
   ByteVec data(numHeaderSymbols_*bytesPerSymbol);
   ByteVecIt dataIt = data.begin();
@@ -432,7 +448,7 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
 
   if(debug_x)
     RawFileUtility::write(qamSymbols.begin(), qamSymbols.end(),
-                          "OutputData/RxSymbol");
+                          "OutputData/RxSymbolData");
 
   QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
                              outBegin, outEnd, 1);
