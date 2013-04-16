@@ -469,7 +469,7 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   }
 
   QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
-                             outBegin, outEnd, 1);
+                             outBegin, outEnd, modulationDepth);
 }
 
 void OfdmDemodulatorComponent::generateFractionalOffsetCorrector(float offset)
