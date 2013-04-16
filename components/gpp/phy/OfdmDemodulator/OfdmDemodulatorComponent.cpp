@@ -79,6 +79,7 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     ,fullFftData_(NULL)
     ,numRxFrames_(0)
     ,numRxFails_(0)
+    ,symbolCount_(0)
 {
   registerParameter(
     "debug", "Whether to write debug data to file.",
@@ -374,21 +375,21 @@ void OfdmDemodulatorComponent::extractHeader()
 
 void OfdmDemodulatorComponent::demodFrame()
 {
+  symbolCount_ = 0;
   int bytesPerSymbol = (numDataCarriers_x*rxModulation_)/8;
   int frameDataLen = (rxNumSymbols_*bytesPerSymbol);
   frameData_.resize(frameDataLen);
 
-  int symbolCount = 0;
   CplxVecIt inIt = rxFrame_.begin();
   ByteVecIt outIt = frameData_.begin();
-  while(symbolCount < rxNumSymbols_)
+  while(symbolCount_ < rxNumSymbols_)
   {
     demodSymbol(inIt, inIt+symbolLength_,
                 outIt, outIt+bytesPerSymbol,
                 rxModulation_);
     inIt += symbolLength_;
     outIt += bytesPerSymbol;
-    symbolCount++;
+    symbolCount_++;
   }
 
   outIt = frameData_.begin();
@@ -426,29 +427,46 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   copy(fullFftData_, fullFftData_+numBins_, bins.begin());
 
   if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBins" << symbolCount_;
     RawFileUtility::write(bins.begin(), bins.end(),
-                          "OutputData/RxSymbolBins");
+                          fileName.str());
+  }
 
   int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
 
   if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBinsRotated" << symbolCount_;
     RawFileUtility::write(bins.begin(), bins.end(),
-                          "OutputData/RxSymbolBinsRotated");
+                          fileName.str());
+  }
 
   equalizeSymbol(bins.begin(), bins.end());
 
   if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBinsEqualized" << symbolCount_;
     RawFileUtility::write(bins.begin(), bins.end(),
-                          "OutputData/RxSymbolBinsEqualized");
+                          fileName.str());
+  }
 
   CplxVec qamSymbols;
   for(int i=0; i<numDataCarriers_x; i++)
     qamSymbols.push_back(bins[dataIndices_[i]]);
 
+
   if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolData" << symbolCount_;
     RawFileUtility::write(qamSymbols.begin(), qamSymbols.end(),
-                          "OutputData/RxSymbolData");
+                          fileName.str());
+  }
 
   QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
                              outBegin, outEnd, 1);

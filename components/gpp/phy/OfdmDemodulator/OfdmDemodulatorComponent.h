@@ -138,6 +138,7 @@ private:
   int rxNumSymbols_;          ///< Number of OFDM symbols in received frame.
   int numRxFrames_;           ///< Count of total detected frames.
   int numRxFails_;            ///< Count of frames we failed to demod.
+  int symbolCount_;           ///< Index of symbol in current frame.
 
   DataSet< Cplx >* in_;       ///< Pointer to an input DataSet.
   IntVec pilotIndices_;       ///< Indices for our pilot carriers.
