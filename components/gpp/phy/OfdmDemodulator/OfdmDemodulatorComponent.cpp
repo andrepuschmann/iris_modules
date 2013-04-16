@@ -338,17 +338,19 @@ void OfdmDemodulatorComponent::extractPreamble()
 
 void OfdmDemodulatorComponent::extractHeader()
 {
+  symbolCount_ = 0;
   numRxFrames_++;
-  int bytesPerSymbol = numDataCarriers_x/8;
-  ByteVec data(numHeaderSymbols_*bytesPerSymbol);
+  int bytesPerHeader = numDataCarriers_x/8;
+  ByteVec data(numHeaderSymbols_*bytesPerHeader);
   ByteVecIt dataIt = data.begin();
   CplxVecIt symIt = rxHeader_.begin();
   for(int i=0; i<numHeaderSymbols_; i++)
   {
     demodSymbol(symIt, symIt+symbolLength_,
-                dataIt, dataIt+bytesPerSymbol, BPSK);
+                dataIt, dataIt+bytesPerHeader, BPSK);
     symIt += symbolLength_;
     dataIt += numDataCarriers_x/8;
+    symbolCount_++;
   }
 
   Whitener::whiten(data.begin(), data.end());
@@ -359,30 +361,29 @@ void OfdmDemodulatorComponent::extractHeader()
   rxCrc_ |= (data[1] << 16);
   rxCrc_ |= (data[0] << 24);
 
+  rxModulation_ = data[6] & 0xFF;
+  if(rxModulation_!=BPSK && rxModulation_!=QPSK && rxModulation_!=QAM16)
+    throw IrisException("Invalid modulation depth - dropping frame.");
+
   rxNumBytes_ = ((data[4]<<8) | data[5]) & 0xFFFF;
+  int bytesPerSymbol = (numDataCarriers_x*rxModulation_)/8;
   rxNumSymbols_ = ceil(rxNumBytes_/(float)bytesPerSymbol);
   if(rxNumSymbols_>32 || rxNumSymbols_<1)
     throw IrisException("Invalid frame length - dropping frame.");
 
   rxFrame_.resize(rxNumSymbols_*symbolLength_);
-
-  rxModulation_ = data[6] & 0xFF;
-  if(rxModulation_!=BPSK && rxModulation_!=QPSK && rxModulation_!=QAM16)
-    throw IrisException("Invalid modulation depth - dropping frame.");
-
   haveHeader_ = true;
 }
 
 void OfdmDemodulatorComponent::demodFrame()
 {
-  symbolCount_ = 0;
   int bytesPerSymbol = (numDataCarriers_x*rxModulation_)/8;
   int frameDataLen = (rxNumSymbols_*bytesPerSymbol);
   frameData_.resize(frameDataLen);
 
   CplxVecIt inIt = rxFrame_.begin();
   ByteVecIt outIt = frameData_.begin();
-  while(symbolCount_ < rxNumSymbols_)
+  for(int i=0;i<rxNumSymbols_;i++)
   {
     demodSymbol(inIt, inIt+symbolLength_,
                 outIt, outIt+bytesPerSymbol,
