@@ -219,7 +219,7 @@ void OfdmDemodulatorComponent::setup()
 
   if(debug_x)
     RawFileUtility::write(preamble_.begin(), preamble_.end(),
-                          "OutputData/TxPreambleBins");
+                          "OutputData/TxPreamble");
 
   halfFftData_ = reinterpret_cast<Cplx*>(
       fftwf_malloc(sizeof(fftwf_complex) * numBins_/2));
