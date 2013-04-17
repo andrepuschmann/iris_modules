@@ -25,7 +25,6 @@ MESSAGE(STATUS "  Processing alohamac.")
 ########################################################################
 # Add includes and dependencies
 ########################################################################
-
 FIND_PACKAGE( Protobuf )
 
 ########################################################################
@@ -36,11 +35,15 @@ SET(sources
   alohamac.pb.cc
 )
 
-# Targets must be globally unique for cmake 
-ADD_LIBRARY(comp_gpp_stack_alohamac SHARED ${sources})
-TARGET_LINK_LIBRARIES(comp_gpp_stack_alohamac ${PROTOBUF_LIBRARIES})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS alohamac.proto)
-SET_TARGET_PROPERTIES(comp_gpp_stack_alohamac PROPERTIES OUTPUT_NAME "alohamac")
-IRIS_INSTALL(comp_gpp_stack_alohamac)
-IRIS_APPEND_INSTALL_LIST("alohamac")
+IF (PROTOBUF_FOUND)
+    # Targets must be globally unique for cmake 
+    ADD_LIBRARY(comp_gpp_stack_alohamac SHARED ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_stack_alohamac ${PROTOBUF_LIBRARIES})
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+    PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS alohamac.proto)
+    SET_TARGET_PROPERTIES(comp_gpp_stack_alohamac PROPERTIES OUTPUT_NAME "alohamac")
+    IRIS_INSTALL(comp_gpp_stack_alohamac)
+    IRIS_APPEND_INSTALL_LIST(alohamac)
+ELSE (PROTOBUF_FOUND)
+  IRIS_APPEND_NOINSTALL_LIST(alohamac)
+ENDIF (PROTOBUF_FOUND)
