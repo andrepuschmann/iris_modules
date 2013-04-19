@@ -45,8 +45,8 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "utility/MathDefines.h"
-#include "utility/Dsp.h"
+#include "math/MathDefines.h"
+#include "math/Dsp.h"
 
 namespace iris
 {

@@ -46,6 +46,7 @@
 #include "modulation/Whitener.h"
 #include "modulation/QamDemodulator.h"
 #include "modulation/ToneGenerator.h"
+#include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace boost::lambda;
@@ -72,7 +73,22 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     ,rxNumSymbols_(0)
     ,headerIndex_(0)
     ,frameIndex_(0)
+    ,halfFft_(NULL)
+    ,halfFftData_(NULL)
+    ,fullFft_(NULL)
+    ,fullFftData_(NULL)
+    ,numRxFrames_(0)
+    ,numRxFails_(0)
+    ,symbolCount_(0)
 {
+  registerParameter(
+    "debug", "Whether to write debug data to file.",
+    "false", true, debug_x);
+
+  registerParameter(
+    "reportrate", "Report performance stats every reportrate frames.",
+    "1000", true, reportRate_x);
+
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
     "192", true, numDataCarriers_x, Interval<int>(1,65536));
@@ -97,6 +113,11 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
   typedef Cplx c;
   c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
   pilotSequence_.assign(begin(seq), end(seq));
+}
+
+OfdmDemodulatorComponent::~OfdmDemodulatorComponent()
+{
+  destroy();
 }
 
 void OfdmDemodulatorComponent::registerPorts()
@@ -142,16 +163,28 @@ void OfdmDemodulatorComponent::process()
     frameIndex_ = 0;
     frameDetected_ = false;
     haveHeader_ = false;
+    numRxFails_++;
   }
 
   releaseInputDataSet("input1", in_);
+
+  if(numRxFrames_ >= reportRate_x)
+  {
+    float successRate = 1-((float)numRxFails_/numRxFrames_);
+    LOG(LINFO) << "Frame succcess rate: " << successRate*100 << "%";
+    numRxFrames_ = 0;
+    numRxFails_ = 0;
+  }
 }
 
 void OfdmDemodulatorComponent::parameterHasChanged(std::string name)
 {
   if(name == "numdatacarriers" || name == "numpilotcarriers" ||
      name == "numguardcarriers" || name == "cyclicprefixlength")
+  {
+    destroy();
     setup();
+  }
 
   if(name == "threshold")
     detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
@@ -174,17 +207,40 @@ void OfdmDemodulatorComponent::setup()
   symbolLength_ = numBins_ + cyclicPrefixLength_x;
   numHeaderSymbols_ = (int)ceil(numHeaderBytes_/((float)numDataCarriers_x/8));
 
-  halfFft_.reset(new kissfft<float>(numBins_/2, false));
-  fullFft_.reset(new kissfft<float>(numBins_, false));
-
   preamble_.clear();
   preamble_.resize(numBins_);
+  preambleBins_.resize(numBins_/2);
+
   OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
                                           numPilotCarriers_x,
                                           numGuardCarriers_x,
-                                          preamble_.begin(), preamble_.end());
-  preambleBins_.resize(numBins_/2);
-  halfFft_->transform(&preamble_[0], &preambleBins_[0]);
+                                          preamble_.begin(),
+                                          preamble_.end());
+
+  if(debug_x)
+    RawFileUtility::write(preamble_.begin(), preamble_.end(),
+                          "OutputData/TxPreamble");
+
+  halfFftData_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_/2));
+  fill(&halfFftData_[0], &halfFftData_[numBins_/2], Cplx(0,0));
+  fullFftData_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_));
+  fill(&fullFftData_[0], &fullFftData_[numBins_], Cplx(0,0));
+  halfFft_ = fftwf_plan_dft_1d(numBins_/2,
+                               (fftwf_complex*)halfFftData_,
+                               (fftwf_complex*)halfFftData_,
+                               FFTW_FORWARD,
+                               FFTW_MEASURE);
+  fullFft_ = fftwf_plan_dft_1d(numBins_,
+                               (fftwf_complex*)fullFftData_,
+                               (fftwf_complex*)fullFftData_,
+                               FFTW_FORWARD,
+                               FFTW_MEASURE);
+
+  copy(preamble_.begin(), preamble_.begin()+numBins_/2, halfFftData_);
+  fftwf_execute(halfFft_);
+  copy(halfFftData_, halfFftData_+numBins_/2, preambleBins_.begin());
 
   rxPreamble_.resize(symbolLength_);
   corrector_.resize(symbolLength_);
@@ -192,6 +248,18 @@ void OfdmDemodulatorComponent::setup()
   equalizer_.resize(numBins_);
 
   detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
+}
+
+void OfdmDemodulatorComponent::destroy()
+{
+  if(halfFft_ != NULL)
+    fftwf_destroy_plan(halfFft_);
+  if(fullFft_ != NULL)
+    fftwf_destroy_plan(fullFft_);
+  if(halfFftData_ != NULL)
+    fftwf_free(halfFftData_);
+  if(fullFftData_ != NULL)
+    fftwf_free(fullFftData_);
 }
 
 OfdmDemodulatorComponent::CplxVecIt
@@ -243,30 +311,46 @@ void OfdmDemodulatorComponent::extractPreamble()
   CplxVecIt begin = rxPreamble_.begin() + off;
   CplxVecIt end = rxPreamble_.begin() + off + (numBins_/2);
 
+  if(debug_x)
+    RawFileUtility::write(begin, end, "OutputData/RxPreamble");
+
   int halfBins = numBins_/2;
   CplxVec bins(halfBins);
-  halfFft_->transform(&(*begin), &bins[0]);
+  copy(begin, end, halfFftData_);
+  fftwf_execute(halfFft_);
+  copy(halfFftData_, halfFftData_+halfBins, bins.begin());
   transform(bins.begin(), bins.end(), bins.begin(), _1*Cplx(2,0));
+
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxPreambleHalfBins");
 
   intFreqOffset_ = findIntegerOffset(bins.begin(), bins.end());
   int shift = (halfBins-intFreqOffset_)%halfBins;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
+
+  if(debug_x)
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          "OutputData/RxPreambleHalfBinsRotated");
 
   generateEqualizer(bins.begin(), bins.end());
 }
 
 void OfdmDemodulatorComponent::extractHeader()
 {
-  int bytesPerSymbol = numDataCarriers_x/8;
-  ByteVec data(numHeaderSymbols_*bytesPerSymbol);
+  symbolCount_ = 0;
+  numRxFrames_++;
+  int bytesPerHeader = numDataCarriers_x/8;
+  ByteVec data(numHeaderSymbols_*bytesPerHeader);
   ByteVecIt dataIt = data.begin();
   CplxVecIt symIt = rxHeader_.begin();
   for(int i=0; i<numHeaderSymbols_; i++)
   {
     demodSymbol(symIt, symIt+symbolLength_,
-                dataIt, dataIt+bytesPerSymbol, BPSK);
+                dataIt, dataIt+bytesPerHeader, BPSK);
     symIt += symbolLength_;
     dataIt += numDataCarriers_x/8;
+    symbolCount_++;
   }
 
   Whitener::whiten(data.begin(), data.end());
@@ -277,17 +361,17 @@ void OfdmDemodulatorComponent::extractHeader()
   rxCrc_ |= (data[1] << 16);
   rxCrc_ |= (data[0] << 24);
 
+  rxModulation_ = data[6] & 0xFF;
+  if(rxModulation_!=BPSK && rxModulation_!=QPSK && rxModulation_!=QAM16)
+    throw IrisException("Invalid modulation depth - dropping frame.");
+
   rxNumBytes_ = ((data[4]<<8) | data[5]) & 0xFFFF;
+  int bytesPerSymbol = (numDataCarriers_x*rxModulation_)/8;
   rxNumSymbols_ = ceil(rxNumBytes_/(float)bytesPerSymbol);
   if(rxNumSymbols_>32 || rxNumSymbols_<1)
     throw IrisException("Invalid frame length - dropping frame.");
 
   rxFrame_.resize(rxNumSymbols_*symbolLength_);
-
-  rxModulation_ = data[6] & 0xFF;
-  if(rxModulation_!=BPSK && rxModulation_!=QPSK && rxModulation_!=QAM16)
-    throw IrisException("Invalid modulation depth - dropping frame.");
-
   haveHeader_ = true;
 }
 
@@ -297,17 +381,16 @@ void OfdmDemodulatorComponent::demodFrame()
   int frameDataLen = (rxNumSymbols_*bytesPerSymbol);
   frameData_.resize(frameDataLen);
 
-  int symbolCount = 0;
   CplxVecIt inIt = rxFrame_.begin();
   ByteVecIt outIt = frameData_.begin();
-  while(symbolCount < rxNumSymbols_)
+  for(int i=0;i<rxNumSymbols_;i++)
   {
     demodSymbol(inIt, inIt+symbolLength_,
                 outIt, outIt+bytesPerSymbol,
                 rxModulation_);
     inIt += symbolLength_;
     outIt += bytesPerSymbol;
-    symbolCount++;
+    symbolCount_++;
   }
 
   outIt = frameData_.begin();
@@ -340,18 +423,54 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   CplxVecIt end = inBegin + off + numBins_;
 
   CplxVec bins(numBins_);
-  fullFft_->transform(&(*begin), &bins[0]);
+  copy(begin, end, fullFftData_);
+  fftwf_execute(fullFft_);
+  copy(fullFftData_, fullFftData_+numBins_, bins.begin());
+
+  if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBins" << symbolCount_;
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          fileName.str());
+  }
 
   int shift = (numBins_-intFreqOffset_*2)%numBins_;
   rotate(bins.begin(), bins.begin()+shift, bins.end());
+
+  if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBinsRotated" << symbolCount_;
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          fileName.str());
+  }
+
   equalizeSymbol(bins.begin(), bins.end());
+
+  if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolBinsEqualized" << symbolCount_;
+    RawFileUtility::write(bins.begin(), bins.end(),
+                          fileName.str());
+  }
 
   CplxVec qamSymbols;
   for(int i=0; i<numDataCarriers_x; i++)
     qamSymbols.push_back(bins[dataIndices_[i]]);
 
+
+  if(debug_x)
+  {
+    stringstream fileName;
+    fileName << "OutputData//RxSymbolData" << symbolCount_;
+    RawFileUtility::write(qamSymbols.begin(), qamSymbols.end(),
+                          fileName.str());
+  }
+
   QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
-                             outBegin, outEnd, 1);
+                             outBegin, outEnd, modulationDepth);
 }
 
 void OfdmDemodulatorComponent::generateFractionalOffsetCorrector(float offset)
@@ -405,12 +524,20 @@ void OfdmDemodulatorComponent::generateEqualizer(CplxVecIt begin, CplxVecIt end)
   CplxVec shortEq(numBins_/2);
   transform(begin, end, preambleBins_.begin(), shortEq.begin(), _2/_1);
 
+  if(debug_x)
+    RawFileUtility::write(shortEq.begin(), shortEq.end(),
+                          "OutputData/ShortEqualizer");
+
   shortEq[0] = (shortEq[(numBins_/2)-1] + shortEq[1])/Cplx(2,0);
   for(int i=0; i<numBins_/2; i++)
     equalizer_[i*2] = shortEq[i];
   for(int i=1; i<numBins_; i+=2)
     equalizer_[i] = (equalizer_[i-1] + equalizer_[(i+1)%numBins_])/Cplx(2,0);
   equalizer_[0] = Cplx(0,0);
+
+  if(debug_x)
+    RawFileUtility::write(equalizer_.begin(), equalizer_.end(),
+                          "OutputData/Equalizer");
 }
 
 void OfdmDemodulatorComponent::equalizeSymbol(CplxVecIt begin, CplxVecIt end)
