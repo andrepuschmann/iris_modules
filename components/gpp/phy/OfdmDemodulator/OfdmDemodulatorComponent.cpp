@@ -241,6 +241,13 @@ void OfdmDemodulatorComponent::setup()
   copy(preamble_.begin(), preamble_.begin()+numBins_/2, halfFftData_);
   fftwf_execute(halfFft_);
   copy(halfFftData_, halfFftData_+numBins_/2, preambleBins_.begin());
+  transform(preambleBins_.begin(),
+            preambleBins_.end(),
+            preambleBins_.begin(),
+            2.0f*_1);
+  if(debug_x)
+    RawFileUtility::write(preambleBins_.begin(), preambleBins_.end(),
+                          "OutputData/TxPreambleBins");
 
   rxPreamble_.resize(symbolLength_);
   corrector_.resize(symbolLength_);
