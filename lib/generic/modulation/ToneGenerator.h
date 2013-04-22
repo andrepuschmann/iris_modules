@@ -39,7 +39,7 @@
 
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "utility/MathDefines.h"
+#include "math/MathDefines.h"
 
 namespace iris
 {

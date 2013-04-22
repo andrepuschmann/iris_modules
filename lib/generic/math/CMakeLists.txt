@@ -21,9 +21,10 @@
 #
 
 ########################################################################
-# Build executable, register as test
+# Add the subdirectories
 ########################################################################
-ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-ADD_EXECUTABLE(OfdmModulatorComponent_test OfdmModulatorComponent_test.cpp)
-TARGET_LINK_LIBRARIES(OfdmModulatorComponent_test comp_gpp_phy_ofdmmodulator_static ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
-ADD_TEST(OfdmModulatorComponent_test OfdmModulatorComponent_test)
+# Recurse into subdirectories. This does not actually cause another cmake 
+# executable to run. The same process will walk through the project's 
+# entire directory structure.
+ADD_SUBDIRECTORY(kissfft)
+ADD_SUBDIRECTORY(tml)

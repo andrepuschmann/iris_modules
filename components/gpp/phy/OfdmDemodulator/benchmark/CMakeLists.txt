@@ -24,5 +24,5 @@
 # Build executable, register as benchmark
 ########################################################################
 ADD_EXECUTABLE(OfdmDemodulatorComponent_benchmark OfdmDemodulatorComponent_benchmark.cpp)
-TARGET_LINK_LIBRARIES(OfdmDemodulatorComponent_benchmark ${Boost_LIBRARIES} comp_gpp_phy_ofdmdemodulator_static)
+TARGET_LINK_LIBRARIES(OfdmDemodulatorComponent_benchmark comp_gpp_phy_ofdmdemodulator_static ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
 IRIS_ADD_BENCHMARK(OfdmDemodulatorComponent_benchmark)

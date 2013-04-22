@@ -25,6 +25,8 @@ MESSAGE(STATUS "  Processing ofdmmodulator.")
 ########################################################################
 # Add includes and dependencies
 ########################################################################
+FIND_PACKAGE( FFTW3F )
+INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
 
 ########################################################################
 # Build the library from source files
@@ -33,15 +35,20 @@ SET(sources
 	OfdmModulatorComponent.cpp
 )
 
-# Static library to be used in tests
-ADD_LIBRARY(comp_gpp_phy_ofdmmodulator_static STATIC ${sources})
-
-# Shared library to be used in radios
-ADD_LIBRARY(comp_gpp_phy_ofdmmodulator SHARED ${sources})
-SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmmodulator PROPERTIES OUTPUT_NAME "ofdmmodulator")
-IRIS_INSTALL(comp_gpp_phy_ofdmmodulator)
-IRIS_APPEND_INSTALL_LIST(ofdmmodulator)
-
-# Add the test and benchmark directories
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+IF(FFTW3F_FOUND)
+    # Static library to be used in tests
+    ADD_LIBRARY(comp_gpp_phy_ofdmmodulator_static STATIC ${sources})
+    
+    # Shared library to be used in radios
+    ADD_LIBRARY(comp_gpp_phy_ofdmmodulator SHARED ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_phy_ofdmmodulator ${FFTW3F_LIBRARIES})
+    SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmmodulator PROPERTIES OUTPUT_NAME "ofdmmodulator")
+    IRIS_INSTALL(comp_gpp_phy_ofdmmodulator)
+    IRIS_APPEND_INSTALL_LIST(ofdmmodulator)
+    
+    # Add the test and benchmark directories
+    ADD_SUBDIRECTORY(test)
+    ADD_SUBDIRECTORY(benchmark)
+ELSE(FFTW3F_FOUND)
+    IRIS_APPEND_NOINSTALL_LIST(ofdmmodulator)
+ENDIF(FFTW3F_FOUND)
