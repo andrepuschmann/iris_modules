@@ -30,7 +30,7 @@
  * \section DESCRIPTION
  *
  * This component implements a software connector between Iris and
- * virtual network device drivers TUN/TAP
+ * virtual network device drivers TUN/TAP on Linux/Unix systems.
  *
  */
 
