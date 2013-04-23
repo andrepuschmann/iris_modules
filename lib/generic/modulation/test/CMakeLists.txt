@@ -50,9 +50,9 @@ ENDFOREACH(test_source)
 # Build any lib-dependent tests
 ########################################################################
 FIND_PACKAGE( FFTW3F )
-INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
 
 IF (FFTW3F_FOUND)
+    INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
     ADD_EXECUTABLE(OfdmPreambleGenerator_test OfdmPreambleGenerator_test.cpp)
     TARGET_LINK_LIBRARIES(OfdmPreambleGenerator_test ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
     ADD_TEST(OfdmPreambleGenerator_test OfdmPreambleGenerator_test)

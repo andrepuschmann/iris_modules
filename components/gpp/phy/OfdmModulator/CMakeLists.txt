@@ -26,7 +26,6 @@ MESSAGE(STATUS "  Processing ofdmmodulator.")
 # Add includes and dependencies
 ########################################################################
 FIND_PACKAGE( FFTW3F )
-INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
 
 ########################################################################
 # Build the library from source files
@@ -36,6 +35,8 @@ SET(sources
 )
 
 IF(FFTW3F_FOUND)
+    INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
+    
     # Static library to be used in tests
     ADD_LIBRARY(comp_gpp_phy_ofdmmodulator_static STATIC ${sources})
     
