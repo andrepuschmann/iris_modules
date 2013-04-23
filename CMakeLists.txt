@@ -182,7 +182,7 @@ ADD_SUBDIRECTORY (tests)
 ########################################################################
 # Set up the documentation
 ########################################################################
-SET(DOC_FILES COPYRIGHT LICENSE LICENSE.GPL README.md)
+SET(DOC_FILES COPYRIGHT LICENSE LICENSE.GPL AUTHORS README.md)
 INSTALL(FILES ${DOC_FILES}
         DESTINATION ${DOC_DIR})
 
