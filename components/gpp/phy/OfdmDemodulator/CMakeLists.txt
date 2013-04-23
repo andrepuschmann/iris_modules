@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -26,7 +26,6 @@ MESSAGE(STATUS "  Processing ofdmdemodulator.")
 # Add includes and dependencies
 ########################################################################
 FIND_PACKAGE( FFTW3F )
-INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
 
 ########################################################################
 # Build the library from source files
@@ -36,6 +35,8 @@ SET(sources
 )
 
 IF(FFTW3F_FOUND)
+    INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
+    
     # Static library to be used in tests
     ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator_static STATIC ${sources})
     

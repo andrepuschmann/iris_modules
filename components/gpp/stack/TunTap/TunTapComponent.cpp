@@ -5,7 +5,7 @@
  * \section COPYRIGHT
  *
  * Copyright 2011-2013 Andre Puschmann <andre.puschmann@tu-ilmenau.de>
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -39,215 +39,244 @@
 #include "TunTapComponent.h"
 
 using namespace std;
-
+using boost::mutex;
+using boost::condition_variable;
+using boost::shared_ptr;
+using boost::lock_guard;
+using std::string;
 
 namespace iris
 {
-  // export library symbols
-  IRIS_COMPONENT_EXPORTS(StackComponent, TunTapComponent);
+namespace stack
+{
 
-  TunTapComponent::TunTapComponent(std::string name):
-      StackComponent(name, "tuntapstackcomponent","Interface to tun/tap virtual network devices", "Andre Puschmann", "0.1")
+// export library symbols
+IRIS_COMPONENT_EXPORTS(StackComponent, TunTapComponent);
+
+TunTapComponent::TunTapComponent(std::string name)
+  : StackComponent(name,
+                   "tuntapstackcomponent",
+                   "Interface to tun/tap virtual network devices",
+                   "Andre Puschmann",
+                   "0.1")
+{
+  //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
+  registerParameter("device",
+                    "Name of the Tun/Tap device to attach to",
+                    "tun0",
+                    false,
+                    tunTapDevice_x);
+  registerParameter("readfrombelow",
+                    "Accept blocks from below (as opposed to above)",
+                    "true",
+                    true,
+                    readFromBelow_x);
+}
+
+
+void TunTapComponent::initialize()
+{
+}
+
+
+void TunTapComponent::processMessage(boost::shared_ptr<StackDataSet> incomingFrame)
+{
+  size_t frameSize = incomingFrame->data.size();
+  size_t writtenBytes;
+
+
+  //LOG(LDEBUG) << "processMessage() called.";
+  assert(frameSize <= MAX_BUF_SIZE);
+  for (int i = 0; i < (int)frameSize; i++)
+    buffer_[i] = incomingFrame->data[i];
+
+  writtenBytes = write(tunFd_, buffer_, frameSize);
+
+  if (writtenBytes != frameSize)
+    LOG(LERROR) << "Less bytes written to tun/tap device then requested.";
+  else
   {
-    //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
-    registerParameter("device","Name of the Tun/Tap device to attach to","tun0",false,tunTapDevice_x);
-    registerParameter("readfrombelow","Accept blocks from downwards (as opposed to upwards)","true",true,readFromBelow_x);
+    LOG(LDEBUG) << "Successfully wrote "
+      << writtenBytes
+      << " bytes to tun device";
+  }
+}
+
+
+void TunTapComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> incomingFrame)
+{
+  //LOG(LDEBUG) << "processMessageFromAbove() called.";
+
+  if(readFromBelow_x == false)
+    processMessage(incomingFrame);
+}
+
+
+void TunTapComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> incomingFrame)
+{
+  //LOG(LDEBUG) << "processMessageFromBelow() called.";
+
+  if(readFromBelow_x)
+    processMessage(incomingFrame);
+}
+
+
+void TunTapComponent::start()
+{
+  //LOG(LDEBUG) << "start() called.";
+
+  // Connect to the device
+  strcpy(tunName_, tunTapDevice_x.c_str());
+  int flags = strstr(tunName_, "tap") == NULL ? IFF_TUN : IFF_TAP | IFF_NO_PI;
+  if ((tunFd_ = allocateTunDevice(tunName_, flags)) >= 0)
+  {
+    LOG(LINFO) << "Successfully attached to tun/tap device "
+      << tunTapDevice_x;
+  }
+  else
+  {
+    LOG(LFATAL) << "Error allocating tun/tap interface.";
+    return;
   }
 
+  // start thread
+  rxThread_.reset(new boost::thread(boost::bind( &TunTapComponent::rxThreadFunction, this)));
+}
 
-  void TunTapComponent::initialize()
-  {
+
+void TunTapComponent::stop()
+{
+  if (rxThread_) {
+    rxThread_->interrupt();
+    rxThread_->join();
   }
+  close(tunFd_);
+}
 
 
-  void TunTapComponent::processMessage(boost::shared_ptr<StackDataSet> incomingFrame)
+void TunTapComponent::registerPorts()
+{
+  std::vector<int> types;
+  types.push_back( int(TypeInfo< uint8_t >::identifier) );
+
+  // We just have bottom ports
+  registerInputPort("bottominputport", types);
+  registerInputPort("bottomoutputport", types);
+}
+
+
+void TunTapComponent::rxThreadFunction()
+{
+  //LOG(LINFO) << "RX thread started, listening on tun/tap device " << x_tunTapDevice;
+  fd_set socketSet;
+  struct timeval selectTimeout;
+  char buffer[MAX_BUF_SIZE];
+  int nread;
+
+  try
   {
-    size_t frameSize = incomingFrame->data.size();
-    size_t writtenBytes;
-
-
-    //LOG(LDEBUG) << "processMessage() called.";
-    assert(frameSize <= MAX_BUF_SIZE);
-    for (int i = 0; i < (int)frameSize; i++)
-      buffer_[i] = incomingFrame->data[i];
-
-    writtenBytes = write(tunFd_, buffer_, frameSize);
-
-    if (writtenBytes != frameSize)
-      LOG(LERROR) << "Less bytes written to tun/tap device then requested.";
-    else
-      LOG(LDEBUG) << "Successfully wrote " << writtenBytes << " bytes to tun device";
-  }
-
-
-  void TunTapComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> incomingFrame)
-  {
-    //LOG(LDEBUG) << "processMessageFromAbove() called.";
-
-    if(readFromBelow_x == false)
-      processMessage(incomingFrame);
-  }
-
-
-  void TunTapComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> incomingFrame)
-  {
-    //LOG(LDEBUG) << "processMessageFromBelow() called.";
-
-    if(readFromBelow_x)
-      processMessage(incomingFrame);
-  }
-
-
-  void TunTapComponent::start()
-  {
-    //LOG(LDEBUG) << "start() called.";
-
-    // Connect to the device
-    strcpy(tunName_, tunTapDevice_x.c_str());
-    int flags = strstr(tunName_, "tap") == NULL ? IFF_TUN : IFF_TAP | IFF_NO_PI;
-    if ((tunFd_ = allocateTunDevice(tunName_, flags)) >= 0)
+    // read data coming from the kernel
+    while(true)
     {
-      LOG(LINFO) << "Successfully attached to tun/tap device " << tunTapDevice_x;
-    }
-    else
-    {
-      LOG(LFATAL) << "Error allocating tun/tap interface.";
-      return;
-    }
+      boost::this_thread::interruption_point();
 
-    // start thread
-    rxThread_.reset(new boost::thread(boost::bind( &TunTapComponent::rxThreadFunction, this)));
-  }
+      // reset socket set and add tap descriptor
+      FD_ZERO(&socketSet);
+      FD_SET(tunFd_, &socketSet);
 
+      // initialize timeout
+      selectTimeout.tv_sec = 1;
+      selectTimeout.tv_usec = 0;
 
-  void TunTapComponent::stop()
-  {
-    if (rxThread_) {
-      rxThread_->interrupt();
-      rxThread_->join();
-    }
-    close(tunFd_);
-  }
-
-
-  void TunTapComponent::registerPorts()
-  {
-    std::vector<int> types;
-    types.push_back( int(TypeInfo< uint8_t >::identifier) );
-
-    // We just have bottom ports
-    registerInputPort("bottominputport", types);
-    registerInputPort("bottomoutputport", types);
-  }
-
-
-  void TunTapComponent::rxThreadFunction()
-  {
-    //LOG(LINFO) << "RX thread started, listening on tun/tap device " << x_tunTapDevice;
-    fd_set socketSet;
-    struct timeval selectTimeout;
-    char buffer[MAX_BUF_SIZE];
-    int nread;
-
-    try
-    {
-      // read data coming from the kernel
-      while(true)
-      {
-        boost::this_thread::interruption_point();
-        
-        // reset socket set and add tap descriptor
-        FD_ZERO(&socketSet); 
-        FD_SET(tunFd_, &socketSet);
-        
-        // initialize timeout
-        selectTimeout.tv_sec = 1;
-        selectTimeout.tv_usec = 0;
-
-        // suspend thread until we receive a packet or timeout
-        if (select(tunFd_ + 1, &socketSet, NULL, NULL, &selectTimeout) == 0) {
-          //LOG(LDEBUG) << "Timeout while waiting for incoming packet.";
-        } else {
-          if (FD_ISSET(tunFd_, &socketSet)) {
-            if ((nread = read(tunFd_, buffer, MAX_BUF_SIZE)) < 0)
-            {
-              LOG(LFATAL) << "Error while reading from tun/tap interface.";
-              continue;
-            }
-            LOG(LDEBUG) << "Read " << nread << " bytes from device " << tunName_;
-
-            // copy received data into new StackDataSet
-            shared_ptr<StackDataSet> packetBuffer(new StackDataSet);
-            packetBuffer->data.assign(buffer, buffer + nread);
-            
-            // send downwards
-            sendDownwards("bottomoutputport", packetBuffer);
+      // suspend thread until we receive a packet or timeout
+      if (select(tunFd_ + 1, &socketSet, NULL, NULL, &selectTimeout) == 0) {
+        //LOG(LDEBUG) << "Timeout while waiting for incoming packet.";
+      } else {
+        if (FD_ISSET(tunFd_, &socketSet)) {
+          if ((nread = read(tunFd_, buffer, MAX_BUF_SIZE)) < 0)
+          {
+            LOG(LFATAL) << "Error while reading from tun/tap interface.";
+            continue;
           }
+          LOG(LDEBUG) << "Read " << nread << " bytes from device "
+            << tunName_;
+
+          // copy received data into new StackDataSet
+          shared_ptr<StackDataSet> packetBuffer(new StackDataSet);
+          packetBuffer->data.assign(buffer, buffer + nread);
+
+          // send downwards
+          sendDownwards("bottomoutputport", packetBuffer);
         }
-      } // while (true)
-      throw SystemException("Rx thread stopped unexpectedly.");
-    }
-    catch(IrisException& ex)
-    {
-      LOG(LFATAL) << "Error in TunTap component: " << ex.what() << " - TX thread exiting.";
-    }
-    catch(boost::thread_interrupted)
-    {
-      LOG(LINFO) << "Thread " << boost::this_thread::get_id() << " in stack component interrupted.";
-    }
+      }
+    } // while (true)
+    throw SystemException("Rx thread stopped unexpectedly.");
   }
-
-
-  /* Arguments taken by the function:
-  *
-  * code shamelessly taken from
-  * http://backreference.org/2010/03/26/tuntap-interface-tutorial/
-  *
-  * char *dev: the name of an interface (or '\0'). MUST have enough
-  *   space to hold the interface name if '\0' is passed
-  * int flags: interface flags (eg, IFF_TUN etc.)
-  */
-  int TunTapComponent::allocateTunDevice(char *dev, int flags)
+  catch(IrisException& ex)
   {
-    struct ifreq ifr;
-    int fd, err;
-    const char *clonedev = (const char *)"/dev/net/tun";
+    LOG(LFATAL) << "Error in TunTap component: " << ex.what()
+      << " - TX thread exiting.";
+  }
+  catch(boost::thread_interrupted)
+  {
+    LOG(LINFO) << "Thread " << boost::this_thread::get_id()
+      << " in stack component interrupted.";
+  }
+}
 
 
-    // open the clone device
-    if((fd = open(clonedev, O_RDWR)) < 0)
-    {
-      return fd;
-    }
+/* Arguments taken by the function:
+*
+* code shamelessly taken from
+* http://backreference.org/2010/03/26/tuntap-interface-tutorial/
+*
+* char *dev: the name of an interface (or '\0'). MUST have enough
+*   space to hold the interface name if '\0' is passed
+* int flags: interface flags (eg, IFF_TUN etc.)
+*/
+int TunTapComponent::allocateTunDevice(char *dev, int flags)
+{
+  struct ifreq ifr;
+  int fd, err;
+  const char *clonedev = (const char *)"/dev/net/tun";
 
-    // preparation of the struct ifr, of type "struct ifreq"
-    memset(&ifr, 0, sizeof(ifr));
 
-    ifr.ifr_flags = flags;   // IFF_TUN or IFF_TAP, plus maybe IFF_NO_PI
-
-    if (*dev)
-    {
-      // if a device name was specified, put it in the structure; otherwise,
-      // the kernel will try to allocate the "next" device of the
-      // specified type
-      strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-    }
-
-    // try to create the device
-    if((err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0)
-    {
-      close(fd);
-      return err;
-    }
-
-    // if the operation was successful, write back the name of the
-    // interface to the variable "dev", so the caller can know
-    // it. Note that the caller MUST reserve space in *dev (see calling
-    // code below)
-    strcpy(dev, ifr.ifr_name);
-
-    // this is the special file descriptor that the caller will use to talk
-    // with the virtual interface
+  // open the clone device
+  if((fd = open(clonedev, O_RDWR)) < 0)
+  {
     return fd;
   }
-} /* namespace iris */
+
+  // preparation of the struct ifr, of type "struct ifreq"
+  memset(&ifr, 0, sizeof(ifr));
+
+  ifr.ifr_flags = flags;   // IFF_TUN or IFF_TAP, plus maybe IFF_NO_PI
+
+  if (*dev)
+  {
+    // if a device name was specified, put it in the structure; otherwise,
+    // the kernel will try to allocate the "next" device of the
+    // specified type
+    strncpy(ifr.ifr_name, dev, IFNAMSIZ);
+  }
+
+  // try to create the device
+  if((err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0)
+  {
+    close(fd);
+    return err;
+  }
+
+  // if the operation was successful, write back the name of the
+  // interface to the variable "dev", so the caller can know
+  // it. Note that the caller MUST reserve space in *dev (see calling
+  // code below)
+  strcpy(dev, ifr.ifr_name);
+
+  // this is the special file descriptor that the caller will use to talk
+  // with the virtual interface
+  return fd;
+}
+
+} // namespace stack
+} // namespace iris

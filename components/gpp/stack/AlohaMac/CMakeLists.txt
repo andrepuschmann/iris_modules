@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -45,5 +45,5 @@ IF (PROTOBUF_FOUND)
     IRIS_INSTALL(comp_gpp_stack_alohamac)
     IRIS_APPEND_INSTALL_LIST(alohamac)
 ELSE (PROTOBUF_FOUND)
-  IRIS_APPEND_NOINSTALL_LIST(alohamac)
+    IRIS_APPEND_NOINSTALL_LIST(alohamac)
 ENDIF (PROTOBUF_FOUND)
