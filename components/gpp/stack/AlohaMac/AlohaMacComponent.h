@@ -4,7 +4,6 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2013 Andre Puschmann <andre.puschmann@tu-ilmenau.de>
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
@@ -42,26 +41,38 @@
 
 namespace iris
 {
-	using boost::mutex;
-	using boost::condition_variable;
-	using boost::shared_ptr;
-  using boost::lock_guard;
-
-class AlohaMacComponent: public StackComponent
+namespace stack
 {
-private:
-	//Exposed parameters
-  std::string localAddress_x;
-  std::string destinationAddress_x;
-  int ackTimeout_x;
-  int maxRetry_x;
 
-	// local variables
+class AlohaMacComponent
+  : public StackComponent
+{
+public:
+  AlohaMacComponent(std::string name);
+  virtual ~AlohaMacComponent();
+
+  virtual void initialize();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+
+  virtual void registerPorts();
+
+  virtual void start();
+  virtual void stop();
+
+private:
+  //Exposed parameters
+  std::string localAddress_x;         ///< Address of this client
+  std::string destinationAddress_x;   ///< Address of destination client
+  int ackTimeout_x;                   ///< Time to wait for ACK packets (ms)
+  int maxRetry_x;                     ///< Number of retransmissions
+
+  // local variables
   StackDataBuffer rxPktBuffer_, txPktBuffer_;
-  uint32_t txSeqNo_; // sequence number of outgoing data packets
-  uint32_t rxSeqNo_;
-  condition_variable ackArrivedCond_;
-  mutex seqNoMutex_;
+  uint32_t txSeqNo_;          ///< sequence number of outgoing data packets
+  uint32_t rxSeqNo_;          ///< sequence number of incoming data packets
+  boost::condition_variable ackArrivedCond_;
+  boost::mutex seqNoMutex_;
 
   // thread pointers
   boost::scoped_ptr< boost::thread > rxThread_, txThread_;
@@ -71,20 +82,10 @@ private:
   void rxThreadFunction();
   void txThreadFunction();
 
-public:
-  AlohaMacComponent(std::string name);
-  virtual ~AlohaMacComponent();
 
-  virtual void initialize();
-  virtual void processMessageFromAbove(shared_ptr<StackDataSet> set);
-  virtual void processMessageFromBelow(shared_ptr<StackDataSet> set);
-
-  virtual void registerPorts();
-
-  virtual void start();
-  virtual void stop();
 };
 
-} /* namespace iris */
+} // namespace stack
+} // namespace iris
 
-#endif /* STACK_ALOHAMACCOMPONENT_H_ */
+#endif // STACK_ALOHAMACCOMPONENT_H_

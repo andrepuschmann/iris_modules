@@ -4,7 +4,6 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2013 Andre Puschmann <andre.puschmann@tu-ilmenau.de>
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
@@ -39,9 +38,16 @@
 #include "utility/StackHelper.h"
 
 using namespace std;
+using boost::mutex;
+using boost::condition_variable;
+using boost::shared_ptr;
+using boost::lock_guard;
 
 namespace iris
 {
+namespace stack
+{
+
 // export library symbols
 IRIS_COMPONENT_EXPORTS(StackComponent, AlohaMacComponent);
 
@@ -263,4 +269,5 @@ void AlohaMacComponent::sendAckPacket(const string destination, uint32_t seqno)
   LOG(LINFO) << "Tx  ACK  " << seqno;
 }
 
-} /* namespace iris */
+} // namespace stack
+} // namespace iris

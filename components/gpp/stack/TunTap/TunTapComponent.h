@@ -4,7 +4,6 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2011-2013 Andre Puschmann <andre.puschmann@tu-ilmenau.de>
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
@@ -53,18 +52,28 @@
 
 namespace iris
 {
-  using boost::mutex;
-  using boost::condition_variable;
-  using boost::shared_ptr;
-  using boost::lock_guard;
-  using std::string;
-
-class TunTapComponent: public StackComponent
+namespace stack
 {
+
+class TunTapComponent
+  : public StackComponent
+{
+public:
+  TunTapComponent(std::string name);
+
+  virtual void initialize();
+  virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
+  virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
+
+  virtual void registerPorts();
+
+  virtual void start();
+  virtual void stop();
+
 private:
   //Exposed parameters
-  bool readFromBelow_x;
-  string tunTapDevice_x;
+  bool readFromBelow_x;       ///< Accept blocks from below (istead of above)
+  std::string tunTapDevice_x; ///< Name of the Tun/Tap device to attach to
 
   char tunName_[IFNAMSIZ];
   int tunFd_;
@@ -76,19 +85,9 @@ private:
   void rxThreadFunction();
   int allocateTunDevice(char *dev, int flags);
 
-public:
-  TunTapComponent(std::string name);
-
-  virtual void initialize();
-  virtual void processMessageFromAbove(shared_ptr<StackDataSet> set);
-  virtual void processMessageFromBelow(shared_ptr<StackDataSet> set);
-
-  virtual void registerPorts();
-
-  virtual void start();
-  virtual void stop();
 };
 
-} /* namespace iris */
+} // namespace stack
+} // namespace iris
 
-#endif /* STACK_TUNTAPCOMPONENT_H_ */
+#endif // STACK_TUNTAPCOMPONENT_H_
