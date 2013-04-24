@@ -40,10 +40,8 @@
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
 #include "modulation/OfdmIndexGenerator.h"
-#include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
 #include "modulation/Whitener.h"
-#include "modulation/QamModulator.h"
 #include "utility/RawFileUtility.h"
 
 using namespace std;
@@ -187,10 +185,10 @@ void OfdmModulatorComponent::setup()
   numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x + 1;
   preamble_.clear();
   preamble_.resize(numBins_);
-  OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
-                                          numPilotCarriers_x,
-                                          numGuardCarriers_x,
-                                          preamble_.begin(), preamble_.end());
+  preambleGen_.generatePreamble(numDataCarriers_x,
+                                numPilotCarriers_x,
+                                numGuardCarriers_x,
+                                preamble_.begin(), preamble_.end());
 
   // Set up containers
   fftBins_ = reinterpret_cast<Cplx*>(
@@ -214,9 +212,9 @@ void OfdmModulatorComponent::setup()
   pad_.resize(bytesPerSymbol_);
   Whitener::whiten(pad_.begin(), pad_.end());
   modPad_.resize(numDataCarriers_x);
-  QamModulator::modulate(pad_.begin(), pad_.end(),
-                         modPad_.begin(), modPad_.end(),
-                         modulationDepth_x);
+  qMod_.modulate(pad_.begin(), pad_.end(),
+                 modPad_.begin(), modPad_.end(),
+                 modulationDepth_x);
 
 }
 
@@ -283,12 +281,12 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
   Whitener::whiten(begin, end);
 
   // Modulate and pad
-  QamModulator::modulate(header_.begin(), header_.end(),
-                         modHeader_.begin(), modHeader_.end(),1);
+  qMod_.modulate(header_.begin(), header_.end(),
+                 modHeader_.begin(), modHeader_.end(),1);
   modData_.resize(numOfdmSymbols*numDataCarriers_x);
-  CplxVecIt modIt = QamModulator::modulate(begin, end,
-                                           modData_.begin(), modData_.end(),
-                                           modulationDepth_x);
+  CplxVecIt modIt = qMod_.modulate(begin, end,
+                                   modData_.begin(), modData_.end(),
+                                   modulationDepth_x);
   CplxVecIt padIt = modPad_.begin();
   for(; modIt!=modData_.end(); modIt++,padIt++)
     *modIt = *padIt;

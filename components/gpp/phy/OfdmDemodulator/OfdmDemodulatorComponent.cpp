@@ -41,11 +41,8 @@
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
 #include "modulation/OfdmIndexGenerator.h"
-#include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
 #include "modulation/Whitener.h"
-#include "modulation/QamDemodulator.h"
-#include "modulation/ToneGenerator.h"
 #include "utility/RawFileUtility.h"
 
 using namespace std;
@@ -211,11 +208,11 @@ void OfdmDemodulatorComponent::setup()
   preamble_.resize(numBins_);
   preambleBins_.resize(numBins_/2);
 
-  OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
-                                          numPilotCarriers_x,
-                                          numGuardCarriers_x,
-                                          preamble_.begin(),
-                                          preamble_.end());
+  preambleGen_.generatePreamble(numDataCarriers_x,
+                                numPilotCarriers_x,
+                                numGuardCarriers_x,
+                                preamble_.begin(),
+                                preamble_.end());
 
   if(debug_x)
     RawFileUtility::write(preamble_.begin(), preamble_.end(),
@@ -476,14 +473,14 @@ void OfdmDemodulatorComponent::demodSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
                           fileName.str());
   }
 
-  QamDemodulator::demodulate(qamSymbols.begin(), qamSymbols.end(),
-                             outBegin, outEnd, modulationDepth);
+  qDemod_.demodulate(qamSymbols.begin(), qamSymbols.end(),
+                     outBegin, outEnd, modulationDepth);
 }
 
 void OfdmDemodulatorComponent::generateFractionalOffsetCorrector(float offset)
 {
   float relFreq = -offset/numBins_;
-  ToneGenerator::generate(corrector_.begin(), corrector_.end(), relFreq);
+  toneGenerator_.generate(corrector_.begin(), corrector_.end(), relFreq);
 }
 
 void OfdmDemodulatorComponent::correctFractionalOffset(CplxVecIt begin,
