@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -43,7 +43,7 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "utility/MathDefines.h"
+#include "math/MathDefines.h"
 
 namespace iris
 {
@@ -56,8 +56,14 @@ namespace iris
 class QamDemodulator
 {
  public:
+  typedef std::vector<uint8_t>  Uint8Vec;
   typedef std::complex<float>   Cplx;
   typedef std::vector<Cplx>     CplxVec;
+
+  QamDemodulator()
+  {
+    createQam16Lut();
+  }
 
   /** Demodulate a set of QAM complex<float> symbols to uint8_t bytes.
    * Defaults to BPSK.
@@ -69,11 +75,11 @@ class QamDemodulator
    * @param M         Modulation depth (1=BPSK, 2=QPSK, 4=QAM16)
    */
   template <class InputInterator, class OutputIterator>
-  static OutputIterator demodulate(InputInterator inBegin,
-                                   InputInterator inEnd,
-                                   OutputIterator outBegin,
-                                   OutputIterator outEnd,
-                                   unsigned int M)
+  OutputIterator demodulate(InputInterator inBegin,
+                            InputInterator inEnd,
+                            OutputIterator outBegin,
+                            OutputIterator outEnd,
+                            unsigned int M)
   {
     // Check for sufficient output size
     if((outEnd-outBegin)*8/M < inEnd-inBegin)
@@ -165,41 +171,37 @@ class QamDemodulator
   }
 
   /// Convenience function for logging.
-  static std::string getName(){ return "QamDemodulator"; }
+  std::string getName(){ return "QamDemodulator"; }
 
-  static std::vector< uint8_t > createQam16Lut()
-  {
-    using namespace std;
-    vector< uint8_t > vec;
-    vec.push_back(15);
-    vec.push_back(13);
-    vec.push_back(12);
-    vec.push_back(14);
-
-    vec.push_back(5);
-    vec.push_back(7);
-    vec.push_back(6);
-    vec.push_back(4);
-
-    vec.push_back(0);
-    vec.push_back(2);
-    vec.push_back(3);
-    vec.push_back(1);
-
-    vec.push_back(10);
-    vec.push_back(8);
-    vec.push_back(9);
-    vec.push_back(11);
-    return vec;
-  }
 
  private:
-  QamDemodulator(); // Disabled constructor
 
-  static const std::vector< uint8_t > Qam16Lut_;
+  void createQam16Lut()
+  {
+    using namespace std;
+    Qam16Lut_.push_back(15);
+    Qam16Lut_.push_back(13);
+    Qam16Lut_.push_back(12);
+    Qam16Lut_.push_back(14);
+
+    Qam16Lut_.push_back(5);
+    Qam16Lut_.push_back(7);
+    Qam16Lut_.push_back(6);
+    Qam16Lut_.push_back(4);
+
+    Qam16Lut_.push_back(0);
+    Qam16Lut_.push_back(2);
+    Qam16Lut_.push_back(3);
+    Qam16Lut_.push_back(1);
+
+    Qam16Lut_.push_back(10);
+    Qam16Lut_.push_back(8);
+    Qam16Lut_.push_back(9);
+    Qam16Lut_.push_back(11);
+  }
+
+  Uint8Vec Qam16Lut_;
 };
-
-const std::vector< uint8_t > QamDemodulator::Qam16Lut_ = QamDemodulator::createQam16Lut();
 
 } // namespace iris
 

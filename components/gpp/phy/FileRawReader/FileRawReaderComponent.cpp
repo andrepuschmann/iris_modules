@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <boost/scoped_array.hpp>
+#include <boost/thread.hpp>
 
 #include "utility/EndianConversion.h"
 
@@ -103,6 +104,12 @@ FileRawReaderComponent::FileRawReaderComponent(string name)
                     "native",
                     false,
                     endian_x);
+  registerParameter("delay",
+                    "Delay in us between reads",
+                    "100000",
+                    true,
+                    delay_x,
+                    Interval<uint32_t>(0,5000000));
 }
 
 void FileRawReaderComponent::registerPorts()
@@ -225,6 +232,7 @@ void FileRawReaderComponent::process()
     default:
       break;
   }
+  boost::this_thread::sleep(boost::posix_time::microseconds(delay_x));
 }
 
 template<typename T>

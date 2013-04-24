@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -50,11 +50,14 @@
 #define PHY_OFDMDEMODULATORCOMPONENT_H_
 
 #include <boost/scoped_ptr.hpp>
+#include "fftw3.h"
 
 #include "irisapi/PhyComponent.h"
 #include "modulation/OfdmPreambleDetector.h"
-#include "kissfft/kissfft.hh"
-#include "utility/MathDefines.h"
+#include "modulation/ToneGenerator.h"
+#include "modulation/QamDemodulator.h"
+#include "modulation/OfdmPreambleGenerator.h"
+#include "math/MathDefines.h"
 
 namespace iris
 {
@@ -84,6 +87,7 @@ public:
   typedef CplxVec::iterator     CplxVecIt;
 
   OfdmDemodulatorComponent(std::string name);
+  ~OfdmDemodulatorComponent();
   virtual void calculateOutputTypes(
       std::map<std::string, int>& inputTypes,
       std::map<std::string, int>& outputTypes);
@@ -94,6 +98,7 @@ public:
 
 private:
   void setup();
+  void destroy();
   CplxVecIt searchInput(CplxVecIt begin, CplxVecIt end);
   CplxVecIt processFrame(CplxVecIt begin, CplxVecIt end);
   void extractPreamble();
@@ -110,6 +115,8 @@ private:
 
   struct opAbs{float operator()(Cplx i) const{return abs(i);};};
 
+  bool debug_x;               ///< Debug flag
+  int reportRate_x;           ///< Report performance every reportRate_x frames
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
@@ -132,6 +139,9 @@ private:
   uint16_t rxNumBytes_;       ///< Number of bytes of data in received frame.
   uint8_t rxModulation_;      ///< Modulation depth of received frame.
   int rxNumSymbols_;          ///< Number of OFDM symbols in received frame.
+  int numRxFrames_;           ///< Count of total detected frames.
+  int numRxFails_;            ///< Count of frames we failed to demod.
+  int symbolCount_;           ///< Index of symbol in current frame.
 
   DataSet< Cplx >* in_;       ///< Pointer to an input DataSet.
   IntVec pilotIndices_;       ///< Indices for our pilot carriers.
@@ -146,10 +156,15 @@ private:
   CplxVec corrector_;         ///< Fractional frequency offset corrector.
   ByteVec frameData_;         ///< Container for received frame data.
 
-  boost::scoped_ptr<kissfft<float> > halfFft_;
-  boost::scoped_ptr<kissfft<float> > fullFft_;
+  Cplx* halfFftData_;         ///< Input/output array for half-length fft
+  fftwf_plan halfFft_;        ///< Half-length fft plan
+  Cplx* fullFftData_;         ///< Input/output array for full-length fft
+  fftwf_plan fullFft_;        ///< Full-length fft plan
 
-  OfdmPreambleDetector detector_;   ///< Our preamble detector.
+  OfdmPreambleDetector detector_;       ///< Our preamble detector.
+  ToneGenerator toneGenerator_;         ///< Our tone generator.
+  QamDemodulator qDemod_;               ///< Our QAM demodulator.
+  OfdmPreambleGenerator preambleGen_;   ///< Our preamble generator.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }

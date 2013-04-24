@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -28,7 +28,6 @@ SET(test_sources
     Crc_test.cpp
     OfdmIndexGenerator_test.cpp
     OfdmPreambleDetector_test.cpp
-    OfdmPreambleGenerator_test.cpp
     QamDemodulator_test.cpp
     QamModulator_test.cpp
     ToneGenerator_test.cpp
@@ -50,3 +49,11 @@ ENDFOREACH(test_source)
 ########################################################################
 # Build any lib-dependent tests
 ########################################################################
+FIND_PACKAGE( FFTW3F )
+
+IF (FFTW3F_FOUND)
+    INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
+    ADD_EXECUTABLE(OfdmPreambleGenerator_test OfdmPreambleGenerator_test.cpp)
+    TARGET_LINK_LIBRARIES(OfdmPreambleGenerator_test ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
+    ADD_TEST(OfdmPreambleGenerator_test OfdmPreambleGenerator_test)
+ENDIF (FFTW3F_FOUND)

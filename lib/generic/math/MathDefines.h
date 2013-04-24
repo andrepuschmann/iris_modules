@@ -1,10 +1,10 @@
 /**
- * \file Dsp.h
+ * \file MathDefines.h
  * \version 1.0
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -28,42 +28,35 @@
  *
  * \section DESCRIPTION
  *
- * Some useful DSP routines.
+ * Math definitions for use in Iris.
  */
 
-#ifndef DSP_H_
-#define DSP_H_
+#ifndef MATHDEFINES_H
+#define MATHDEFINES_H
 
-#include <cmath>
-#include <complex>
+#define IRIS_E    2.71828182845904523536
+#define IRIS_LOG2E  1.44269504088896340736
+#define IRIS_LOG10E   0.434294481903251827651
+#define IRIS_LN2    0.693147180559945309417
+#define IRIS_LN10   2.30258509299404568402
+#define IRIS_PI     3.14159265358979323846
+#define IRIS_PI_2   1.57079632679489661923
+#define IRIS_PI_4   0.785398163397448309616
+#define IRIS_1_PI   0.318309886183790671538
+#define IRIS_2_PI   0.636619772367581343076
+#define IRIS_2_SQRTPI 1.12837916709551257390
+#define IRIS_SQRT2  1.41421356237309504880
+#define IRIS_SQRT1_2  0.707106781186547524401
 
 namespace iris
 {
-
-/** Quick routine to estimate the magnitude of a complex number.
- * Adapted from Grant Griffin's DSP trick
- * (http://www.dspguru.com/dsp/tricks/magnitude-estimator)
- * Default alpha/beta values are for min RMS error.
- *
- * @param c       The complex number.
- * @param alpha   First multiplier
- * @param beta    Second multiplier
- */
-
-template<class T>
-T fastMag(std::complex<T> c,
-          double alpha = 0.947543636291,
-          double beta = 0.392485425092)
+enum QAM
 {
-  // magnitude ~= alpha * max(|I|, |Q|) + beta * min(|I|, |Q|)
-  T absI = fabs(c.real());
-  T absQ = fabs(c.imag());
-  if (absI > absQ) {
-    return alpha * absI + beta * absQ;
-  }
-  return alpha * absQ + beta * absI;
-}
-
+  BPSK=1,
+  QPSK=2,
+  QAM16=4
+};
 } // namespace iris
 
-#endif // DSP_H_
+#endif
+

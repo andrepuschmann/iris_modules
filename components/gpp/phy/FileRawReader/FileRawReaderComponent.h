@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -69,6 +69,7 @@ class FileRawReaderComponent
   std::string fileName_x;   ///< Name of file to read
   std::string dataType_x;   ///< Interpret the data as this data type
   std::string endian_x;     ///< Endianness of the data
+  uint32_t delay_x;         ///< Time to wait between blocks.
 
   std::ifstream hInFile_;   ///< The file stream
 };

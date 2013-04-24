@@ -1,6 +1,5 @@
-
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -21,20 +20,30 @@
 # and at http://www.gnu.org/licenses/.
 #
 
+MESSAGE(STATUS "  Processing alohamac.")
+
 ########################################################################
 # Add includes and dependencies
 ########################################################################
-
+FIND_PACKAGE( Protobuf )
 
 ########################################################################
 # Build the library from source files
 ########################################################################
-SET(tml_sources
-	tml_arithmetics.c
-	tml_processing.c
-	tml_varithmetics.c
-	tml_stochastics.c
+SET(sources
+  AlohaMacComponent.cpp
+  alohamac.pb.cc
 )
 
-ADD_LIBRARY(tml SHARED ${tml_sources})
-SET_TARGET_PROPERTIES(tml PROPERTIES DEFINE_SYMBOL "IRIS_CORE_DLL_EXPORTS")
+IF (PROTOBUF_FOUND)
+    # Targets must be globally unique for cmake 
+    ADD_LIBRARY(comp_gpp_stack_alohamac SHARED ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_stack_alohamac ${PROTOBUF_LIBRARIES})
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+    PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS alohamac.proto)
+    SET_TARGET_PROPERTIES(comp_gpp_stack_alohamac PROPERTIES OUTPUT_NAME "alohamac")
+    IRIS_INSTALL(comp_gpp_stack_alohamac)
+    IRIS_APPEND_INSTALL_LIST(alohamac)
+ELSE (PROTOBUF_FOUND)
+    IRIS_APPEND_NOINSTALL_LIST(alohamac)
+ENDIF (PROTOBUF_FOUND)

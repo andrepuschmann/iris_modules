@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -55,7 +55,7 @@ FileWriterComponent::FileWriterComponent(std::string name)
                    "0.1")
 {
   registerParameter("filename",
-                    "The file to read",
+                    "The file to write",
                     "temp.bin",
                     false,
                     fileName_x);

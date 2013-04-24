@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -40,10 +40,9 @@
 #include "irisapi/LibraryDefs.h"
 #include "irisapi/Version.h"
 #include "modulation/OfdmIndexGenerator.h"
-#include "modulation/OfdmPreambleGenerator.h"
 #include "modulation/Crc.h"
 #include "modulation/Whitener.h"
-#include "modulation/QamModulator.h"
+#include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace boost::lambda;
@@ -66,7 +65,13 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
     ,numHeaderSymbols_(0)
     ,sampleRate_(0)
     ,timeStamp_(0)
+    ,fft_(NULL)
+    ,fftBins_(NULL)
 {
+  registerParameter(
+    "debug", "Whether to output debug data.",
+    "false", true, debug_x);
+
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
     "192", true, numDataCarriers_x, Interval<int>(1,65536));
@@ -96,6 +101,11 @@ OfdmModulatorComponent::OfdmModulatorComponent(std::string name)
   typedef Cplx c;
   c seq[] = {c(1,0),c(1,0),c(-1,0),c(-1,0),c(-1,0),c(1,0),c(-1,0),c(1,0),};
   pilotSequence_.assign(begin(seq), end(seq));
+}
+
+OfdmModulatorComponent::~OfdmModulatorComponent()
+{
+  destroy();
 }
 
 void OfdmModulatorComponent::registerPorts()
@@ -151,7 +161,10 @@ void OfdmModulatorComponent::parameterHasChanged(std::string name)
   if(name == "numdatacarriers" || name == "numpilotcarriers" ||
      name == "numguardcarriers" || name == "cyclicprefixlength" ||
      name == "modulationdepth")
+  {
+    destroy();
     setup();
+  }
 }
 
 /// Set up all our index vectors and containers.
@@ -172,15 +185,20 @@ void OfdmModulatorComponent::setup()
   numBins_ = numDataCarriers_x + numPilotCarriers_x + numGuardCarriers_x + 1;
   preamble_.clear();
   preamble_.resize(numBins_);
-  OfdmPreambleGenerator::generatePreamble(numDataCarriers_x,
-                                          numPilotCarriers_x,
-                                          numGuardCarriers_x,
-                                          preamble_.begin(), preamble_.end());
+  preambleGen_.generatePreamble(numDataCarriers_x,
+                                numPilotCarriers_x,
+                                numGuardCarriers_x,
+                                preamble_.begin(), preamble_.end());
 
   // Set up containers
-  fft_.reset(new kissfft<float>(numBins_, true));
-  fftBins_.clear();
-  fftBins_.resize(numBins_);
+  fftBins_ = reinterpret_cast<Cplx*>(
+      fftwf_malloc(sizeof(fftwf_complex) * numBins_));
+  fill(&fftBins_[0], &fftBins_[numBins_], Cplx(0,0));
+  fft_ = fftwf_plan_dft_1d(numBins_,
+                           (fftwf_complex*)fftBins_,
+                           (fftwf_complex*)fftBins_,
+                           FFTW_BACKWARD,
+                           FFTW_MEASURE);
   symbol_.clear();
   symbol_.resize(numBins_);
   int bytesPerSymbol = numDataCarriers_x/8;
@@ -194,10 +212,18 @@ void OfdmModulatorComponent::setup()
   pad_.resize(bytesPerSymbol_);
   Whitener::whiten(pad_.begin(), pad_.end());
   modPad_.resize(numDataCarriers_x);
-  QamModulator::modulate(pad_.begin(), pad_.end(),
-                         modPad_.begin(), modPad_.end(),
-                         modulationDepth_x);
+  qMod_.modulate(pad_.begin(), pad_.end(),
+                 modPad_.begin(), modPad_.end(),
+                 modulationDepth_x);
 
+}
+
+void OfdmModulatorComponent::destroy()
+{
+  if(fftBins_ != NULL)
+    fftwf_free(fftBins_);
+  if(fft_ != NULL)
+    fftwf_destroy_plan(fft_);
 }
 
 /** Create a header for the current frame.
@@ -255,12 +281,12 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
   Whitener::whiten(begin, end);
 
   // Modulate and pad
-  QamModulator::modulate(header_.begin(), header_.end(),
-                         modHeader_.begin(), modHeader_.end(),1);
+  qMod_.modulate(header_.begin(), header_.end(),
+                 modHeader_.begin(), modHeader_.end(),1);
   modData_.resize(numOfdmSymbols*numDataCarriers_x);
-  CplxVecIt modIt = QamModulator::modulate(begin, end,
-                                           modData_.begin(), modData_.end(),
-                                           modulationDepth_x);
+  CplxVecIt modIt = qMod_.modulate(begin, end,
+                                   modData_.begin(), modData_.end(),
+                                   modulationDepth_x);
   CplxVecIt padIt = modPad_.begin();
   for(; modIt!=modData_.end(); modIt++,padIt++)
     *modIt = *padIt;
@@ -292,6 +318,10 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
     it = copyWithCp(symbol_.begin(), symbol_.end(), it, it+ofdmSymLength);
   }
 
+  if(debug_x)
+    RawFileUtility::write(out->data.begin(), out->data.end(),
+                          "OutputData/TxFrame");
+
   releaseOutputDataSet("output1", out);
 }
 
@@ -311,6 +341,8 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   if(outEnd-outBegin < numBins_)
     throw IrisException("Insufficient storage provided for createSymbol output.");
 
+  fill(&fftBins_[0], &fftBins_[numBins_], Cplx(0,0));
+
   int i = 0;
   IntVecIt it = pilotIndices_.begin();
   for(; it!=pilotIndices_.end(); it++, i++)
@@ -318,9 +350,18 @@ void OfdmModulatorComponent::createSymbol(CplxVecIt inBegin, CplxVecIt inEnd,
   for(it=dataIndices_.begin(); it!= dataIndices_.end(); it++)
     fftBins_[*it] = *inBegin++;
 
-  fft_->transform(&fftBins_[0], &(*outBegin));
+  if(debug_x)
+    RawFileUtility::write(&fftBins_[0], &fftBins_[numBins_],
+                          "OutputData/TxSymbolBins");
+
+  fftwf_execute(fft_);
+  copy(&fftBins_[0], &fftBins_[numBins_], outBegin);
   float scaleFactor = numPilotCarriers_x + numDataCarriers_x;
   transform(outBegin, outEnd, outBegin, _1/scaleFactor);
+
+  if(debug_x)
+    RawFileUtility::write(outBegin, outEnd,
+                          "OutputData/TxSymbol");
 }
 
 OfdmModulatorComponent::CplxVecIt

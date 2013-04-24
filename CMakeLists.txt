@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -140,7 +140,7 @@ CONFIGURE_FILE(
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
     IMMEDIATE @ONLY)
 
-ADD_CUSTOM_TARGET(uninstall
+ADD_CUSTOM_TARGET(uninstall_modules
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
     
 ########################################################################
@@ -182,7 +182,7 @@ ADD_SUBDIRECTORY (tests)
 ########################################################################
 # Set up the documentation
 ########################################################################
-SET(DOC_FILES COPYRIGHT LICENSE LICENSE.GPL README.md)
+SET(DOC_FILES COPYRIGHT LICENSE LICENSE.GPL AUTHORS README.md)
 INSTALL(FILES ${DOC_FILES}
         DESTINATION ${DOC_DIR})
 

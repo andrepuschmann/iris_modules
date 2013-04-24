@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -39,7 +39,7 @@
 
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "utility/MathDefines.h"
+#include "math/MathDefines.h"
 
 namespace iris
 {
@@ -49,8 +49,17 @@ class ToneGenerator
 {
  public:
   typedef std::vector<float>      FloatVec;
-  typedef FloatVec::iterator      FloatVecIt;
   typedef std::complex<float>     Cplx;
+
+  ToneGenerator()
+  {
+    double angle;
+    for(int i=0; i<65536; i++)
+    {
+      angle = (2.0 * IRIS_PI * (double)i) / (double)65536.0;
+      lookup_.push_back((float)cos(angle));
+    }
+  }
 
   /** Generate a complex tone with a given frequency
    *
@@ -59,7 +68,7 @@ class ToneGenerator
    * @param frequency   Required tone frequency.
    */
   template <class Iterator>
-  static void generate(Iterator outBegin, Iterator outEnd, float frequency)
+  void generate(Iterator outBegin, Iterator outEnd, float frequency)
   {
     int neg = 1;
     frequency >= 0 ? neg = 1 : neg = -1;
@@ -75,29 +84,12 @@ class ToneGenerator
     }
   }
 
-  /// Create our over-sampled cosine lookup table
-  static FloatVec createLookup()
-  {
-    FloatVec v;
-    double angle;
-    for(int i=0; i<65536; i++)
-    {
-      angle = (2.0 * IRIS_PI * (double)i) / (double)65536.0;
-      v.push_back((float)cos(angle));
-    }
-    return v;
-  }
-
   /// Convenience function for logging.
-  static std::string getName(){ return "ToneGenerator"; }
+  std::string getName(){ return "ToneGenerator"; }
 
  private:
-  static const FloatVec lookup_;  ///< An oversampled cosine
-  ToneGenerator(); // Disabled constructor
+  FloatVec lookup_;  ///< An oversampled cosine
 };
-
-const ToneGenerator::FloatVec ToneGenerator::lookup_ =
-    ToneGenerator::createLookup();
 
 } // namespace iris
 

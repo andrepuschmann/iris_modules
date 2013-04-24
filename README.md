@@ -21,7 +21,10 @@ Required:
 
 Optional:
 * UHD - http://code.ettus.com/redmine/ettus/projects/uhd/wiki
+* FFTW
+* Google Protocol Buffers
 * Matlab
+* Python
 
 ## Where To Get Help
 

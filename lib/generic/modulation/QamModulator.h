@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -44,7 +44,7 @@
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
 #include "irisapi/Logging.h"
-#include "utility/MathDefines.h"
+#include "math/MathDefines.h"
 
 namespace iris
 {
@@ -60,6 +60,13 @@ class QamModulator
   typedef std::complex<float>   Cplx;
   typedef std::vector<Cplx>     CplxVec;
 
+  QamModulator()
+  {
+    createBpskLut();
+    createQpskLut();
+    createQam16Lut();
+  }
+
   /** Modulate a sequence of uint8_t bytes to QAM complex<float>
    * symbols. Defaults to BPSK.
    *
@@ -71,11 +78,11 @@ class QamModulator
    * @return          Iterator to end of written range
    */
   template <class InputInterator, class OutputIterator>
-  static OutputIterator modulate(InputInterator inBegin,
-                                 InputInterator inEnd,
-                                 OutputIterator outBegin,
-                                 OutputIterator outEnd,
-                                 unsigned int M)
+  OutputIterator modulate(InputInterator inBegin,
+                          InputInterator inEnd,
+                          OutputIterator outBegin,
+                          OutputIterator outEnd,
+                          unsigned int M)
   {
     // Check for sufficient output size
     if(outEnd-outBegin < (inEnd-inBegin)*8/M)
@@ -112,65 +119,54 @@ class QamModulator
   }
 
   /// Convenience function for logging.
-  static std::string getName(){ return "QamModulator"; }
-
-  static CplxVec createBpskLut()
-  {
-    using namespace std;
-    CplxVec vec;
-    vec.push_back(Cplx(1,0));
-    vec.push_back(Cplx(-1,0));
-    return vec;
-  }
-
-  static CplxVec createQpskLut()
-  {
-    using namespace std;
-    CplxVec vec;
-    vec.push_back(Cplx(-1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
-    vec.push_back(Cplx(-1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
-    vec.push_back(Cplx( 1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
-    vec.push_back(Cplx( 1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
-    return vec;
-  }
-
-  static CplxVec createQam16Lut()
-  {
-    using namespace std;
-    CplxVec vec;
-    vec.push_back(Cplx(-1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-
-    vec.push_back(Cplx(-1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx(-3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-
-    vec.push_back(Cplx( 1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
-
-    vec.push_back(Cplx( 1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
-    vec.push_back(Cplx( 3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
-    return vec;
-  }
+  std::string getName(){ return "QamModulator"; }
 
  private:
-  QamModulator(); // Disabled constructor
 
-  static const CplxVec BpskLut_;
-  static const CplxVec QpskLut_;
-  static const CplxVec Qam16Lut_;
+  void createBpskLut()
+  {
+    using namespace std;
+    BpskLut_.push_back(Cplx(1,0));
+    BpskLut_.push_back(Cplx(-1,0));
+  }
+
+  void createQpskLut()
+  {
+    using namespace std;
+    QpskLut_.push_back(Cplx(-1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
+    QpskLut_.push_back(Cplx(-1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
+    QpskLut_.push_back(Cplx( 1.0f/sqrtf(2.0f),-1.0f/sqrtf(2.0f)));
+    QpskLut_.push_back(Cplx( 1.0f/sqrtf(2.0f), 1.0f/sqrtf(2.0f)));
+  }
+
+  void createQam16Lut()
+  {
+    using namespace std;
+    Qam16Lut_.push_back(Cplx(-1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+
+    Qam16Lut_.push_back(Cplx(-1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx(-3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+
+    Qam16Lut_.push_back(Cplx( 1.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 1.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 3.0f/sqrtf(10.0f),-1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 3.0f/sqrtf(10.0f),-3.0f/sqrtf(10.0f)));
+
+    Qam16Lut_.push_back(Cplx( 1.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 1.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 3.0f/sqrtf(10.0f), 1.0f/sqrtf(10.0f)));
+    Qam16Lut_.push_back(Cplx( 3.0f/sqrtf(10.0f), 3.0f/sqrtf(10.0f)));
+  }
+
+  CplxVec BpskLut_;
+  CplxVec QpskLut_;
+  CplxVec Qam16Lut_;
 };
-
-const QamModulator::CplxVec QamModulator::BpskLut_ = QamModulator::createBpskLut();
-const QamModulator::CplxVec QamModulator::QpskLut_ = QamModulator::createQpskLut();
-const QamModulator::CplxVec QamModulator::Qam16Lut_ = QamModulator::createQam16Lut();
 
 } // namespace iris
 
