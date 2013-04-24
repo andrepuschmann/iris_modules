@@ -57,6 +57,12 @@ class OfdmPreambleGenerator
   typedef std::vector<Cplx>     CplxVec;
   typedef CplxVec::iterator     CplxVecIt;
 
+  OfdmPreambleGenerator()
+  {
+    createPosPreambleSequence();
+    createNegPreambleSequence();
+  }
+
   /** Generate an OFDM preamble symbol with a half-symbol repetition.
    *
    * A time-domain OFDM preamble symbol is generated using the 802.16
@@ -71,11 +77,11 @@ class OfdmPreambleGenerator
    * @param outBegin  Iterator to first element of output vector.
    * @param outEnd    Iterator to one past last element of output.
    */
-  static void generatePreamble(int numData,
-                               int numPilot,
-                               int numGuard,
-                               CplxVecIt outBegin,
-                               CplxVecIt outEnd)
+  void generatePreamble(int numData,
+                        int numPilot,
+                        int numGuard,
+                       CplxVecIt outBegin,
+                       CplxVecIt outEnd)
   {
     using namespace boost::lambda;
 
@@ -110,10 +116,13 @@ class OfdmPreambleGenerator
   }
 
   /// Convenience function for logging.
-  static std::string getName(){ return "OfdmPreambleGenerator"; }
+  std::string getName(){ return "OfdmPreambleGenerator"; }
+
+
+ private:
 
   /// Static function used to build up posPreambleSequence_ vector.
-  static CplxVec createPosPreambleSequence()
+  void createPosPreambleSequence()
   {
     using namespace boost::lambda;
     typedef Cplx c;
@@ -133,13 +142,14 @@ class OfdmPreambleGenerator
       c( 1, 1),c( 1, 1),c( 1, 1),c(-1,-1),c(-1,-1),c(-1,-1),c(-1,-1),c( 1, 1),c( 1,-1),c( 1,-1)   \
     };
 
-    CplxVec vec(begin(posSeq), end(posSeq));
-    transform(vec.begin(), vec.end(), vec.begin(), _1/sqrtf(2.0f));
-    return vec;
+    posPreambleSequence_.assign(begin(posSeq), end(posSeq));
+    transform(posPreambleSequence_.begin(),
+              posPreambleSequence_.end(),
+              posPreambleSequence_.begin(), _1/sqrtf(2.0f));
   }
 
   /// Static function used to build up negPreambleSequence_ vector.
-  static CplxVec createNegPreambleSequence()
+  void createNegPreambleSequence()
   {
     using namespace boost::lambda;
     typedef Cplx c;
@@ -159,29 +169,20 @@ class OfdmPreambleGenerator
       c( 1,-1),c( 1,-1),c( 1,-1),c(-1, 1),c( 1,-1),c( 1,-1),c( 1, 1),c(-1,-1),c( 1,-1),c( 1,-1)   \
     };
 
-    CplxVec vec(begin(negSeq), end(negSeq));
-    transform(vec.begin(), vec.end(), vec.begin(), _1/sqrtf(2.0f));
-    return vec;
+    negPreambleSequence_.assign(begin(negSeq), end(negSeq));
+    transform(negPreambleSequence_.begin(),
+              negPreambleSequence_.end(),
+              negPreambleSequence_.begin(), _1/sqrtf(2.0f));
   }
 
-  static const CplxVec posPreambleSequence_;
-  static const CplxVec negPreambleSequence_;
-
- private:
+  CplxVec posPreambleSequence_;
+  CplxVec negPreambleSequence_;
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }
   template <typename T, size_t N>
   static T* end(T(&arr)[N]) { return &arr[0]+N; }
-
-  OfdmPreambleGenerator(); // Disabled constructor
 };
-
-const OfdmPreambleGenerator::CplxVec OfdmPreambleGenerator::posPreambleSequence_ =
-    OfdmPreambleGenerator::createPosPreambleSequence();
-
-const OfdmPreambleGenerator::CplxVec OfdmPreambleGenerator::negPreambleSequence_ =
-    OfdmPreambleGenerator::createNegPreambleSequence();
 
 } // namespace iris
 

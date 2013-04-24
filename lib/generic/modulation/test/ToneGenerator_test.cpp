@@ -54,7 +54,8 @@ BOOST_AUTO_TEST_CASE(ToneGenerator_Test1)
   typedef vector<Cplx>      CplxVec;
 
   CplxVec tone(64);
-  ToneGenerator::generate(tone.begin(), tone.end(), 1.0/64);
+  ToneGenerator t;
+  t.generate(tone.begin(), tone.end(), 1.0/64);
 
   CplxVec bins(64),fftTone(64);
   bins[1] = Cplx(1,0);
@@ -75,7 +76,8 @@ BOOST_AUTO_TEST_CASE(ToneGenerator_Test2)
   typedef vector<Cplx>      CplxVec;
 
   CplxVec tone(64);
-  ToneGenerator::generate(tone.begin(), tone.end(), 3.0/64);
+  ToneGenerator t;
+  t.generate(tone.begin(), tone.end(), 3.0/64);
 
   CplxVec bins(64),fftTone(64);
   bins[3] = Cplx(1,0);

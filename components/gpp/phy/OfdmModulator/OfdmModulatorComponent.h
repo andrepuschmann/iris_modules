@@ -52,6 +52,8 @@
 
 #include <boost/scoped_ptr.hpp>
 #include "fftw3.h"
+#include "modulation/QamModulator.h"
+#include "modulation/OfdmPreambleGenerator.h"
 #include "irisapi/PhyComponent.h"
 
 namespace iris
@@ -126,7 +128,9 @@ class OfdmModulatorComponent
   CplxVec modPad_;            ///< Used to pad out the last symbol, if required.
   CplxVec symbol_;            ///< Contains a single OFDM symbol.
 
-  fftwf_plan fft_;            ///< Our FFT object pointer.
+  fftwf_plan fft_;                      ///< Our FFT object pointer.
+  QamModulator qMod_;                   ///< Our QAM modulator.
+  OfdmPreambleGenerator preambleGen_;   ///< Our preamble generator.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }

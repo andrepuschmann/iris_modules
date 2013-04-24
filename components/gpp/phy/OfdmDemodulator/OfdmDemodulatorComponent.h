@@ -54,6 +54,9 @@
 
 #include "irisapi/PhyComponent.h"
 #include "modulation/OfdmPreambleDetector.h"
+#include "modulation/ToneGenerator.h"
+#include "modulation/QamDemodulator.h"
+#include "modulation/OfdmPreambleGenerator.h"
 #include "math/MathDefines.h"
 
 namespace iris
@@ -158,7 +161,10 @@ private:
   Cplx* fullFftData_;         ///< Input/output array for full-length fft
   fftwf_plan fullFft_;        ///< Full-length fft plan
 
-  OfdmPreambleDetector detector_;   ///< Our preamble detector.
+  OfdmPreambleDetector detector_;       ///< Our preamble detector.
+  ToneGenerator toneGenerator_;         ///< Our tone generator.
+  QamDemodulator qDemod_;               ///< Our QAM demodulator.
+  OfdmPreambleGenerator preambleGen_;   ///< Our preamble generator.
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }
