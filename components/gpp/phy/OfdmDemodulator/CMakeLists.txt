@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -25,6 +25,7 @@ MESSAGE(STATUS "  Processing ofdmdemodulator.")
 ########################################################################
 # Add includes and dependencies
 ########################################################################
+FIND_PACKAGE( FFTW3F )
 
 ########################################################################
 # Build the library from source files
@@ -33,15 +34,22 @@ SET(sources
 	OfdmDemodulatorComponent.cpp
 )
 
-# Static library to be used in tests
-ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator_static STATIC ${sources})
-
-# Shared library to be used in radios
-ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator SHARED ${sources})
-SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmdemodulator PROPERTIES OUTPUT_NAME "ofdmdemodulator")
-IRIS_INSTALL(comp_gpp_phy_ofdmdemodulator)
-IRIS_APPEND_INSTALL_LIST(ofdmdemodulator)
-
-# Add the test and benchmark directories
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+IF(FFTW3F_FOUND)
+    INCLUDE_DIRECTORIES(${FFTW3F_INCLUDE_DIRS})
+    
+    # Static library to be used in tests
+    ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator_static STATIC ${sources})
+    
+    # Shared library to be used in radios
+    ADD_LIBRARY(comp_gpp_phy_ofdmdemodulator SHARED ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_phy_ofdmdemodulator ${FFTW3F_LIBRARIES})
+    SET_TARGET_PROPERTIES(comp_gpp_phy_ofdmdemodulator PROPERTIES OUTPUT_NAME "ofdmdemodulator")
+    IRIS_INSTALL(comp_gpp_phy_ofdmdemodulator)
+    IRIS_APPEND_INSTALL_LIST(ofdmdemodulator)
+    
+    # Add the test and benchmark directories
+    ADD_SUBDIRECTORY(test)
+    ADD_SUBDIRECTORY(benchmark)
+ELSE(FFTW3F_FOUND)
+    IRIS_APPEND_NOINSTALL_LIST(ofdmdemodulator)
+ENDIF(FFTW3F_FOUND)

@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -25,5 +25,5 @@
 ########################################################################
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
 ADD_EXECUTABLE(OfdmDemodulatorComponent_test OfdmDemodulatorComponent_test.cpp)
-TARGET_LINK_LIBRARIES(OfdmDemodulatorComponent_test ${Boost_LIBRARIES} comp_gpp_phy_ofdmdemodulator_static)
+TARGET_LINK_LIBRARIES(OfdmDemodulatorComponent_test comp_gpp_phy_ofdmdemodulator_static ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
 ADD_TEST(OfdmDemodulatorComponent_test OfdmDemodulatorComponent_test)

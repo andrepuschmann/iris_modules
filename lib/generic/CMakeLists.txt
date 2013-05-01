@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -26,7 +26,6 @@
 # Recurse into subdirectories. This does not actually cause another cmake 
 # executable to run. The same process will walk through the project's 
 # entire directory structure.
+ADD_SUBDIRECTORY(math)
 ADD_SUBDIRECTORY(modulation)
-ADD_SUBDIRECTORY(tml)
-ADD_SUBDIRECTORY(kissfft)
 ADD_SUBDIRECTORY(utility)

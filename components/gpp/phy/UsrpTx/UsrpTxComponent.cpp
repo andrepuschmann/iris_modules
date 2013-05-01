@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -213,6 +213,7 @@ void UsrpTxComponent::initialize()
       lo_offset = fixLoOffset_x;
     usrp_->set_tx_freq(tune_request_t(frequency_x, lo_offset));
     LOG(LINFO) << "Actual TX Frequency: " << (usrp_->get_tx_freq()/1e6) << "MHz";
+    LOG(LINFO) << "RX LO offset: " << (lo_offset/1e6) << "MHz...";
 
     //We can only set the time on usrp2 devices
     if(usrp_->get_mboard_name().find("usrp1") == string::npos)

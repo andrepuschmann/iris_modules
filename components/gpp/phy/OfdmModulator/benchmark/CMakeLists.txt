@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -24,5 +24,5 @@
 # Build executable, register as benchmark
 ########################################################################
 ADD_EXECUTABLE(OfdmModulatorComponent_benchmark OfdmModulatorComponent_benchmark.cpp)
-TARGET_LINK_LIBRARIES(OfdmModulatorComponent_benchmark ${Boost_LIBRARIES} comp_gpp_phy_ofdmmodulator_static)
+TARGET_LINK_LIBRARIES(OfdmModulatorComponent_benchmark comp_gpp_phy_ofdmmodulator_static ${Boost_LIBRARIES} ${FFTW3F_LIBRARIES})
 IRIS_ADD_BENCHMARK(OfdmModulatorComponent_benchmark)
