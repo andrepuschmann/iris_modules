@@ -216,7 +216,7 @@ void OfdmDemodulatorComponent::setup()
 
   if(debug_x)
     RawFileUtility::write(preamble_.begin(), preamble_.end(),
-                          "OutputData/TxPreamble");
+                          "OutputData/RxKnownPreamble");
 
   halfFftData_ = reinterpret_cast<Cplx*>(
       fftwf_malloc(sizeof(fftwf_complex) * numBins_/2));
@@ -244,14 +244,14 @@ void OfdmDemodulatorComponent::setup()
             2.0f*_1);
   if(debug_x)
     RawFileUtility::write(preambleBins_.begin(), preambleBins_.end(),
-                          "OutputData/TxPreambleBins");
+                          "OutputData/RxKnownPreambleBins");
 
   rxPreamble_.resize(symbolLength_);
   corrector_.resize(symbolLength_);
   rxHeader_.resize(symbolLength_*numHeaderSymbols_);
   equalizer_.resize(numBins_);
 
-  detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x);
+  detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x, debug_x);
 }
 
 void OfdmDemodulatorComponent::destroy()
@@ -481,6 +481,9 @@ void OfdmDemodulatorComponent::generateFractionalOffsetCorrector(float offset)
 {
   float relFreq = -offset/numBins_;
   toneGenerator_.generate(corrector_.begin(), corrector_.end(), relFreq);
+  if(debug_x)
+    RawFileUtility::write(corrector_.begin(), corrector_.end(),
+                          "OutputData/RxFreqCorrector");
 }
 
 void OfdmDemodulatorComponent::correctFractionalOffset(CplxVecIt begin,
@@ -518,6 +521,10 @@ int OfdmDemodulatorComponent::findIntegerOffset(CplxVecIt begin, CplxVecIt end)
     correlations.push_back(res);
   }
 
+  if(debug_x)
+    RawFileUtility::write(correlations.begin(), correlations.end(),
+                          "OutputData/RxFreqOffsetCorrelations");
+
   FloatVecIt result = max_element(correlations.begin(), correlations.end());
   int off =  (int)distance(correlations.begin(), result) - 16;
   return off;
@@ -530,7 +537,7 @@ void OfdmDemodulatorComponent::generateEqualizer(CplxVecIt begin, CplxVecIt end)
 
   if(debug_x)
     RawFileUtility::write(shortEq.begin(), shortEq.end(),
-                          "OutputData/ShortEqualizer");
+                          "OutputData/RxShortEqualizer");
 
   shortEq[0] = (shortEq[(numBins_/2)-1] + shortEq[1])/Cplx(2,0);
   for(int i=0; i<numBins_/2; i++)
@@ -541,7 +548,7 @@ void OfdmDemodulatorComponent::generateEqualizer(CplxVecIt begin, CplxVecIt end)
 
   if(debug_x)
     RawFileUtility::write(equalizer_.begin(), equalizer_.end(),
-                          "OutputData/Equalizer");
+                          "OutputData/RxEqualizer");
 }
 
 void OfdmDemodulatorComponent::equalizeSymbol(CplxVecIt begin, CplxVecIt end)
