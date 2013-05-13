@@ -32,7 +32,7 @@ set(IRIS_DEFINITIONS ${PC_IRIS_CFLAGS_OTHER})
 
 find_path(IRIS_INCLUDE_DIR 
             NAMES irisapi/Version.h
-            HINTS ${PC_IRIS_INCLUDEDIR} ${PC_IRIS_INCLUDE_DIRS} $ENV{IRIS_DIR}/include
+            HINTS ${PC_IRIS_INCLUDEDIR} ${PC_IRIS_INCLUDE_DIRS} $ENV{IRIS_DIR}/include ${IRIS_CORE_SOURCE_DIR}
             PATHS /usr/local/include 
                   /usr/include )
 
