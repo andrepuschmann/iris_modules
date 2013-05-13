@@ -43,6 +43,7 @@ INCLUDE(IrisModulesPackage)	#setup cpack
 FIND_PACKAGE(IRIS REQUIRED)
 INCLUDE_DIRECTORIES(${IRIS_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic)
+INCLUDE_DIRECTORIES(${IRIS_CORE_SOURCE_DIR})
 
 ########################################################################
 # Install Dirs
