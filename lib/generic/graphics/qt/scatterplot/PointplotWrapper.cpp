@@ -14,11 +14,13 @@ PointplotWrapper::PointplotWrapper()
     return; //TODO: throw exception here in Iris
   if(QCoreApplication::instance()->thread() == QThread::currentThread())
   {
-    connect( this, SIGNAL( createPlotSignal() ), this, SLOT(createPlotSlot()) );
+    connect( this, SIGNAL(createPlotSignal()), this, SLOT(createPlotSlot()) );
+    connect( this, SIGNAL(destroyPlotSignal()), this, SLOT(destroyPlotSlot()) );
   }
   else
   {
-    connect( this, SIGNAL( createPlotSignal() ), this, SLOT(createPlotSlot()), Qt::BlockingQueuedConnection );
+    connect( this, SIGNAL(createPlotSignal()), this, SLOT(createPlotSlot()), Qt::BlockingQueuedConnection );
+    connect( this, SIGNAL(destroyPlotSignal()), this, SLOT(destroyPlotSlot()), Qt::BlockingQueuedConnection );
     moveToThread(QCoreApplication::instance()->thread());
   }
   emit createPlotSignal();
@@ -26,7 +28,7 @@ PointplotWrapper::PointplotWrapper()
 
 PointplotWrapper::~PointplotWrapper()
 {
-  delete plot_;
+  emit destroyPlotSignal();
 }
 
 void PointplotWrapper::createPlotSlot()
@@ -45,6 +47,11 @@ void PointplotWrapper::createPlotSlot()
   plot_->setPlotAxes(-2,2,-2,2);
   plot_->show();
   plot_->moveToThread(QApplication::instance()->thread());
+}
+
+void PointplotWrapper::destroyPlotSlot()
+{
+  delete plot_;
 }
 
 void PointplotWrapper::plotNewData(double* real, double* imag, int numPoints)

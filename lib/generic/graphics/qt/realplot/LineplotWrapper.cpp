@@ -15,10 +15,12 @@ LineplotWrapper::LineplotWrapper()
   if(QCoreApplication::instance()->thread() == QThread::currentThread())
   {
     connect( this, SIGNAL( createPlotSignal() ), this, SLOT(createPlotSlot()) );
+    connect( this, SIGNAL( destroyPlotSignal() ), this, SLOT(destroyPlotSlot()) );
   }
   else
   {
     connect( this, SIGNAL( createPlotSignal() ), this, SLOT(createPlotSlot()), Qt::BlockingQueuedConnection );
+    connect( this, SIGNAL( destroyPlotSignal() ), this, SLOT(destroyPlotSlot()), Qt::BlockingQueuedConnection );
     moveToThread(QCoreApplication::instance()->thread());
   }
   emit createPlotSignal();
@@ -26,7 +28,7 @@ LineplotWrapper::LineplotWrapper()
 
 LineplotWrapper::~LineplotWrapper()
 {
-  delete plot_;
+  emit destroyPlotSignal();
 }
 
 void LineplotWrapper::createPlotSlot()
@@ -44,6 +46,11 @@ void LineplotWrapper::createPlotSlot()
   plot_->resize( 800, 600 );
   plot_->show();
   plot_->moveToThread(QApplication::instance()->thread());
+}
+
+void LineplotWrapper::destroyPlotSlot()
+{
+  delete plot_;
 }
 
 void LineplotWrapper::plotNewData(double* data, int numPoints)

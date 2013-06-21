@@ -24,9 +24,11 @@ public:
 
 public slots:
   void createPlotSlot();
+  void destroyPlotSlot();
 
 signals:
   void createPlotSignal();
+  void destroyPlotSignal();
   void setPlotTitle(QString title);
   void setPlotXLabel(QString title);
   void setPlotYLabel(QString title);
