@@ -26,9 +26,12 @@ public:
   void setXLabel(QString title);
   void setYLabel(QString title);
   void setAxes(double xMin, double xMax,
-               double yMin, double yMax);
+                   double yMin, double yMax);
   void setXAxisRange(double xMin, double xMax);
   void resetZoom();
+
+public slots:
+  void linkScales();
 
 private:
   QwtPlotCurve* curve_;

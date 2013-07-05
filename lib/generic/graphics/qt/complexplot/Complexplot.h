@@ -26,6 +26,7 @@ public:
   void setTitle(std::string title);
   void setAxes(PlotId id, double xMin, double xMax,
                double yMin, double yMax);
+  void setXAxisRange(double xMin, double xMax);
 
 private:
   ComplexplotWrapper* plot_;

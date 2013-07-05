@@ -39,6 +39,8 @@ void ComplexplotWrapper::createWidgetSlot()
           widget_, SLOT(setWidgetTitle(QString)));
   connect(this, SIGNAL(setWidgetAxes(int, double,double,double,double)),
           widget_, SLOT(setWidgetAxes(int, double,double,double,double)));
+  connect(this, SIGNAL(setWidgetXAxisRange(double,double)),
+          widget_, SLOT(setWidgetXAxisRange(double,double)));
 
   widget_->resize( 800, 600 );
   widget_->show();
@@ -78,5 +80,12 @@ void ComplexplotWrapper::setAxes(int id, double xMin, double xMax,
   if(widget_ == NULL)
     return;
   emit setWidgetAxes(id, xMin, xMax, yMin, yMax);
+}
+
+void ComplexplotWrapper::setXAxisRange(double xMin, double xMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetXAxisRange(xMin, xMax);
 }
 

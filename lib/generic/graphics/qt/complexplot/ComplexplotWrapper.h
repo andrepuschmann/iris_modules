@@ -20,6 +20,7 @@ public:
   void setTitle(std::string title);
   void setAxes(int id, double xMin, double xMax,
                double yMin, double yMax);
+  void setXAxisRange(double xMin, double xMax);
 
 public slots:
   void createWidgetSlot();
@@ -31,6 +32,7 @@ signals:
   void setWidgetTitle(QString title);
   void setWidgetAxes(int id, double xMin, double xMax,
                    double yMin, double yMax);
+  void setWidgetXAxisRange(double xMin, double xMax);
 
 private:
   ComplexWidget* widget_;

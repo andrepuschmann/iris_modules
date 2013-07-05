@@ -79,7 +79,7 @@ void threadMain1()
   {
     getPoints(real, imag, 1024);
     plot.plotNewData(real, imag, 1024);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   }
 }
 
@@ -93,7 +93,7 @@ void threadMain2()
   {
     getPoints(real, imag, 1024);
     plot.plotNewData(real, imag, 1024);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   }
 }
 
@@ -106,7 +106,7 @@ void threadMain3()
   {
     getPoints(v.begin(), v.end());
     plot.plotNewData(v.begin(), v.end());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   }
 }
 
@@ -127,6 +127,9 @@ BOOST_AUTO_TEST_CASE(Scatterplot_Basic_Test)
   thread3_.reset( new boost::thread( &threadMain3 ) );
 
   qApp->exec();
+  thread1_->join();
+  thread2_->join();
+  thread3_->join();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

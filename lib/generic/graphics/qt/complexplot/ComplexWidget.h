@@ -22,6 +22,7 @@ public slots:
   void setWidgetTitle(QString title);
   void setWidgetAxes(int id, double xMin, double xMax,
                    double yMin, double yMax);
+  void setWidgetXAxisRange(double xMin, double xMax);
 
 private:
   void plotData(PlotComplexEvent* e);

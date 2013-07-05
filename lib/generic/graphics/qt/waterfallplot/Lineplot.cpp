@@ -28,11 +28,17 @@ Lineplot::Lineplot(QWidget *parent)
   for(int i=0;i<numPoints_;i++)
     indexPoints_[i] = i;
 
+  enableAxis(QwtPlot::yRight);
+  QwtScaleWidget *leftAxis = axisWidget(QwtPlot::yLeft);
+  connect(leftAxis, SIGNAL(scaleDivChanged()), this, SLOT(linkScales()));
+
   setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
   setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+  setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
   axisScaleEngine(QwtPlot::xBottom)->setAttribute(QwtScaleEngine::Floating,true);
   axisScaleEngine(QwtPlot::yLeft)->setAttribute(QwtScaleEngine::Floating,true);
+  axisScaleEngine(QwtPlot::yRight)->setAttribute(QwtScaleEngine::Floating,true);
 
   zoomer_ = new QwtPlotZoomer(canvas());
   zoomer_->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton);
@@ -98,10 +104,11 @@ void Lineplot::setYLabel(QString label)
 }
 
 void Lineplot::setAxes(double xMin, double xMax,
-                       double yMin, double yMax)
+                 double yMin, double yMax)
 {
   setAxisScale(QwtPlot::xBottom, xMin, xMax);
   setAxisScale(QwtPlot::yLeft, yMin, yMax);
+  setAxisScale(QwtPlot::yRight, yMin, yMax);
 }
 
 void Lineplot::setXAxisRange(double xMin, double xMax)
@@ -118,4 +125,9 @@ void Lineplot::setXAxisRange(double xMin, double xMax)
 void Lineplot::resetZoom()
 {
   zoomer_->setZoomBase();
+}
+
+void Lineplot::linkScales()
+{
+  setAxisScaleDiv(QwtPlot::yRight, *axisScaleDiv(QwtPlot::yLeft));
 }

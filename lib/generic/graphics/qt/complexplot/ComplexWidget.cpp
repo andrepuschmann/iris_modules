@@ -109,3 +109,11 @@ void ComplexWidget::setWidgetAxes(int id, double xMin, double xMax,
     break;
   }
 }
+
+void ComplexWidget::setWidgetXAxisRange(double xMin, double xMax)
+{
+  i_->setXAxisRange(xMin, xMax);
+  q_->setXAxisRange(xMin, xMax);
+  m_->setXAxisRange(xMin, xMax);
+  p_->setXAxisRange(xMin, xMax);
+}

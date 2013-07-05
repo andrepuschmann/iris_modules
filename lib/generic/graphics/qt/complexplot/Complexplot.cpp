@@ -34,3 +34,8 @@ void Complexplot::setAxes(PlotId id, double xMin, double xMax,
   plot_->setAxes(id, xMin, xMax, yMin, yMax);
 }
 
+void Complexplot::setXAxisRange(double xMin, double xMax)
+{
+  plot_->setXAxisRange(xMin, xMax);
+}
+

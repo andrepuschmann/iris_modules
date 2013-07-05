@@ -28,12 +28,12 @@
  *
  * \section DESCRIPTION
  *
- * Main test file for Complexplot class.
+ * Main test file for Waterfallplot class.
  */
 
-#define BOOST_TEST_MODULE Complexplot_Test
+#define BOOST_TEST_MODULE Waterfallplot_Test
 
-#include "Complexplot.h"
+#include "Waterfallplot.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/thread.hpp>
@@ -41,7 +41,6 @@
 #include <boost/bind.hpp>
 #include <qapplication.h>
 #include <cstdlib>
-#include <complex>
 #include <vector>
 #include <boost/test/unit_test.hpp>
 
@@ -49,19 +48,17 @@
 
 using namespace std;
 
-typedef vector< complex<float> > FloatVec;
-
 void threadMain1()
 {
-  Complexplot plot;
+  int n=2048;
+  Waterfallplot plot(n, n);
   plot.setTitle("Test1");
-  plot.setXAxisRange(0,2);
+  plot.setAxes(0,2,0,2,-1,1);
 
-  int n=1024;
   float step = 2.0*PI/n;
-  complex<float>* data = new complex<float>[n];
+  float* data = new float[n];
   for(int i=0;i<n;i++)
-    data[i] = polar(1.0f,step*i);
+    data[i] = sinf(step*i);
 
   plot.plotNewData(data, n);
 
@@ -75,15 +72,15 @@ void threadMain1()
 
 void threadMain2()
 {
-  Complexplot plot;
-  plot.setTitle("Test2");
-  plot.setXAxisRange(0,2);
+  int n=2048;
+  Waterfallplot plot(n, n);
+  plot.setTitle("Test1");
+  plot.setAxes(0,2,0,2,-1,1);
 
-  int n=1024;
   double step = 2.0*PI/n;
-  complex<double>* data = new complex<double>[n];
+  double* data = new double[n];
   for(int i=0;i<n;i++)
-    data[i] = polar(1.0,step*i);
+    data[i] = sin(step*i);
 
   plot.plotNewData(data, n);
 
@@ -95,32 +92,29 @@ void threadMain2()
   }
 }
 
-void threadMain3()
+BOOST_AUTO_TEST_SUITE (Waterfallplot_Test)
+
+BOOST_AUTO_TEST_CASE(Waterfallplot_Init_Test)
 {
+  int argc = 1;
+  char* argv[] = { const_cast<char *>("Waterfallplot_Init_Test"), NULL };
+  QApplication a(argc, argv);
 
-  Complexplot plot;
-  plot.setTitle("Test3");
-  plot.setXAxisRange(0,2);
+  boost::scoped_ptr< boost::thread > thread1_;
+  boost::scoped_ptr< boost::thread > thread2_;
+  //boost::scoped_ptr< boost::thread > thread3_;
 
-  FloatVec data(1024);
-  int n=data.size();
-  float step = 2.0*PI/n;
-  for(int i=0;i<n;i++)
-    data[i] = polar(1.0f,step*i);
+  thread1_.reset( new boost::thread( &threadMain1 ) );
+  thread2_.reset( new boost::thread( &threadMain2 ) );
+  //thread3_.reset( new boost::thread( &threadMain3 ) );
 
-  plot.plotNewData(data.begin(), data.end());
-
-  for(int i=0;i<n;i++)
-  {
-    rotate(data.begin(), data.begin()+1, data.end());
-    plot.plotNewData(data.begin(), data.end());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
-  }
+  qApp->exec();
+  thread1_->join();
+  thread2_->join();
+  //thread3_->join();
 }
-
-BOOST_AUTO_TEST_SUITE (Complexplot_Test)
-
-BOOST_AUTO_TEST_CASE(Complexplot_Basic_Test)
+/*
+BOOST_AUTO_TEST_CASE(Waterfallplot_Basic_Test)
 {
   int argc = 1;
   char* argv[] = { const_cast<char *>("Compleplot_Basic_Test"), NULL };
@@ -139,5 +133,5 @@ BOOST_AUTO_TEST_CASE(Complexplot_Basic_Test)
   thread2_->join();
   thread3_->join();
 }
-
+*/
 BOOST_AUTO_TEST_SUITE_END()
