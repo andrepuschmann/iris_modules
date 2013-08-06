@@ -54,8 +54,9 @@ typedef vector< complex<float> > FloatVec;
 void threadMain1()
 {
   Complexplot plot;
-  plot.setTitle("Test1");
+  plot.setTitle("Float");
   plot.setXAxisRange(0,2);
+  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
 
   int n=1024;
   float step = 2.0*PI/n;
@@ -76,8 +77,9 @@ void threadMain1()
 void threadMain2()
 {
   Complexplot plot;
-  plot.setTitle("Test2");
+  plot.setTitle("Double");
   plot.setXAxisRange(0,2);
+  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
 
   int n=1024;
   double step = 2.0*PI/n;
@@ -99,8 +101,9 @@ void threadMain3()
 {
 
   Complexplot plot;
-  plot.setTitle("Test3");
+  plot.setTitle("FloatVec");
   plot.setXAxisRange(0,2);
+  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
 
   FloatVec data(1024);
   int n=data.size();

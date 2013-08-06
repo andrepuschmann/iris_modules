@@ -49,12 +49,12 @@ typedef std::complex<float> Cplx;
 typedef std::vector<Cplx>   CplxVec;
 
 template<class T>
-void getPoints(T* real, T* imag, int numPoints)
+void getPoints(std::complex<T>* data, int numPoints)
 {
   for(int i=0;i<numPoints;i++)
   {
-    real[i] = 2*((T)rand()/RAND_MAX)-1;
-    imag[i] = 2*((T)rand()/RAND_MAX)-1;
+    data[i] = std::complex<T>(2*((T)rand()/RAND_MAX)-1,
+                              2*((T)rand()/RAND_MAX)-1);
   }
 }
 
@@ -71,14 +71,12 @@ void getPoints(Iterator begin, Iterator end)
 void threadMain1()
 {
   Scatterplot plot;
-
-  float real[1024];
-  float imag[1024];
+  std::complex<float> data[1024];
 
   for(int i=0;i<10;i++)
   {
-    getPoints(real, imag, 1024);
-    plot.plotNewData(real, imag, 1024);
+    getPoints(data, 1024);
+    plot.plotNewData(data, 1024);
     boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   }
 }
@@ -86,13 +84,12 @@ void threadMain1()
 void threadMain2()
 {
   Scatterplot plot;
-  double real[1024];
-  double imag[1024];
+  std::complex<double> data[1024];
 
   for(int i=0;i<10;i++)
   {
-    getPoints(real, imag, 1024);
-    plot.plotNewData(real, imag, 1024);
+    getPoints(data, 1024);
+    plot.plotNewData(data, 1024);
     boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   }
 }

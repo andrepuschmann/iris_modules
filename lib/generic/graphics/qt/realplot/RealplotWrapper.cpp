@@ -1,14 +1,12 @@
-#include "ComplexplotWrapper.h"
+#include "RealplotWrapper.h"
 
-#include "ComplexWidget.h"
+#include "RealWidget.h"
 #include "common/Events.h"
 #include <qapplication.h>
 #include <QThread>
 
-using namespace std;
 
-
-ComplexplotWrapper::ComplexplotWrapper()
+RealplotWrapper::RealplotWrapper()
     :widget_(NULL)
 {
   if(QCoreApplication::instance() == NULL)
@@ -27,18 +25,20 @@ ComplexplotWrapper::ComplexplotWrapper()
   emit createWidgetSignal();
 }
 
-ComplexplotWrapper::~ComplexplotWrapper()
+RealplotWrapper::~RealplotWrapper()
 {
   emit destroyWidgetSignal();
 }
 
-void ComplexplotWrapper::createWidgetSlot()
+void RealplotWrapper::createWidgetSlot()
 {
-  widget_ = new ComplexWidget;
+  widget_ = new RealWidget;
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
-  connect(this, SIGNAL(setWidgetAxes(int, double,double,double,double)),
-          widget_, SLOT(setWidgetAxes(int, double,double,double,double)));
+  connect(this, SIGNAL(setWidgetAxisLabels(QString, QString)),
+          widget_, SLOT(setWidgetAxisLabels(QString, QString)));
+  connect(this, SIGNAL(setWidgetAxes(double,double,double,double)),
+          widget_, SLOT(setWidgetAxes(double,double,double,double)));
   connect(this, SIGNAL(setWidgetXAxisRange(double,double)),
           widget_, SLOT(setWidgetXAxisRange(double,double)));
 
@@ -47,26 +47,26 @@ void ComplexplotWrapper::createWidgetSlot()
   widget_->moveToThread(QApplication::instance()->thread());
 }
 
-void ComplexplotWrapper::destroyWidgetSlot()
+void RealplotWrapper::destroyWidgetSlot()
 {
   delete widget_;
 }
 
-void ComplexplotWrapper::plotNewData(complex<double>* data, int numPoints)
+void RealplotWrapper::plotNewData(double* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
-  qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
+  qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
-void ComplexplotWrapper::plotNewData(complex<float>* data, int numPoints)
+void RealplotWrapper::plotNewData(float* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
-  qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
+  qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
-void ComplexplotWrapper::setTitle(std::string title)
+void RealplotWrapper::setTitle(std::string title)
 {
   if(widget_ == NULL)
     return;
@@ -74,18 +74,26 @@ void ComplexplotWrapper::setTitle(std::string title)
   emit setWidgetTitle(str);
 }
 
-void ComplexplotWrapper::setAxes(int id, double xMin, double xMax,
+void RealplotWrapper::setAxisLabels(std::string xLabel, std::string yLabel)
+{
+  if(widget_ == NULL)
+    return;
+  QString xStr = QString::fromUtf8(xLabel.c_str());
+  QString yStr = QString::fromUtf8(yLabel.c_str());
+  emit setWidgetAxisLabels(xStr, yStr);
+}
+
+void RealplotWrapper::setAxes(double xMin, double xMax,
                         double yMin, double yMax)
 {
   if(widget_ == NULL)
     return;
-  emit setWidgetAxes(id, xMin, xMax, yMin, yMax);
+  emit setWidgetAxes(xMin, xMax, yMin, yMax);
 }
 
-void ComplexplotWrapper::setXAxisRange(double xMin, double xMax)
+void RealplotWrapper::setXAxisRange(double xMin, double xMax)
 {
   if(widget_ == NULL)
     return;
   emit setWidgetXAxisRange(xMin, xMax);
 }
-

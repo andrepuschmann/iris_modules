@@ -12,13 +12,19 @@ IF(QT4_FOUND AND QWT_FOUND)
 ENDIF(QT4_FOUND AND QWT_FOUND)
  
 ########################################################################
-# Build our library
+# Build our libraries
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
-  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic/graphics/qt)
-  QT4_WRAP_CPP(MOCSrcs ComplexWidget.h ComplexplotWrapper.h)
-  ADD_LIBRARY(complexplot ComplexWidget.cpp ComplexplotWrapper.cpp Complexplot.cpp ${MOCSrcs})
-  TARGET_LINK_LIBRARIES(complexplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)
-  IRIS_SET_PIC(complexplot)
-  ADD_SUBDIRECTORY(test)
+  QT4_WRAP_CPP(eventwraps Events.h)
+  ADD_LIBRARY(events Events.cpp ${eventwraps})
+  TARGET_LINK_LIBRARIES(events ${QT_LIBRARIES} ${QWT_LIBRARIES})
+  IRIS_SET_PIC(events)
+  QT4_WRAP_CPP(lineplotwraps Lineplot.h)
+  ADD_LIBRARY(lineplot Lineplot.cpp ${lineplotwraps})
+  TARGET_LINK_LIBRARIES(lineplot ${QT_LIBRARIES} ${QWT_LIBRARIES} events)
+  IRIS_SET_PIC(lineplot)
+  QT4_WRAP_CPP(pointplotwraps Pointplot.h)
+  ADD_LIBRARY(pointplot Pointplot.cpp ${pointplotwraps})
+  TARGET_LINK_LIBRARIES(pointplot ${QT_LIBRARIES} ${QWT_LIBRARIES} events)
+  IRIS_SET_PIC(pointplot)
 ENDIF(QT4_FOUND AND QWT_FOUND)

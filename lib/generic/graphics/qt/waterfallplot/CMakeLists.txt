@@ -15,9 +15,10 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 # Build our library
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
-  QT4_WRAP_CPP(MOCSrcs Lineplot.h Spectrogramplot.h WaterfallWidget.h WaterfallplotWrapper.h)
-  ADD_LIBRARY(waterfallplot Lineplot.cpp Spectrogram.cpp Spectrogramplot.cpp WaterfallWidget.cpp WaterfallplotWrapper.cpp WaterfallplotEvents.cpp Waterfallplot.cpp ${MOCSrcs})
-  TARGET_LINK_LIBRARIES(waterfallplot ${QT_LIBRARIES} ${QWT_LIBRARIES})
+  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic/graphics/qt)
+  QT4_WRAP_CPP(MOCSrcs Spectrogramplot.h WaterfallWidget.h WaterfallplotWrapper.h)
+  ADD_LIBRARY(waterfallplot Spectrogram.cpp Spectrogramplot.cpp WaterfallWidget.cpp WaterfallplotWrapper.cpp Waterfallplot.cpp ${MOCSrcs})
+  TARGET_LINK_LIBRARIES(waterfallplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)
   IRIS_SET_PIC(waterfallplot)
   ADD_SUBDIRECTORY(test)
 ENDIF(QT4_FOUND AND QWT_FOUND)

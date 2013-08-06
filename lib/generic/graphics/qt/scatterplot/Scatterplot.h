@@ -2,8 +2,9 @@
 #define SCATTERPLOT_H
 
 #include <string>
+#include <complex>
 
-class PointplotWrapper;
+class ScatterplotWrapper;
 
 class Scatterplot
 {
@@ -13,35 +14,31 @@ public:
 
   template<class Iterator>
   void plotNewData(Iterator begin, Iterator end);
-  void plotNewData(float* real, float* imag, int numPoints);
-  void plotNewData(double* real, double* imag, int numPoints);
+  void plotNewData(std::complex<float>* data, int numPoints);
+  void plotNewData(std::complex<double>* data, int numPoints);
+  void setTitle(std::string title);
   void setAxes(double xMin, double xMax,
                double yMin, double yMax);
-  void setTitle(std::string title);
-  void setXLabel(std::string label);
-  void setYLabel(std::string label);
+  void setAxisLabels(std::string xLabel, std::string yLabel);
 
 private:
-  PointplotWrapper* plot_;
+  ScatterplotWrapper* plot_;
 };
 
 template<class Iterator>
 void Scatterplot::plotNewData(Iterator begin, Iterator end)
 {
   int numPoints = end-begin;
-  double* real = new double[numPoints];
-  double* imag = new double[numPoints];
+  std::complex<double>* data = new std::complex<double>[numPoints];
 
   for(int i=0;begin!=end;begin++,i++)
   {
-    real[i] = begin->real();
-    imag[i] = begin->imag();
+    data[i] = *begin;
   }
 
-  plotNewData(real, imag, numPoints);
+  plotNewData(data, numPoints);
 
-  delete[] real;
-  delete[] imag;
+  delete[] data;
 }
 
 #endif // SCATTERPLOT_H

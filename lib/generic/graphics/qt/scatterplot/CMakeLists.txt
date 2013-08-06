@@ -15,9 +15,10 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 # Build our library
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
-  QT4_WRAP_CPP(MOCSrcs Pointplot.h PointplotWrapper.h)
-  ADD_LIBRARY(scatterplot Pointplot.cpp PointplotWrapper.cpp PointplotEvents.cpp Scatterplot.cpp ${MOCSrcs})
-  TARGET_LINK_LIBRARIES(scatterplot ${QT_LIBRARIES} ${QWT_LIBRARIES})
+  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic/graphics/qt)
+  QT4_WRAP_CPP(MOCSrcs ScatterWidget.h ScatterplotWrapper.h)
+  ADD_LIBRARY(scatterplot ScatterWidget.cpp ScatterplotWrapper.cpp Scatterplot.cpp ${MOCSrcs})
+  TARGET_LINK_LIBRARIES(scatterplot ${QT_LIBRARIES} ${QWT_LIBRARIES} pointplot)
   IRIS_SET_PIC(scatterplot)
   ADD_SUBDIRECTORY(test)
 ENDIF(QT4_FOUND AND QWT_FOUND)

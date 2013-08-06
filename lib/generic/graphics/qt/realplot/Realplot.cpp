@@ -1,9 +1,9 @@
 #include "Realplot.h"
-#include "LineplotWrapper.h"
+#include "RealplotWrapper.h"
 
 Realplot::Realplot()
 {
-  plot_ = new LineplotWrapper;
+  plot_ = new RealplotWrapper;
 }
 
 Realplot::~Realplot()
@@ -21,24 +21,24 @@ void Realplot::plotNewData(float* data, int numPoints)
   plot_->plotNewData(data, numPoints);
 }
 
+void Realplot::setTitle(std::string title)
+{
+  plot_->setTitle(title);
+}
+
 void Realplot::setAxes(double xMin, double xMax,
                           double yMin, double yMax)
 {
   plot_->setAxes(xMin, xMax, yMin, yMax);
 }
 
-void Realplot::setTitle(std::string title)
+void Realplot::setXAxisRange(double xMin, double xMax)
 {
-  plot_->setTitle(title);
+  plot_->setXAxisRange(xMin, xMax);
 }
 
-void Realplot::setXLabel(std::string label)
+void Realplot::setLabels(std::string xLabel, std::string yLabel)
 {
-  plot_->setXLabel(label);
-}
-
-void Realplot::setYLabel(std::string label)
-{
-  plot_->setYLabel(label);
+  plot_->setAxisLabels(xLabel, yLabel);
 }
 

@@ -1,6 +1,6 @@
 #include "ComplexWidget.h"
-#include "Lineplot.h"
-#include "ComplexplotEvents.h"
+#include "common/Lineplot.h"
+#include "common/Events.h"
 
 #include <qlayout.h>
 #include <algorithm>
@@ -45,14 +45,14 @@ ComplexWidget::~ComplexWidget()
 
 void ComplexWidget::customEvent( QEvent * e )
 {
-  if(e->type() == PlotComplexEvent::type)
+  if(e->type() == ComplexDataEvent::type)
   {
-    PlotComplexEvent* dataEvent = (PlotComplexEvent*)e;
+    ComplexDataEvent* dataEvent = (ComplexDataEvent*)e;
     plotData(dataEvent);
   }
 }
 
-void ComplexWidget::plotData(PlotComplexEvent* e)
+void ComplexWidget::plotData(ComplexDataEvent* e)
 {
   if(e->numPoints_ != numPoints_)
   {

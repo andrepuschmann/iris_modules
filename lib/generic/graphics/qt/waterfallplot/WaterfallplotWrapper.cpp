@@ -1,7 +1,7 @@
 #include "WaterfallplotWrapper.h"
 
 #include "WaterfallWidget.h"
-#include "WaterfallplotEvents.h"
+#include "common/Events.h"
 #include <qapplication.h>
 #include <QThread>
 
@@ -58,14 +58,14 @@ void WaterfallplotWrapper::plotNewData(float* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
-  qApp->postEvent(widget_, new PlotWaterfallEvent(data, numPoints));
+  qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
 void WaterfallplotWrapper::plotNewData(double* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
-  qApp->postEvent(widget_, new PlotWaterfallEvent(data, numPoints));
+  qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
 

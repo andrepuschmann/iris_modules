@@ -3,7 +3,7 @@
 
 #include <string>
 
-class LineplotWrapper;
+class RealplotWrapper;
 
 class Realplot
 {
@@ -15,14 +15,14 @@ public:
   void plotNewData(Iterator begin, Iterator end);
   void plotNewData(float* data, int numPoints);
   void plotNewData(double* data, int numPoints);
+  void setTitle(std::string title);
   void setAxes(double xMin, double xMax,
                double yMin, double yMax);
-  void setTitle(std::string title);
-  void setXLabel(std::string label);
-  void setYLabel(std::string label);
+  void setXAxisRange(double xMin, double xMax);
+  void setLabels(std::string xLabel, std::string yLabel);
 
 private:
-  LineplotWrapper* plot_;
+  RealplotWrapper* plot_;
 };
 
 template<class Iterator>

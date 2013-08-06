@@ -1,7 +1,7 @@
 #include "WaterfallWidget.h"
-#include "Lineplot.h"
 #include "Spectrogramplot.h"
-#include "WaterfallplotEvents.h"
+#include "common/Lineplot.h"
+#include "common/Events.h"
 
 #include <qlayout.h>
 #include <algorithm>
@@ -18,8 +18,8 @@ WaterfallWidget::WaterfallWidget(int numDataPoints, int numRows, QWidget *parent
   s_ = new Spectrogramplot(numDataPoints, numRows);
 
   QVBoxLayout* vLayout1 = new QVBoxLayout(this);
-  vLayout1->addWidget(p_);
-  vLayout1->addWidget(s_);
+  vLayout1->addWidget(p_);vLayout1->setStretch(0,1);
+  vLayout1->addWidget(s_);vLayout1->setStretch(1,3);
 
   numPoints_ = numDataPoints;
   data_ = new double[numPoints_];
@@ -33,9 +33,9 @@ WaterfallWidget::~WaterfallWidget()
 
 void WaterfallWidget::customEvent( QEvent * e )
 {
-  if(e->type() == PlotWaterfallEvent::type)
+  if(e->type() == RealDataEvent::type)
   {
-    PlotWaterfallEvent* dataEvent = (PlotWaterfallEvent*)e;
+    RealDataEvent* dataEvent = (RealDataEvent*)e;
     plotData(dataEvent);
   }
 }
@@ -53,7 +53,7 @@ void WaterfallWidget::setPlotAxes(double xMin, double xMax,
   s_->setPlotAxes(xMin, xMax, yMin, yMax, zMin, zMax);
 }
 
-void WaterfallWidget::plotData(PlotWaterfallEvent* e)
+void WaterfallWidget::plotData(RealDataEvent* e)
 {
   if(e->numPoints_ != numPoints_)
   {

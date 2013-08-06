@@ -12,8 +12,6 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
 
-class PlotLineEvent;
-
 class Lineplot
   : public QwtPlot
 {
@@ -23,17 +21,19 @@ public:
   Lineplot(QWidget* parent = 0);
   virtual ~Lineplot();
 
+  void plotData(double* data, int n);
+  void setTitle(QString title);
+  void setXLabel(QString title);
+  void setYLabel(QString title);
+  void setAxes(double xMin, double xMax,
+               double yMin, double yMax);
+  void setXAxisRange(double xMin, double xMax);
+  void resetZoom();
+
 public slots:
-  void customEvent( QEvent * e );
-  void setPlotTitle(QString title);
-  void setPlotXLabel(QString title);
-  void setPlotYLabel(QString title);
-  void setPlotAxes(double xMin, double xMax,
-                   double yMin, double yMax);
+  void linkScales();
 
 private:
-  void plotData(PlotLineEvent* e);
-
   QwtPlotCurve* curve_;
 
   QwtPlotPanner* panner_;
@@ -45,6 +45,8 @@ private:
 
   int64_t numPoints_;
   int counter_;
+  double xMin_;
+  double xMax_;
 };
 
 #endif // LINEPLOT_H

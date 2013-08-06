@@ -52,20 +52,19 @@ void threadMain1()
 {
   int n=2048;
   Waterfallplot plot(n, n);
-  plot.setTitle("Test1");
+  plot.setTitle("Float");
   plot.setAxes(0,2,0,2,-1,1);
 
   float step = 2.0*PI/n;
-  float* data = new float[n];
-  for(int i=0;i<n;i++)
+  float* data = new float[n*2];
+  for(int i=0;i<n*2;i++)
     data[i] = sinf(step*i);
 
   plot.plotNewData(data, n);
 
   for(int i=0;i<n;i++)
   {
-    rotate(data, data+1, data+n);
-    plot.plotNewData(data, n);
+    plot.plotNewData(data+i, n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -74,20 +73,41 @@ void threadMain2()
 {
   int n=2048;
   Waterfallplot plot(n, n);
-  plot.setTitle("Test1");
+  plot.setTitle("Double");
   plot.setAxes(0,2,0,2,-1,1);
 
   double step = 2.0*PI/n;
-  double* data = new double[n];
-  for(int i=0;i<n;i++)
+  double* data = new double[n*2];
+  for(int i=0;i<n*2;i++)
     data[i] = sin(step*i);
 
   plot.plotNewData(data, n);
 
   for(int i=0;i<n;i++)
   {
-    rotate(data, data+1, data+n);
-    plot.plotNewData(data, n);
+    plot.plotNewData(data+i, n);
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+  }
+}
+
+void threadMain3()
+{
+  int n=2048;
+  Waterfallplot plot(n, n);
+  plot.setTitle("FloatVec");
+  plot.setAxes(0,2,0,2,-1,1);
+
+  double step = 2.0*PI/n;
+  std::vector<float> data;
+  data.resize(n*2);
+  for(int i=0;i<n*2;i++)
+    data[i] = sin(step*i);
+
+  plot.plotNewData(data.begin(), data.begin()+n);
+
+  for(int i=0;i<n;i++)
+  {
+    plot.plotNewData(data.begin()+i, data.begin()+i+n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -98,26 +118,6 @@ BOOST_AUTO_TEST_CASE(Waterfallplot_Init_Test)
 {
   int argc = 1;
   char* argv[] = { const_cast<char *>("Waterfallplot_Init_Test"), NULL };
-  QApplication a(argc, argv);
-
-  boost::scoped_ptr< boost::thread > thread1_;
-  boost::scoped_ptr< boost::thread > thread2_;
-  //boost::scoped_ptr< boost::thread > thread3_;
-
-  thread1_.reset( new boost::thread( &threadMain1 ) );
-  thread2_.reset( new boost::thread( &threadMain2 ) );
-  //thread3_.reset( new boost::thread( &threadMain3 ) );
-
-  qApp->exec();
-  thread1_->join();
-  thread2_->join();
-  //thread3_->join();
-}
-/*
-BOOST_AUTO_TEST_CASE(Waterfallplot_Basic_Test)
-{
-  int argc = 1;
-  char* argv[] = { const_cast<char *>("Compleplot_Basic_Test"), NULL };
   QApplication a(argc, argv);
 
   boost::scoped_ptr< boost::thread > thread1_;
@@ -133,5 +133,5 @@ BOOST_AUTO_TEST_CASE(Waterfallplot_Basic_Test)
   thread2_->join();
   thread3_->join();
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,11 +1,33 @@
 #include "Pointplot.h"
-#include "PointplotEvents.h"
+#include <algorithm>
+
+using namespace std;
+
+class MyZoomer: public QwtPlotZoomer
+{
+public:
+    MyZoomer(QwtPlotCanvas *canvas):
+        QwtPlotZoomer(canvas)
+    {
+        setTrackerMode(AlwaysOn);
+    }
+
+    virtual QwtText trackerTextF(const QPointF &pos) const
+    {
+        QColor bg(Qt::white);
+        bg.setAlpha(200);
+
+        QwtText text = QwtPlotZoomer::trackerTextF(pos);
+        text.setBackgroundBrush( QBrush( bg ));
+        return text;
+    }
+};
 
 Pointplot::Pointplot(QWidget *parent)
   :QwtPlot(parent)
 {
   counter_ = 0;
-  numPoints_ = 1024;
+  numPoints_ = 1;
   realPoints_ = new double[numPoints_];
   imagPoints_ = new double[numPoints_];
 
@@ -30,7 +52,7 @@ Pointplot::Pointplot(QWidget *parent)
   memset(realPoints_, 0x0, numPoints_*sizeof(double));
   memset(imagPoints_, 0x0, numPoints_*sizeof(double));
 
-  zoomer_ = new QwtPlotZoomer(canvas());
+  zoomer_ = new MyZoomer(canvas());
   zoomer_->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton);
   zoomer_->setMousePattern(QwtEventPattern::MouseSelect2, Qt::LeftButton,
                            Qt::ControlModifier);
@@ -49,20 +71,11 @@ Pointplot::~Pointplot()
   delete[] imagPoints_;
 }
 
-void Pointplot::customEvent( QEvent * e )
+void Pointplot::plotData(double* iData, double* qData, int n)
 {
-  if(e->type() == PlotDataEvent::type)
+  if(numPoints_ != n)
   {
-    PlotDataEvent* dataEvent = (PlotDataEvent*)e;
-    plotData(dataEvent);
-  }
-}
-
-void Pointplot::plotData(PlotDataEvent* e)
-{
-  if(numPoints_ != e->numPoints_)
-  {
-    numPoints_ = e->numPoints_;
+    numPoints_ = n;
     delete[] realPoints_;
     delete[] imagPoints_;
     realPoints_ = new double[numPoints_];
@@ -70,29 +83,29 @@ void Pointplot::plotData(PlotDataEvent* e)
     curve_->setRawSamples(realPoints_, imagPoints_, numPoints_);
   }
 
-  memcpy(realPoints_, e->realPoints_, numPoints_*sizeof(double));
-  memcpy(imagPoints_, e->imagPoints_, numPoints_*sizeof(double));
+  copy(iData, iData+n, realPoints_);
+  copy(qData, qData+n, imagPoints_);
 
   replot();
 }
 
-void Pointplot::setPlotTitle(QString title)
+void Pointplot::setTitle(QString title)
 {
   setTitle(title);
 }
 
-void Pointplot::setPlotXLabel(QString label)
+void Pointplot::setXLabel(QString label)
 {
   setAxisTitle(QwtPlot::xBottom, label);
 }
 
-void Pointplot::setPlotYLabel(QString label)
+void Pointplot::setYLabel(QString label)
 {
   setAxisTitle(QwtPlot::yLeft, label);
 }
 
-void Pointplot::setPlotAxes(double xMin, double xMax,
-                 double yMin, double yMax)
+void Pointplot::setAxes(double xMin, double xMax,
+                        double yMin, double yMax)
 {
   setAxisScale(QwtPlot::xBottom, xMin, xMax);
   setAxisScale(QwtPlot::yLeft, yMin, yMax);

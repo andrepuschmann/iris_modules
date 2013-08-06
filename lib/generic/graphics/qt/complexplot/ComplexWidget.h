@@ -5,7 +5,7 @@
 #include <qwidget.h>
 #include <complex>
 
-class PlotComplexEvent;
+class ComplexDataEvent;
 class Lineplot;
 
 class ComplexWidget
@@ -25,16 +25,16 @@ public slots:
   void setWidgetXAxisRange(double xMin, double xMax);
 
 private:
-  void plotData(PlotComplexEvent* e);
+  void plotData(ComplexDataEvent* e);
   Lineplot* i_; //In-phase plot
   Lineplot* q_; //Quadrature plot
   Lineplot* m_; //Magnitude plot
   Lineplot* p_; //Phase plot
 
-  struct opReal{float operator()(std::complex<double> i) const{return real(i);}};
-  struct opImag{float operator()(std::complex<double> i) const{return imag(i);}};
-  struct opAbs{float operator()(std::complex<double> i) const{return abs(i);}};
-  struct opArg{float operator()(std::complex<double> i) const{return arg(i);}};
+  struct opReal{double operator()(std::complex<double> i) const{return real(i);}};
+  struct opImag{double operator()(std::complex<double> i) const{return imag(i);}};
+  struct opAbs{double operator()(std::complex<double> i) const{return abs(i);}};
+  struct opArg{double operator()(std::complex<double> i) const{return arg(i);}};
 
   double* iData_;
   double* qData_;

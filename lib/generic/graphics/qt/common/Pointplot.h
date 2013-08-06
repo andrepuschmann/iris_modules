@@ -1,5 +1,5 @@
-#ifndef LINEPLOT_H
-#define LINEPLOT_H
+#ifndef POINTPLOT_H
+#define POINTPLOT_H
 
 #include <qapplication.h>
 #include <qwt_plot.h>
@@ -11,24 +11,23 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
+#include <complex>
 
-class Lineplot
+class Pointplot
   : public QwtPlot
 {
   Q_OBJECT
 
 public:
-  Lineplot(QWidget* parent = 0);
-  virtual ~Lineplot();
+  Pointplot(QWidget* parent = 0);
+  virtual ~Pointplot();
 
-  void plotData(double* data, int n);
+  void plotData(double* iData, double* qData, int n);
   void setTitle(QString title);
   void setXLabel(QString title);
   void setYLabel(QString title);
   void setAxes(double xMin, double xMax,
                double yMin, double yMax);
-  void setXAxisRange(double xMin, double xMax);
-  void resetZoom();
 
 private:
   QwtPlotCurve* curve_;
@@ -37,13 +36,14 @@ private:
   QwtPlotZoomer* zoomer_;
   QwtPlotMagnifier* magnifier_;
 
-  double* indexPoints_;
-  double* dataPoints_;
+  struct opReal{double operator()(std::complex<double> i) const{return real(i);}};
+  struct opImag{double operator()(std::complex<double> i) const{return imag(i);}};
+
+  double* realPoints_;
+  double* imagPoints_;
 
   int64_t numPoints_;
   int counter_;
-  double xMin_;
-  double xMax_;
 };
 
-#endif // LINEPLOT_H
+#endif // POINTPLOT_H

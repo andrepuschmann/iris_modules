@@ -5,7 +5,7 @@
 #include <qwidget.h>
 #include <complex>
 
-class PlotWaterfallEvent;
+class RealDataEvent;
 class Lineplot;
 class Spectrogramplot;
 
@@ -26,7 +26,7 @@ public slots:
                    double zMin, double zMax);
 
 private:
-  void plotData(PlotWaterfallEvent* e);
+  void plotData(RealDataEvent* e);
   Lineplot* p_;
   Spectrogramplot* s_;
 

@@ -1,9 +1,9 @@
 #include "Scatterplot.h"
-#include "PointplotWrapper.h"
+#include "ScatterplotWrapper.h"
 
 Scatterplot::Scatterplot()
 {
-  plot_ = new PointplotWrapper;
+  plot_ = new ScatterplotWrapper;
 }
 
 Scatterplot::~Scatterplot()
@@ -11,14 +11,19 @@ Scatterplot::~Scatterplot()
   delete plot_;
 }
 
-void Scatterplot::plotNewData(double* real, double* imag, int numPoints)
+void Scatterplot::plotNewData(std::complex<float>* data, int numPoints)
 {
-  plot_->plotNewData(real, imag, numPoints);
+  plot_->plotNewData(data, numPoints);
 }
 
-void Scatterplot::plotNewData(float* real, float* imag, int numPoints)
+void Scatterplot::plotNewData(std::complex<double>* data, int numPoints)
 {
-  plot_->plotNewData(real, imag, numPoints);
+  plot_->plotNewData(data, numPoints);
+}
+
+void Scatterplot::setTitle(std::string title)
+{
+  plot_->setTitle(title);
 }
 
 void Scatterplot::setAxes(double xMin, double xMax,
@@ -27,18 +32,8 @@ void Scatterplot::setAxes(double xMin, double xMax,
   plot_->setAxes(xMin, xMax, yMin, yMax);
 }
 
-void Scatterplot::setTitle(std::string title)
+void Scatterplot::setAxisLabels(std::string xLabel, std::string yLabel)
 {
-  plot_->setTitle(title);
-}
-
-void Scatterplot::setXLabel(std::string label)
-{
-  plot_->setXLabel(label);
-}
-
-void Scatterplot::setYLabel(std::string label)
-{
-  plot_->setYLabel(label);
+  plot_->setAxisLabels(xLabel, yLabel);
 }
 
