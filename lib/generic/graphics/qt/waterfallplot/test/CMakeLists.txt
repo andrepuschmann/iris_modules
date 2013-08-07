@@ -21,12 +21,12 @@
 #
 
 ########################################################################
-# Add the subdirectories
+# Build tests
 ########################################################################
-# Recurse into subdirectories. This does not actually cause another cmake 
-# executable to run. The same process will walk through the project's 
-# entire directory structure.
-ADD_SUBDIRECTORY(math)
-ADD_SUBDIRECTORY(modulation)
-ADD_SUBDIRECTORY(utility)
-ADD_SUBDIRECTORY(graphics)
+#turn the test cpp file into an executable with an int main() function
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+INCLUDE_DIRECTORIES(..)
+ADD_EXECUTABLE(waterfallplot_test Waterfallplot_test.cpp)
+TARGET_LINK_LIBRARIES(waterfallplot_test ${Boost_LIBRARIES} waterfallplot)
+ADD_TEST(waterfallplot_test waterfallplot_test)
+
