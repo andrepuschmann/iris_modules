@@ -1,5 +1,5 @@
 #include "WaterfallWidget.h"
-#include "Spectrogramplot.h"
+#include "graphics/qt/common/Spectrogramplot.h"
 #include "graphics/qt/common/Lineplot.h"
 #include "graphics/qt/common/Events.h"
 
