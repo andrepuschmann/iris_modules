@@ -59,7 +59,7 @@ Spectrogramplot::Spectrogramplot(int numDataPoints, int numRows, QWidget *parent
   ,nRows_(numRows)
 {
     spectrogram_ = new Spectrogram();
-    spectrogram_->setRenderThreadCount(1); // set system specific thread count
+    spectrogram_->setRenderThreadCount(0); // set system specific thread count
     data_ = new SpectrogramData(nData_, nRows_);
     spectrogram_->attach(this);
     //setPlotAxes(0, 100, 0, 100, -1.0, 1.0); //PROBLEM WHEN THIS IS REMOVED
