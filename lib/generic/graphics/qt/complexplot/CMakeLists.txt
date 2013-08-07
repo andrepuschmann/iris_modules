@@ -15,7 +15,6 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 # Build our library
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
-  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic/graphics/qt)
   QT4_WRAP_CPP(MOCSrcs ComplexWidget.h ComplexplotWrapper.h)
   ADD_LIBRARY(complexplot ComplexWidget.cpp ComplexplotWrapper.cpp Complexplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(complexplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)

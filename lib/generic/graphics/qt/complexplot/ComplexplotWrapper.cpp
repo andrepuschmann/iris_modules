@@ -1,7 +1,7 @@
 #include "ComplexplotWrapper.h"
 
 #include "ComplexWidget.h"
-#include "common/Events.h"
+#include "graphics/qt/common/Events.h"
 #include <qapplication.h>
 #include <QThread>
 

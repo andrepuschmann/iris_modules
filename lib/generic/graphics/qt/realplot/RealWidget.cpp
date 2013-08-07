@@ -1,6 +1,6 @@
 #include "RealWidget.h"
-#include "common/Lineplot.h"
-#include "common/Events.h"
+#include "graphics/qt/common/Lineplot.h"
+#include "graphics/qt/common/Events.h"
 
 #include <qlayout.h>
 #include <algorithm>

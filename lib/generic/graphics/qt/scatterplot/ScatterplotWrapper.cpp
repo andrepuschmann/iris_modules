@@ -1,7 +1,7 @@
 #include "ScatterplotWrapper.h"
 
 #include "ScatterWidget.h"
-#include "common/Events.h"
+#include "graphics/qt/common/Events.h"
 #include <qapplication.h>
 #include <QThread>
 #include <complex>

@@ -15,7 +15,6 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 # Build our library
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
-  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/generic/graphics/qt)
   QT4_WRAP_CPP(MOCSrcs RealWidget.h RealplotWrapper.h)
   ADD_LIBRARY(realplot RealWidget.cpp RealplotWrapper.cpp Realplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(realplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)

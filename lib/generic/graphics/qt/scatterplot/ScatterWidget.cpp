@@ -1,6 +1,6 @@
 #include "ScatterWidget.h"
-#include "common/Pointplot.h"
-#include "common/Events.h"
+#include "graphics/qt/common/Pointplot.h"
+#include "graphics/qt/common/Events.h"
 
 #include <qlayout.h>
 #include <algorithm>
