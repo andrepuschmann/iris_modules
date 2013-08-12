@@ -158,7 +158,7 @@ void SpectrogramComponent::processWindow()
   //Calculate spectrogram, fftshift and accumulate
   spgram_push(sp_, &window_[0], windowLength_x);
   spgram_execute(sp_, &spec_[0]);
-  for(int i=0;i<windowLength_x;i++)
+  for(int i=0;i<nFft_x;i++)
   {
     Cplx c = spec_[(i+nFft_x/2)%nFft_x];
     psd_[i] += real(c*conj(c));
@@ -174,7 +174,7 @@ void SpectrogramComponent::processWindow()
   {
     transform(psd_.begin(), psd_.end(), psd_.begin(), _1/nWindows_x);
     outputPsd();
-    psd_.assign(0, nFft_x);
+    psd_.assign(nFft_x, 0.0);
     n_ = 0;
   }
 }
