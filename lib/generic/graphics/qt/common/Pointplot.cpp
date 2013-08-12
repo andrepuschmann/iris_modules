@@ -36,11 +36,9 @@ Pointplot::Pointplot(QWidget *parent)
   canvas()->setPalette(palette);
 
   setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
-  setAxisScale(QwtPlot::xBottom, -2.0, 2.0);
   setAxisTitle(QwtPlot::xBottom, "In-phase");
 
   setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
-  setAxisScale(QwtPlot::yLeft, -2.0, 2.0);
   setAxisTitle(QwtPlot::yLeft, "Quadrature");
 
   curve_ = new QwtPlotCurve("Constellation Points");

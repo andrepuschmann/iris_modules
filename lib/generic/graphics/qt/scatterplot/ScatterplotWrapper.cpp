@@ -44,7 +44,6 @@ void ScatterplotWrapper::createWidgetSlot()
           widget_, SLOT(setWidgetAxisLabels(QString, QString)));
 
   widget_->resize( 800, 600 );
-  widget_->setWidgetAxes(-2,2,-2,2);
   widget_->show();
   widget_->moveToThread(QApplication::instance()->thread());
 }
