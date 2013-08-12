@@ -11,7 +11,8 @@
 
 class SpectrogramData;
 
-class Spectrogramplot: public QwtPlot
+class Spectrogramplot
+  :public QwtPlot
 {
     Q_OBJECT
 

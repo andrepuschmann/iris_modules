@@ -123,7 +123,6 @@ void Spectrogramplot::setPlotAxes(double xMin, double xMax,
   //rightAxis->setTitle("Intensity");
   rightAxis->setColorBarEnabled(true);
   rightAxis->setColorMap( zInterval, new ColorMap());
-
   setAxisScale(QwtPlot::yRight, zInterval.minValue(), zInterval.maxValue() );
   enableAxis(QwtPlot::yRight);
 
