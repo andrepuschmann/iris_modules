@@ -20,12 +20,14 @@ public:
   ~Complexplot();
 
   template<class Iterator>
-  void plotNewData(Iterator begin, Iterator end);
-  void plotNewData(std::complex<float>* data, int numPoints);
-  void plotNewData(std::complex<double>* data, int numPoints);
+  void setNewData(Iterator begin, Iterator end);
+  void setNewData(std::complex<float>* data, int numPoints);
+  void setNewData(std::complex<double>* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(PlotId id, double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisAutoScale(PlotId id, bool on);
+  void setYAxisAutoScale(PlotId id, bool on);
+  void setXAxisScale(PlotId id, double xMin, double xMax);
+  void setYAxisScale(PlotId id, double yMin, double yMax);
   void setXAxisRange(double xMin, double xMax);
 
 private:
@@ -33,7 +35,7 @@ private:
 };
 
 template<class Iterator>
-void Complexplot::plotNewData(Iterator begin, Iterator end)
+void Complexplot::setNewData(Iterator begin, Iterator end)
 {
   int numPoints = end-begin;
   std::complex<double>* data = new std::complex<double>[numPoints];
@@ -43,7 +45,7 @@ void Complexplot::plotNewData(Iterator begin, Iterator end)
     data[i] = *begin;
   }
 
-  plotNewData(data, numPoints);
+  setNewData(data, numPoints);
 
   delete[] data;
 }

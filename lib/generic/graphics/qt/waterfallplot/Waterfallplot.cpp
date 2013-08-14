@@ -13,14 +13,14 @@ Waterfallplot::~Waterfallplot()
   delete plot_;
 }
 
-void Waterfallplot::plotNewData(float* data, int numPoints)
+void Waterfallplot::appendNewData(float* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->appendNewData(data, numPoints);
 }
 
-void Waterfallplot::plotNewData(double* data, int numPoints)
+void Waterfallplot::appendNewData(double* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->appendNewData(data, numPoints);
 }
 
 void Waterfallplot::setTitle(std::string title)
@@ -28,9 +28,28 @@ void Waterfallplot::setTitle(std::string title)
   plot_->setTitle(title);
 }
 
-void Waterfallplot::setAxes(double xMin, double xMax,
-                            double yMin, double yMax,
-                            double zMin, double zMax)
+void Waterfallplot::setPlotXAxisScale(double xMin, double xMax)
 {
-  plot_->setAxes(xMin, xMax, yMin, yMax, zMin, zMax);
+  plot_->setPlotXAxisScale(xMin, xMax);
 }
+
+void Waterfallplot::setSpectrogramXAxisScale(double xMin, double xMax)
+{
+  plot_->setSpectrogramXAxisScale(xMin, xMax);
+}
+
+void Waterfallplot::setPlotYAxisScale(double yMin, double yMax)
+{
+  plot_->setPlotYAxisScale(yMin, yMax);
+}
+
+void Waterfallplot::setSpectrogramYAxisScale(double yMin, double yMax)
+{
+  plot_->setSpectrogramYAxisScale(yMin, yMax);
+}
+
+void Waterfallplot::setSpectrogramZAxisScale(double zMin, double zMax)
+{
+  plot_->setSpectrogramZAxisScale(zMin, zMax);
+}
+

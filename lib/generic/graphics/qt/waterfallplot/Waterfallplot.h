@@ -12,20 +12,22 @@ public:
   ~Waterfallplot();
 
   template<class Iterator>
-  void plotNewData(Iterator begin, Iterator end);
-  void plotNewData(float* data, int numPoints);
-  void plotNewData(double* data, int numPoints);
+  void appendNewData(Iterator begin, Iterator end);
+  void appendNewData(float* data, int numPoints);
+  void appendNewData(double* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax,
-               double zMin, double zMax);
+  void setPlotXAxisScale(double xMin, double xMax);
+  void setSpectrogramXAxisScale(double xMin, double xMax);
+  void setPlotYAxisScale(double yMin, double yMax);
+  void setSpectrogramYAxisScale(double yMin, double yMax);
+  void setSpectrogramZAxisScale(double zMin, double zMax);
 
 private:
   WaterfallplotWrapper* plot_;
 };
 
 template<class Iterator>
-void Waterfallplot::plotNewData(Iterator begin, Iterator end)
+void Waterfallplot::appendNewData(Iterator begin, Iterator end)
 {
   int numPoints = end-begin;
   double* data = new double[numPoints];
@@ -35,7 +37,7 @@ void Waterfallplot::plotNewData(Iterator begin, Iterator end)
     data[i] = *begin;
   }
 
-  plotNewData(data, numPoints);
+  appendNewData(data, numPoints);
   delete[] data;
 }
 

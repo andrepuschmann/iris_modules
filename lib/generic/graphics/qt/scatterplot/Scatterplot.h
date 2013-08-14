@@ -13,12 +13,14 @@ public:
   ~Scatterplot();
 
   template<class Iterator>
-  void plotNewData(Iterator begin, Iterator end);
-  void plotNewData(std::complex<float>* data, int numPoints);
-  void plotNewData(std::complex<double>* data, int numPoints);
+  void setNewData(Iterator begin, Iterator end);
+  void setNewData(std::complex<float>* data, int numPoints);
+  void setNewData(std::complex<double>* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisScale(double xMin, double xMax);
+  void setYAxisScale(double yMin, double yMax);
+  void setXAxisAutoScale(bool on);
+  void setYAxisAutoScale(bool on);
   void setAxisLabels(std::string xLabel, std::string yLabel);
 
 private:
@@ -26,7 +28,7 @@ private:
 };
 
 template<class Iterator>
-void Scatterplot::plotNewData(Iterator begin, Iterator end)
+void Scatterplot::setNewData(Iterator begin, Iterator end)
 {
   int numPoints = end-begin;
   std::complex<double>* data = new std::complex<double>[numPoints];
@@ -36,7 +38,7 @@ void Scatterplot::plotNewData(Iterator begin, Iterator end)
     data[i] = *begin;
   }
 
-  plotNewData(data, numPoints);
+  setNewData(data, numPoints);
 
   delete[] data;
 }

@@ -12,12 +12,14 @@ public:
   ~Realplot();
 
   template<class Iterator>
-  void plotNewData(Iterator begin, Iterator end);
-  void plotNewData(float* data, int numPoints);
-  void plotNewData(double* data, int numPoints);
+  void setNewData(Iterator begin, Iterator end);
+  void setNewData(float* data, int numPoints);
+  void setNewData(double* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisScale(double xMin, double xMax);
+  void setYAxisScale(double yMin, double yMax);
+  void setXAxisAutoScale(bool on);
+  void setYAxisAutoScale(bool on);
   void setXAxisRange(double xMin, double xMax);
   void setLabels(std::string xLabel, std::string yLabel);
 
@@ -26,7 +28,7 @@ private:
 };
 
 template<class Iterator>
-void Realplot::plotNewData(Iterator begin, Iterator end)
+void Realplot::setNewData(Iterator begin, Iterator end)
 {
   int numPoints = end-begin;
   double* data = new double[numPoints];
@@ -36,7 +38,7 @@ void Realplot::plotNewData(Iterator begin, Iterator end)
     data[i] = *begin;
   }
 
-  plotNewData(data, numPoints);
+  setNewData(data, numPoints);
 
   delete[] data;
 }

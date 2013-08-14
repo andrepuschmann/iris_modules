@@ -18,6 +18,8 @@ ScatterWidget::ScatterWidget(QWidget *parent)
   numPoints_ = 16;
   iData_ = new double[numPoints_];
   qData_ = new double[numPoints_];
+  timerId_ = startTimer(10);
+  haveNewData_ = false;
 }
 
 ScatterWidget::~ScatterWidget()
@@ -31,11 +33,25 @@ void ScatterWidget::customEvent( QEvent * e )
   if(e->type() == ComplexDataEvent::type)
   {
     ComplexDataEvent* dataEvent = (ComplexDataEvent*)e;
-    plotData(dataEvent);
+    setData(dataEvent);
   }
 }
 
-void ScatterWidget::plotData(ComplexDataEvent* e)
+void ScatterWidget::timerEvent(QTimerEvent *event)
+{
+  if(event->timerId() == timerId_)
+  {
+    if(haveNewData_)
+    {
+      plot_->replot();
+      haveNewData_ = false;
+    }
+    return;
+  }
+  QWidget::timerEvent(event);
+}
+
+void ScatterWidget::setData(ComplexDataEvent* e)
 {
   if(e->numPoints_ != numPoints_)
   {
@@ -49,7 +65,8 @@ void ScatterWidget::plotData(ComplexDataEvent* e)
   transform(e->dataPoints_, &e->dataPoints_[numPoints_], iData_, opReal());
   transform(e->dataPoints_, &e->dataPoints_[numPoints_], qData_, opImag());
 
-  plot_->plotData(iData_, qData_, numPoints_);
+  plot_->setData(iData_, qData_, numPoints_);
+  haveNewData_ = true;
 }
 
 void ScatterWidget::setWidgetTitle(QString title)
@@ -59,12 +76,26 @@ void ScatterWidget::setWidgetTitle(QString title)
 
 void ScatterWidget::setWidgetAxisLabels(QString xLabel, QString yLabel)
 {
-  plot_->setXLabel(xLabel);
-  plot_->setYLabel(yLabel);
+  plot_->setAxisTitle(QwtPlot::xBottom, xLabel);
+  plot_->setAxisTitle(QwtPlot::yLeft, yLabel);
 }
 
-void ScatterWidget::setWidgetAxes(double xMin, double xMax,
-                               double yMin, double yMax)
+void ScatterWidget::setWidgetXAxisScale(double xMin, double xMax)
 {
-  plot_->setAxes(xMin, xMax, yMin, yMax);
+  plot_->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+}
+
+void ScatterWidget::setWidgetYAxisScale(double yMin, double yMax)
+{
+  plot_->setAxisScale(QwtPlot::yLeft, yMin, yMax);
+}
+
+void ScatterWidget::setWidgetXAxisAutoScale(bool on=true)
+{
+  plot_->setAxisAutoScale(QwtPlot::xBottom, on);
+}
+
+void ScatterWidget::setWidgetYAxisAutoScale(bool on)
+{
+  plot_->setAxisAutoScale(QwtPlot::yLeft, on);
 }

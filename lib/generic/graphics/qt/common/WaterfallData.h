@@ -1,5 +1,5 @@
-#ifndef SPECTROGRAMDATA_H
-#define SPECTROGRAMDATA_H
+#ifndef WATERFALLDATA_H
+#define WATERFALLDATA_H
 
 #include <qwt_raster_data.h>
 #include <boost/circular_buffer.hpp>
@@ -8,7 +8,7 @@
 #include "irisapi/Exceptions.h"
 
 
-class SpectrogramData
+class WaterfallData
     :public QwtRasterData
 {
 public:
@@ -16,7 +16,7 @@ public:
   typedef boost::circular_buffer< VecPtr >          VecPtrBuf;
   typedef VecPtrBuf::iterator                       VecPtrBufIt;
 
-  SpectrogramData(int numDataPoints, int numRows)
+  WaterfallData(int numDataPoints, int numRows)
     :QwtRasterData()
     ,nData_(numDataPoints)
     ,nRows_(numRows)
@@ -32,11 +32,11 @@ public:
   void appendData(double* data, int n)
   {
     if(n != nData_)
-      throw iris::InvalidDataException("SpectrogramData: invalid data length");
+      throw iris::InvalidDataException("WaterfallData: invalid data length");
 
-    VecPtr v = data_.back();
+    VecPtr v = data_.front();
     v->assign(data, data+n);
-    data_.push_front(v);
+    data_.push_back(v);
   }
 
   double value(double x, double y) const
@@ -45,9 +45,15 @@ public:
     double top = interval(Qt::YAxis).maxValue();
     double left = interval(Qt::XAxis).minValue();
     double right = interval(Qt::XAxis).maxValue();
+    double xStep = abs(right-left)/nData_;
+    double yStep = abs(top-bottom)/nRows_;
 
-    int ix = static_cast<int>((x-left)/(right-left) * (nData_-1));
-    int iy = static_cast<int>((y-top)/(bottom-top) * (nRows_-1));
+    int ix = static_cast<int>((x-left) / xStep);
+    int iy = static_cast<int>((y-bottom) / yStep);
+    if(ix >= nData_)
+      ix = nData_-1;
+    if(iy >= nRows_)
+      iy = nRows_-1;
     double ret = (*data_[iy])[ix];
     return ret;
   }
@@ -58,4 +64,4 @@ private:
   int nRows_;
 };
 
-#endif // SPECTROGRAMDATA_H
+#endif // WATERFALLDATA_H

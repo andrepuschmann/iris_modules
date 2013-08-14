@@ -41,12 +41,19 @@ void WaterfallplotWrapper::createWidgetSlot(int numDataPoints, int numRows)
   widget_ = new WaterfallWidget(numDataPoints, numRows);
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
-  connect(this, SIGNAL(setWidgetAxes(double, double, double, double, double, double)),
-          widget_, SLOT(setPlotAxes(double, double, double, double, double, double)));
+  connect(this, SIGNAL(setWidgetPXAxisScale(double, double)),
+          widget_, SLOT(setPlotXAxisScale(double, double)));
+  connect(this, SIGNAL(setWidgetSXAxisScale(double, double)),
+          widget_, SLOT(setSpectrogramXAxisScale(double, double)));
+  connect(this, SIGNAL(setWidgetPYAxisScale(double, double)),
+          widget_, SLOT(setPlotYAxisScale(double, double)));
+  connect(this, SIGNAL(setWidgetSYAxisScale(double, double)),
+          widget_, SLOT(setSpectrogramYAxisScale(double, double)));
+  connect(this, SIGNAL(setWidgetSZAxisScale(double, double)),
+          widget_, SLOT(setSpectrogramZAxisScale(double, double)));
 
   widget_->resize( 800, 600 );
   widget_->show();
-  widget_->moveToThread(QApplication::instance()->thread());
 }
 
 void WaterfallplotWrapper::destroyWidgetSlot()
@@ -54,14 +61,14 @@ void WaterfallplotWrapper::destroyWidgetSlot()
   delete widget_;
 }
 
-void WaterfallplotWrapper::plotNewData(float* data, int numPoints)
+void WaterfallplotWrapper::appendNewData(float* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
   qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
-void WaterfallplotWrapper::plotNewData(double* data, int numPoints)
+void WaterfallplotWrapper::appendNewData(double* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
@@ -77,11 +84,37 @@ void WaterfallplotWrapper::setTitle(std::string title)
   emit setWidgetTitle(str);
 }
 
-void WaterfallplotWrapper::setAxes(double xMin, double xMax,
-                                   double yMin, double yMax,
-                                   double zMin, double zMax)
+void WaterfallplotWrapper::setPlotXAxisScale(double xMin, double xMax)
 {
   if(widget_ == NULL)
     return;
-  emit setWidgetAxes(xMin, xMax, yMin, yMax, zMin, zMax);
+  emit setWidgetPXAxisScale(xMin, xMax);
+}
+
+void WaterfallplotWrapper::setSpectrogramXAxisScale(double xMin, double xMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetSXAxisScale(xMin, xMax);
+}
+
+void WaterfallplotWrapper::setPlotYAxisScale(double yMin, double yMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetPYAxisScale(yMin, yMax);
+}
+
+void WaterfallplotWrapper::setSpectrogramYAxisScale(double yMin, double yMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetSYAxisScale(yMin, yMax);
+}
+
+void WaterfallplotWrapper::setSpectrogramZAxisScale(double zMin, double zMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetSZAxisScale(zMin, zMax);
 }

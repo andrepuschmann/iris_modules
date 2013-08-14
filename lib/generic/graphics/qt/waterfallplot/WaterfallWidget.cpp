@@ -23,6 +23,8 @@ WaterfallWidget::WaterfallWidget(int numDataPoints, int numRows, QWidget *parent
 
   numPoints_ = numDataPoints;
   data_ = new double[numPoints_];
+  timerId_ = startTimer(10);
+  haveNewData_ = false;
 }
 
 WaterfallWidget::~WaterfallWidget()
@@ -36,7 +38,7 @@ void WaterfallWidget::customEvent( QEvent * e )
   if(e->type() == RealDataEvent::type)
   {
     RealDataEvent* dataEvent = (RealDataEvent*)e;
-    plotData(dataEvent);
+    appendData(dataEvent);
   }
 }
 
@@ -45,15 +47,47 @@ void WaterfallWidget::setWidgetTitle(QString title)
   setWindowTitle(title);
 }
 
-void WaterfallWidget::setPlotAxes(double xMin, double xMax,
-                                  double yMin, double yMax,
-                                  double zMin, double zMax)
+void WaterfallWidget::setPlotXAxisScale(double xMin, double xMax)
 {
-  p_->setXAxisRange(xMin, xMax);
-  s_->setPlotAxes(xMin, xMax, yMin, yMax, zMin, zMax);
+  p_->setAxisScale(QwtPlot::xBottom, xMin, xMax);
 }
 
-void WaterfallWidget::plotData(RealDataEvent* e)
+void WaterfallWidget::setSpectrogramXAxisScale(double xMin, double xMax)
+{
+  s_->setPlotXAxisScale(xMin, xMax);
+}
+
+void WaterfallWidget::setPlotYAxisScale(double yMin, double yMax)
+{
+  p_->setAxisScale(QwtPlot::yLeft, yMin, yMax);
+}
+
+void WaterfallWidget::setSpectrogramYAxisScale(double yMin, double yMax)
+{
+  s_->setPlotYAxisScale(yMin, yMax);
+}
+
+void WaterfallWidget::setSpectrogramZAxisScale(double zMin, double zMax)
+{
+  s_->setPlotZAxisScale(zMin, zMax);
+}
+
+void WaterfallWidget::timerEvent(QTimerEvent *event)
+{
+  if(event->timerId() == timerId_)
+  {
+    if(haveNewData_)
+    {
+      p_->replot();
+      s_->replot();
+      haveNewData_ = false;
+    }
+    return;
+  }
+  QWidget::timerEvent(event);
+}
+
+void WaterfallWidget::appendData(RealDataEvent* e)
 {
   if(e->numPoints_ != numPoints_)
   {
@@ -64,6 +98,7 @@ void WaterfallWidget::plotData(RealDataEvent* e)
 
   memcpy(data_, e->dataPoints_, numPoints_*sizeof(double));
 
-  p_->plotData(data_, numPoints_);
-  s_->plotData(data_, numPoints_);
+  p_->setData(data_, numPoints_);
+  s_->appendData(data_, numPoints_);
+  haveNewData_ = true;
 }

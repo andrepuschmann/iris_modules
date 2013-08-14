@@ -20,12 +20,17 @@ public:
 public slots:
   void customEvent( QEvent * e );
   void setWidgetTitle(QString title);
-  void setWidgetAxes(int id, double xMin, double xMax,
-                   double yMin, double yMax);
+  void setWidgetXAxisScale(int id, double xMin, double xMax);
+  void setWidgetYAxisScale(int id, double yMin, double yMax);
+  void setWidgetXAxisAutoScale(int id, bool on);
+  void setWidgetYAxisAutoScale(int id, bool on);
   void setWidgetXAxisRange(double xMin, double xMax);
 
+protected:
+  virtual void timerEvent(QTimerEvent *event);
+
 private:
-  void plotData(ComplexDataEvent* e);
+  void setData(ComplexDataEvent* e);
   Lineplot* i_; //In-phase plot
   Lineplot* q_; //Quadrature plot
   Lineplot* m_; //Magnitude plot
@@ -41,7 +46,8 @@ private:
   double* mData_;
   double* pData_;
   int numPoints_;
-
+  int timerId_;
+  bool haveNewData_;
 };
 
 #endif // COMPLEXWIDGET_H

@@ -21,17 +21,24 @@ public:
 public slots:
   void customEvent( QEvent * e );
   void setWidgetTitle(QString title);
-  void setPlotAxes(double xMin, double xMax,
-                   double yMin, double yMax,
-                   double zMin, double zMax);
+  void setPlotXAxisScale(double xMin, double xMax);
+  void setSpectrogramXAxisScale(double xMin, double xMax);
+  void setPlotYAxisScale(double yMin, double yMax);
+  void setSpectrogramYAxisScale(double yMin, double yMax);
+  void setSpectrogramZAxisScale(double zMin, double zMax);
+
+protected:
+  virtual void timerEvent(QTimerEvent *event);
 
 private:
-  void plotData(RealDataEvent* e);
+  void appendData(RealDataEvent* e);
   Lineplot* p_;
   Spectrogramplot* s_;
 
   double* data_;
   int numPoints_;
+  int timerId_;
+  bool haveNewData_;
 };
 
 #endif // WATERFALLWIDGET_H

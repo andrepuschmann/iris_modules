@@ -15,11 +15,13 @@ public:
   ScatterplotWrapper();
   ~ScatterplotWrapper();
 
-  void plotNewData(std::complex<float>* data, int numPoints);
-  void plotNewData(std::complex<double>* data, int numPoints);
+  void setNewData(std::complex<float>* data, int numPoints);
+  void setNewData(std::complex<double>* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisScale(double xMin, double xMax);
+  void setYAxisScale(double yMin, double yMax);
+  void setXAxisAutoScale(bool on);
+  void setYAxisAutoScale(bool on);
   void setAxisLabels(std::string xLabel, std::string yLabel);
 
 public slots:
@@ -31,8 +33,10 @@ signals:
   void destroyWidgetSignal();
   void setWidgetTitle(QString title);
   void setWidgetAxisLabels(QString xLabel, QString yLabel);
-  void setWidgetAxes(double xMin, double xMax,
-                   double yMin, double yMax);
+  void setWidgetXAxisScale(double xMin, double xMax);
+  void setWidgetYAxisScale(double yMin, double yMax);
+  void setWidgetXAxisAutoScale(bool on);
+  void setWidgetYAxisAutoScale(bool on);
 
 private:
   ScatterWidget* widget_;

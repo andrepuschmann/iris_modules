@@ -21,11 +21,16 @@ public slots:
   void customEvent( QEvent * e );
   void setWidgetTitle(QString title);
   void setWidgetAxisLabels(QString xLabel, QString yLabel);
-  void setWidgetAxes(double xMin, double xMax,
-                     double yMin, double yMax);
+  void setWidgetXAxisScale(double xMin, double xMax);
+  void setWidgetYAxisScale(double yMin, double yMax);
+  void setWidgetXAxisAutoScale(bool on);
+  void setWidgetYAxisAutoScale(bool on);
+
+protected:
+  virtual void timerEvent(QTimerEvent *event);
 
 private:
-  void plotData(ComplexDataEvent* e);
+  void setData(ComplexDataEvent* e);
   Pointplot* plot_;
 
   struct opReal{double operator()(std::complex<double> i) const{return real(i);}};
@@ -34,7 +39,8 @@ private:
   double* iData_;
   double* qData_;
   int numPoints_;
-
+  int timerId_;
+  bool haveNewData_;
 };
 
 #endif // SCATTERWIDGET_H

@@ -1,3 +1,36 @@
+/**
+ * \file lib/generic/graphics/qt/common/Pointplot.h
+ * \version 1.0
+ *
+ * \section COPYRIGHT
+ *
+ * Copyright 2012-2013 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * \section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * \section DESCRIPTION
+ *
+ * Implementation of a plot of complex data values as points on an IQ axis.
+ */
+
 #include "Pointplot.h"
 #include <algorithm>
 
@@ -69,7 +102,7 @@ Pointplot::~Pointplot()
   delete[] imagPoints_;
 }
 
-void Pointplot::plotData(double* iData, double* qData, int n)
+void Pointplot::setData(double* iData, double* qData, int n)
 {
   if(numPoints_ != n)
   {
@@ -83,28 +116,4 @@ void Pointplot::plotData(double* iData, double* qData, int n)
 
   copy(iData, iData+n, realPoints_);
   copy(qData, qData+n, imagPoints_);
-
-  replot();
-}
-
-void Pointplot::setTitle(QString title)
-{
-  setTitle(title);
-}
-
-void Pointplot::setXLabel(QString label)
-{
-  setAxisTitle(QwtPlot::xBottom, label);
-}
-
-void Pointplot::setYLabel(QString label)
-{
-  setAxisTitle(QwtPlot::yLeft, label);
-}
-
-void Pointplot::setAxes(double xMin, double xMax,
-                        double yMin, double yMax)
-{
-  setAxisScale(QwtPlot::xBottom, xMin, xMax);
-  setAxisScale(QwtPlot::yLeft, yMin, yMax);
 }

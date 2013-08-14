@@ -1,3 +1,36 @@
+/**
+ * \file lib/generic/graphics/qt/common/Lineplot.cpp
+ * \version 1.0
+ *
+ * \section COPYRIGHT
+ *
+ * Copyright 2012-2013 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * \section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * \section DESCRIPTION
+ *
+ * Implementation of a simple line plotted using a QwtPlot.
+ */
+
 #include "Lineplot.h"
 
 #include <algorithm>
@@ -39,10 +72,11 @@ Lineplot::Lineplot(QWidget *parent)
   canvas()->setPalette(palette);
 
   curve_ = new QwtPlotCurve("Curve");
-  curve_->attach(this);
   curve_->setPen(QPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
   curve_->setStyle(QwtPlotCurve::Lines);
   curve_->setRawSamples(indexPoints_, dataPoints_, numPoints_);
+  curve_->setYAxis(QwtPlot::yLeft);
+  curve_->attach(this);
 
   memset(dataPoints_, 0x0, numPoints_*sizeof(double));
   for(int i=0;i<numPoints_;i++)
@@ -79,7 +113,7 @@ Lineplot::~Lineplot()
   delete[] dataPoints_;
 }
 
-void Lineplot::plotData(double* data, int n)
+void Lineplot::setData(double* data, int n)
 {
   if(numPoints_ != n)
   {
@@ -90,7 +124,7 @@ void Lineplot::plotData(double* data, int n)
     dataPoints_ = new double[numPoints_];
     if(xMin_==xMax_)
     {
-      for(int i=0;i<=numPoints_;i++)
+      for(int i=0;i<numPoints_;i++)
         indexPoints_[i] = i;
     }
     else
@@ -100,12 +134,11 @@ void Lineplot::plotData(double* data, int n)
       for(int i=0;i<numPoints_;i++,val+=step)
         indexPoints_[i] = val;
     }
-    curve_->setRawSamples(indexPoints_, dataPoints_, numPoints_);
   }
 
   memcpy(dataPoints_, data, numPoints_*sizeof(double));
-
-  replot();
+  //Need to setRawSamples again for autoscaling to work
+  curve_->setRawSamples(indexPoints_, dataPoints_, numPoints_);
 }
 
 void Lineplot::setTitle(QString title)
@@ -121,14 +154,6 @@ void Lineplot::setXLabel(QString label)
 void Lineplot::setYLabel(QString label)
 {
   setAxisTitle(QwtPlot::yLeft, label);
-}
-
-void Lineplot::setAxes(double xMin, double xMax,
-                 double yMin, double yMax)
-{
-  setAxisScale(QwtPlot::xBottom, xMin, xMax);
-  setAxisScale(QwtPlot::yLeft, yMin, yMax);
-  setAxisScale(QwtPlot::yRight, yMin, yMax);
 }
 
 void Lineplot::setXAxisRange(double xMin, double xMax)

@@ -15,11 +15,13 @@ public:
   ComplexplotWrapper();
   ~ComplexplotWrapper();
 
-  void plotNewData(std::complex<float>* data, int numPoints);
-  void plotNewData(std::complex<double>* data, int numPoints);
+  void setNewData(std::complex<float>* data, int numPoints);
+  void setNewData(std::complex<double>* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(int id, double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisAutoScale(int id, bool on);
+  void setYAxisAutoScale(int id, bool on);
+  void setXAxisScale(int id, double xMin, double xMax);
+  void setYAxisScale(int id, double yMin, double yMax);
   void setXAxisRange(double xMin, double xMax);
 
 public slots:
@@ -30,8 +32,10 @@ signals:
   void createWidgetSignal();
   void destroyWidgetSignal();
   void setWidgetTitle(QString title);
-  void setWidgetAxes(int id, double xMin, double xMax,
-                   double yMin, double yMax);
+  void setWidgetXAxisAutoScale(int id, bool on);
+  void setWidgetYAxisAutoScale(int id, bool on);
+  void setWidgetXAxisScale(int id, double xMin, double xMax);
+  void setWidgetYAxisScale(int id, double yMin, double yMax);
   void setWidgetXAxisRange(double xMin, double xMax);
 
 private:

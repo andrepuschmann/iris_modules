@@ -51,20 +51,17 @@ using namespace std;
 void threadMain1()
 {
   int n=2048;
-  Waterfallplot plot(n, n);
+  Waterfallplot plot(n,n);
   plot.setTitle("Float");
-  plot.setAxes(0,2,0,2,-1,1);
 
   float step = 2.0*PI/n;
   float* data = new float[n*2];
   for(int i=0;i<n*2;i++)
     data[i] = sinf(step*i);
 
-  plot.plotNewData(data, n);
-
   for(int i=0;i<n;i++)
   {
-    plot.plotNewData(data+i, n);
+    plot.appendNewData(data+i, n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -72,20 +69,17 @@ void threadMain1()
 void threadMain2()
 {
   int n=2048;
-  Waterfallplot plot(n, n);
+  Waterfallplot plot(n,n);
   plot.setTitle("Double");
-  plot.setAxes(0,2,0,2,-1,1);
 
   double step = 2.0*PI/n;
   double* data = new double[n*2];
   for(int i=0;i<n*2;i++)
     data[i] = sin(step*i);
 
-  plot.plotNewData(data, n);
-
   for(int i=0;i<n;i++)
   {
-    plot.plotNewData(data+i, n);
+    plot.appendNewData(data+i, n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -93,9 +87,8 @@ void threadMain2()
 void threadMain3()
 {
   int n=2048;
-  Waterfallplot plot(n, n);
+  Waterfallplot plot(n,n);
   plot.setTitle("FloatVec");
-  plot.setAxes(0,2,0,2,-1,1);
 
   double step = 2.0*PI/n;
   std::vector<float> data;
@@ -103,11 +96,9 @@ void threadMain3()
   for(int i=0;i<n*2;i++)
     data[i] = sin(step*i);
 
-  plot.plotNewData(data.begin(), data.begin()+n);
-
   for(int i=0;i<n;i++)
   {
-    plot.plotNewData(data.begin()+i, data.begin()+i+n);
+    plot.appendNewData(data.begin()+i, data.begin()+i+n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }

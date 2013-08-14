@@ -14,12 +14,14 @@ public:
   WaterfallplotWrapper(int numDataPoints, int numRows);
   ~WaterfallplotWrapper();
 
-  void plotNewData(float* data, int numPoints);
-  void plotNewData(double* data, int numPoints);
+  void appendNewData(float* data, int numPoints);
+  void appendNewData(double* data, int numPoints);
   void setTitle(std::string title);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax,
-               double zMin, double zMax);
+  void setPlotXAxisScale(double xMin, double xMax);
+  void setSpectrogramXAxisScale(double xMin, double xMax);
+  void setPlotYAxisScale(double yMin, double yMax);
+  void setSpectrogramYAxisScale(double yMin, double yMax);
+  void setSpectrogramZAxisScale(double zMin, double zMax);
 
 public slots:
   void createWidgetSlot(int numDataPoints, int numRows);
@@ -29,9 +31,11 @@ signals:
   void createWidgetSignal(int numDataPoints, int numRows);
   void destroyWidgetSignal();
   void setWidgetTitle(QString title);
-  void setWidgetAxes(double xMin, double xMax,
-                     double yMin, double yMax,
-                     double zMin, double zMax);
+  void setWidgetPXAxisScale(double xMin, double xMax);
+  void setWidgetSXAxisScale(double xMin, double xMax);
+  void setWidgetPYAxisScale(double yMin, double yMax);
+  void setWidgetSYAxisScale(double yMin, double yMax);
+  void setWidgetSZAxisScale(double zMin, double zMax);
 
 private:
   WaterfallWidget* widget_;

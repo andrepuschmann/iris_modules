@@ -56,7 +56,7 @@ void threadMain1()
   Complexplot plot;
   plot.setTitle("Float");
   plot.setXAxisRange(0,2);
-  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
+  plot.setYAxisScale(Complexplot::Magnitude, 0.9, 1.1);
 
   int n=1024;
   float step = 2.0*PI/n;
@@ -64,12 +64,12 @@ void threadMain1()
   for(int i=0;i<n;i++)
     data[i] = polar(1.0f,step*i);
 
-  plot.plotNewData(data, n);
+  plot.setNewData(data, n);
 
   for(int i=0;i<n;i++)
   {
     rotate(data, data+1, data+n);
-    plot.plotNewData(data, n);
+    plot.setNewData(data, n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -79,7 +79,7 @@ void threadMain2()
   Complexplot plot;
   plot.setTitle("Double");
   plot.setXAxisRange(0,2);
-  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
+  plot.setYAxisScale(Complexplot::Magnitude, 0.9, 1.1);
 
   int n=1024;
   double step = 2.0*PI/n;
@@ -87,12 +87,12 @@ void threadMain2()
   for(int i=0;i<n;i++)
     data[i] = polar(1.0,step*i);
 
-  plot.plotNewData(data, n);
+  plot.setNewData(data, n);
 
   for(int i=0;i<n;i++)
   {
     rotate(data, data+1, data+n);
-    plot.plotNewData(data, n);
+    plot.setNewData(data, n);
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }
@@ -103,7 +103,7 @@ void threadMain3()
   Complexplot plot;
   plot.setTitle("FloatVec");
   plot.setXAxisRange(0,2);
-  plot.setAxes(Complexplot::Magnitude, 0, 2, 0.9, 1.1);
+  plot.setYAxisScale(Complexplot::Magnitude, 0.9, 1.1);
 
   FloatVec data(1024);
   int n=data.size();
@@ -111,12 +111,12 @@ void threadMain3()
   for(int i=0;i<n;i++)
     data[i] = polar(1.0f,step*i);
 
-  plot.plotNewData(data.begin(), data.end());
+  plot.setNewData(data.begin(), data.end());
 
   for(int i=0;i<n;i++)
   {
     rotate(data.begin(), data.begin()+1, data.end());
-    plot.plotNewData(data.begin(), data.end());
+    plot.setNewData(data.begin(), data.end());
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }
 }

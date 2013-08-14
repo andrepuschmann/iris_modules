@@ -18,6 +18,8 @@ RealWidget::RealWidget(QWidget *parent)
 
   numPoints_ = 16;
   dataPoints_ = new double[numPoints_];
+  timerId_ = startTimer(10);
+  haveNewData_ = false;
 }
 
 RealWidget::~RealWidget()
@@ -30,11 +32,25 @@ void RealWidget::customEvent( QEvent * e )
   if(e->type() == RealDataEvent::type)
   {
     RealDataEvent* dataEvent = (RealDataEvent*)e;
-    plotData(dataEvent);
+    setData(dataEvent);
   }
 }
 
-void RealWidget::plotData(RealDataEvent* e)
+void RealWidget::timerEvent(QTimerEvent *event)
+{
+  if(event->timerId() == timerId_)
+  {
+    if(haveNewData_)
+    {
+      l_->replot();
+      haveNewData_ = false;
+    }
+    return;
+  }
+  QWidget::timerEvent(event);
+}
+
+void RealWidget::setData(RealDataEvent* e)
 {
   if(e->numPoints_ != numPoints_)
   {
@@ -45,7 +61,8 @@ void RealWidget::plotData(RealDataEvent* e)
   for(int i=0;i<numPoints_;i++)
     dataPoints_[i] = e->dataPoints_[i];
 
-  l_->plotData(dataPoints_, numPoints_);
+  l_->setData(dataPoints_, numPoints_);
+  haveNewData_ = true;
 }
 
 void RealWidget::setWidgetTitle(QString title)
@@ -59,10 +76,24 @@ void RealWidget::setWidgetAxisLabels(QString xLabel, QString yLabel)
   l_->setYLabel(yLabel);
 }
 
-void RealWidget::setWidgetAxes(double xMin, double xMax,
-                               double yMin, double yMax)
+void RealWidget::setWidgetXAxisScale(double xMin, double xMax)
 {
-  l_->setAxes(xMin, xMax, yMin, yMax);
+  l_->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+}
+
+void RealWidget::setWidgetYAxisScale(double yMin, double yMax)
+{
+  l_->setAxisScale(QwtPlot::yLeft, yMin, yMax);
+}
+
+void RealWidget::setWidgetXAxisAutoScale(bool on=true)
+{
+  l_->setAxisAutoScale(QwtPlot::xBottom, on);
+}
+
+void RealWidget::setWidgetYAxisAutoScale(bool on=true)
+{
+  l_->setAxisAutoScale(QwtPlot::yLeft, on);
 }
 
 void RealWidget::setWidgetXAxisRange(double xMin, double xMax)

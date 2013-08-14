@@ -11,14 +11,14 @@ Scatterplot::~Scatterplot()
   delete plot_;
 }
 
-void Scatterplot::plotNewData(std::complex<float>* data, int numPoints)
+void Scatterplot::setNewData(std::complex<float>* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
-void Scatterplot::plotNewData(std::complex<double>* data, int numPoints)
+void Scatterplot::setNewData(std::complex<double>* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
 void Scatterplot::setTitle(std::string title)
@@ -26,10 +26,24 @@ void Scatterplot::setTitle(std::string title)
   plot_->setTitle(title);
 }
 
-void Scatterplot::setAxes(double xMin, double xMax,
-                          double yMin, double yMax)
+void Scatterplot::setXAxisScale(double xMin, double xMax)
 {
-  plot_->setAxes(xMin, xMax, yMin, yMax);
+  plot_->setXAxisScale(xMin, xMax);
+}
+
+void Scatterplot::setYAxisScale(double yMin, double yMax)
+{
+  plot_->setYAxisScale(yMin, yMax);
+}
+
+void Scatterplot::setXAxisAutoScale(bool on=true)
+{
+  plot_->setXAxisAutoScale(on);
+}
+
+void Scatterplot::setYAxisAutoScale(bool on=true)
+{
+  plot_->setYAxisAutoScale(on);
 }
 
 void Scatterplot::setAxisLabels(std::string xLabel, std::string yLabel)

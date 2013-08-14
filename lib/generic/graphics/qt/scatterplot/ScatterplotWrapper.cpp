@@ -36,8 +36,14 @@ ScatterplotWrapper::~ScatterplotWrapper()
 void ScatterplotWrapper::createWidgetSlot()
 {
   widget_ = new ScatterWidget;
-  connect(this, SIGNAL(setWidgetAxes(double,double,double,double)),
-                       widget_, SLOT(setWidgetAxes(double,double,double,double)));
+  connect(this, SIGNAL(setWidgetXAxisScale(double,double)),
+          widget_, SLOT(setWidgetXAxisScale(double,double)));
+  connect(this, SIGNAL(setWidgetYAxisScale(double,double)),
+          widget_, SLOT(setWidgetYAxisScale(double,double)));
+  connect(this, SIGNAL(setWidgetXAxisAutoScale(bool)),
+          widget_, SLOT(setWidgetXAxisAutoScale(bool)));
+  connect(this, SIGNAL(setWidgetYAxisAutoScale(bool)),
+          widget_, SLOT(setWidgetYAxisAutoScale(bool)));
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
   connect(this, SIGNAL(setWidgetAxisLabels(QString, QString)),
@@ -45,7 +51,6 @@ void ScatterplotWrapper::createWidgetSlot()
 
   widget_->resize( 800, 600 );
   widget_->show();
-  widget_->moveToThread(QApplication::instance()->thread());
 }
 
 void ScatterplotWrapper::destroyWidgetSlot()
@@ -53,14 +58,14 @@ void ScatterplotWrapper::destroyWidgetSlot()
   delete widget_;
 }
 
-void ScatterplotWrapper::plotNewData(complex<double>* data, int numPoints)
+void ScatterplotWrapper::setNewData(complex<double>* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
   qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
 }
 
-void ScatterplotWrapper::plotNewData(complex<float>* data, int numPoints)
+void ScatterplotWrapper::setNewData(complex<float>* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
@@ -75,12 +80,32 @@ void ScatterplotWrapper::setTitle(std::string title)
   emit setWidgetTitle(str);
 }
 
-void ScatterplotWrapper::setAxes(double xMin, double xMax,
-                        double yMin, double yMax)
+void ScatterplotWrapper::setXAxisScale(double xMin, double xMax)
 {
   if(widget_ == NULL)
     return;
-  emit setWidgetAxes(xMin, xMax, yMin, yMax);
+  emit setWidgetXAxisScale(xMin, xMax);
+}
+
+void ScatterplotWrapper::setYAxisScale(double yMin, double yMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisScale(yMin, yMax);
+}
+
+void ScatterplotWrapper::setXAxisAutoScale(bool on=true)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetXAxisAutoScale(on);
+}
+
+void ScatterplotWrapper::setYAxisAutoScale(bool on=true)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisAutoScale(on);
 }
 
 void ScatterplotWrapper::setAxisLabels(std::string xLabel, std::string yLabel)

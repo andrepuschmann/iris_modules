@@ -37,14 +37,19 @@ void ComplexplotWrapper::createWidgetSlot()
   widget_ = new ComplexWidget;
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
-  connect(this, SIGNAL(setWidgetAxes(int, double,double,double,double)),
-          widget_, SLOT(setWidgetAxes(int, double,double,double,double)));
+  connect(this, SIGNAL(setWidgetXAxisScale(int,double,double)),
+          widget_, SLOT(setWidgetXAxisScale(int,double,double)));
+  connect(this, SIGNAL(setWidgetYAxisScale(int,double,double)),
+          widget_, SLOT(setWidgetYAxisScale(int,double,double)));
+  connect(this, SIGNAL(setWidgetXAxisAutoScale(int,bool)),
+          widget_, SLOT(setWidgetXAxisAutoScale(int,bool)));
+  connect(this, SIGNAL(setWidgetYAxisAutoScale(int,bool)),
+          widget_, SLOT(setWidgetYAxisAutoScale(int,bool)));
   connect(this, SIGNAL(setWidgetXAxisRange(double,double)),
           widget_, SLOT(setWidgetXAxisRange(double,double)));
 
   widget_->resize( 800, 600 );
   widget_->show();
-  widget_->moveToThread(QApplication::instance()->thread());
 }
 
 void ComplexplotWrapper::destroyWidgetSlot()
@@ -52,14 +57,14 @@ void ComplexplotWrapper::destroyWidgetSlot()
   delete widget_;
 }
 
-void ComplexplotWrapper::plotNewData(complex<double>* data, int numPoints)
+void ComplexplotWrapper::setNewData(complex<double>* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
   qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
 }
 
-void ComplexplotWrapper::plotNewData(complex<float>* data, int numPoints)
+void ComplexplotWrapper::setNewData(complex<float>* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
@@ -74,12 +79,32 @@ void ComplexplotWrapper::setTitle(std::string title)
   emit setWidgetTitle(str);
 }
 
-void ComplexplotWrapper::setAxes(int id, double xMin, double xMax,
-                        double yMin, double yMax)
+void ComplexplotWrapper::setXAxisAutoScale(int id, bool on=true)
 {
   if(widget_ == NULL)
     return;
-  emit setWidgetAxes(id, xMin, xMax, yMin, yMax);
+  emit setWidgetXAxisAutoScale(id, on);
+}
+
+void ComplexplotWrapper::setYAxisAutoScale(int id, bool on=true)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisAutoScale(id, on);
+}
+
+void ComplexplotWrapper::setXAxisScale(int id, double xMin, double xMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetXAxisScale(id, xMin, xMax);
+}
+
+void ComplexplotWrapper::setYAxisScale(int id, double yMin, double yMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisScale(id, yMin, yMax);
 }
 
 void ComplexplotWrapper::setXAxisRange(double xMin, double xMax)

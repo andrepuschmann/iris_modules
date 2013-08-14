@@ -14,12 +14,14 @@ public:
   RealplotWrapper();
   ~RealplotWrapper();
 
-  void plotNewData(float* data, int numPoints);
-  void plotNewData(double* data, int numPoints);
+  void setNewData(float* data, int numPoints);
+  void setNewData(double* data, int numPoints);
   void setTitle(std::string title);
   void setAxisLabels(std::string xLabel, std::string yLabel);
-  void setAxes(double xMin, double xMax,
-               double yMin, double yMax);
+  void setXAxisScale(double xMin, double xMax);
+  void setYAxisScale(double yMin, double yMax);
+  void setXAxisAutoScale(bool on);
+  void setYAxisAutoScale(bool on);
   void setXAxisRange(double xMin, double xMax);
 
 public slots:
@@ -31,8 +33,10 @@ signals:
   void destroyWidgetSignal();
   void setWidgetTitle(QString title);
   void setWidgetAxisLabels(QString xLabel, QString yLabel);
-  void setWidgetAxes(double xMin, double xMax,
-                     double yMin, double yMax);
+  void setWidgetXAxisScale(double xMin, double xMax);
+  void setWidgetYAxisScale(double yMin, double yMax);
+  void setWidgetXAxisAutoScale(bool on);
+  void setWidgetYAxisAutoScale(bool on);
   void setWidgetXAxisRange(double xMin, double xMax);
 
 private:

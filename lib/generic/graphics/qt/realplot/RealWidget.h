@@ -21,17 +21,23 @@ public slots:
   void customEvent( QEvent * e );
   void setWidgetTitle(QString title);
   void setWidgetAxisLabels(QString xLabel, QString yLabel);
-  void setWidgetAxes(double xMin, double xMax,
-                     double yMin, double yMax);
+  void setWidgetXAxisScale(double xMin, double xMax);
+  void setWidgetYAxisScale(double yMin, double yMax);
+  void setWidgetXAxisAutoScale(bool on);
+  void setWidgetYAxisAutoScale(bool on);
   void setWidgetXAxisRange(double xMin, double xMax);
 
+protected:
+  virtual void timerEvent(QTimerEvent *event);
+
 private:
-  void plotData(RealDataEvent* e);
+  void setData(RealDataEvent* e);
   Lineplot* l_; //The line plot
 
   double* dataPoints_;
   int numPoints_;
-
+  int timerId_;
+  bool haveNewData_;
 };
 
 #endif // REALWIDGET_H

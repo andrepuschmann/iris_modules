@@ -13,14 +13,14 @@ Complexplot::~Complexplot()
   delete plot_;
 }
 
-void Complexplot::plotNewData(complex<double>* data, int numPoints)
+void Complexplot::setNewData(complex<double>* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
-void Complexplot::plotNewData(complex<float>* data, int numPoints)
+void Complexplot::setNewData(complex<float>* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
 void Complexplot::setTitle(std::string title)
@@ -28,10 +28,24 @@ void Complexplot::setTitle(std::string title)
   plot_->setTitle(title);
 }
 
-void Complexplot::setAxes(PlotId id, double xMin, double xMax,
-                          double yMin, double yMax)
+void Complexplot::setXAxisAutoScale(PlotId id, bool on=true)
 {
-  plot_->setAxes(id, xMin, xMax, yMin, yMax);
+  plot_->setXAxisAutoScale(id, on);
+}
+
+void Complexplot::setYAxisAutoScale(PlotId id, bool on=true)
+{
+  plot_->setYAxisAutoScale(id, on);
+}
+
+void Complexplot::setXAxisScale(PlotId id, double xMin, double xMax)
+{
+  plot_->setXAxisScale(id, xMin, xMax);
+}
+
+void Complexplot::setYAxisScale(PlotId id, double yMin, double yMax)
+{
+  plot_->setYAxisScale(id, yMin, yMax);
 }
 
 void Complexplot::setXAxisRange(double xMin, double xMax)

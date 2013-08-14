@@ -37,14 +37,19 @@ void RealplotWrapper::createWidgetSlot()
           widget_, SLOT(setWidgetTitle(QString)));
   connect(this, SIGNAL(setWidgetAxisLabels(QString, QString)),
           widget_, SLOT(setWidgetAxisLabels(QString, QString)));
-  connect(this, SIGNAL(setWidgetAxes(double,double,double,double)),
-          widget_, SLOT(setWidgetAxes(double,double,double,double)));
+  connect(this, SIGNAL(setWidgetXAxisScale(double,double)),
+          widget_, SLOT(setWidgetXAxisScale(double,double)));
+  connect(this, SIGNAL(setWidgetYAxisScale(double,double)),
+          widget_, SLOT(setWidgetYAxisScale(double,double)));
+  connect(this, SIGNAL(setWidgetXAxisAutoScale(bool)),
+          widget_, SLOT(setWidgetXAxisAutoScale(bool)));
+  connect(this, SIGNAL(setWidgetYAxisAutoScale(bool)),
+          widget_, SLOT(setWidgetYAxisAutoScale(bool)));
   connect(this, SIGNAL(setWidgetXAxisRange(double,double)),
           widget_, SLOT(setWidgetXAxisRange(double,double)));
 
   widget_->resize( 800, 600 );
   widget_->show();
-  widget_->moveToThread(QApplication::instance()->thread());
 }
 
 void RealplotWrapper::destroyWidgetSlot()
@@ -52,14 +57,14 @@ void RealplotWrapper::destroyWidgetSlot()
   delete widget_;
 }
 
-void RealplotWrapper::plotNewData(double* data, int numPoints)
+void RealplotWrapper::setNewData(double* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
   qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
-void RealplotWrapper::plotNewData(float* data, int numPoints)
+void RealplotWrapper::setNewData(float* data, int numPoints)
 {
   if(widget_ == NULL)
     return; //TODO: throw exception here in Iris
@@ -83,12 +88,32 @@ void RealplotWrapper::setAxisLabels(std::string xLabel, std::string yLabel)
   emit setWidgetAxisLabels(xStr, yStr);
 }
 
-void RealplotWrapper::setAxes(double xMin, double xMax,
-                        double yMin, double yMax)
+void RealplotWrapper::setXAxisScale(double xMin, double xMax)
 {
   if(widget_ == NULL)
     return;
-  emit setWidgetAxes(xMin, xMax, yMin, yMax);
+  emit setWidgetXAxisScale(xMin, xMax);
+}
+
+void RealplotWrapper::setYAxisScale(double yMin, double yMax)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisScale(yMin, yMax);
+}
+
+void RealplotWrapper::setXAxisAutoScale(bool on=true)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetXAxisAutoScale(on);
+}
+
+void RealplotWrapper::setYAxisAutoScale(bool on=true)
+{
+  if(widget_ == NULL)
+    return;
+  emit setWidgetYAxisAutoScale(on);
 }
 
 void RealplotWrapper::setXAxisRange(double xMin, double xMax)

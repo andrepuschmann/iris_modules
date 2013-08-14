@@ -11,14 +11,14 @@ Realplot::~Realplot()
   delete plot_;
 }
 
-void Realplot::plotNewData(double* data, int numPoints)
+void Realplot::setNewData(double* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
-void Realplot::plotNewData(float* data, int numPoints)
+void Realplot::setNewData(float* data, int numPoints)
 {
-  plot_->plotNewData(data, numPoints);
+  plot_->setNewData(data, numPoints);
 }
 
 void Realplot::setTitle(std::string title)
@@ -26,10 +26,24 @@ void Realplot::setTitle(std::string title)
   plot_->setTitle(title);
 }
 
-void Realplot::setAxes(double xMin, double xMax,
-                          double yMin, double yMax)
+void Realplot::setXAxisScale(double xMin, double xMax)
 {
-  plot_->setAxes(xMin, xMax, yMin, yMax);
+  plot_->setXAxisScale(xMin, xMax);
+}
+
+void Realplot::setYAxisScale(double yMin, double yMax)
+{
+  plot_->setYAxisScale(yMin, yMax);
+}
+
+void Realplot::setXAxisAutoScale(bool on=true)
+{
+  plot_->setXAxisAutoScale(on);
+}
+
+void Realplot::setYAxisAutoScale(bool on=true)
+{
+  plot_->setYAxisAutoScale(on);
 }
 
 void Realplot::setXAxisRange(double xMin, double xMax)
