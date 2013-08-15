@@ -48,8 +48,8 @@ public:
     double xStep = abs(right-left)/nData_;
     double yStep = abs(top-bottom)/nRows_;
 
-    int ix = static_cast<int>((x-left) / xStep);
-    int iy = static_cast<int>((y-bottom) / yStep);
+    int ix = (x-left) / xStep;
+    int iy = (y-bottom) / yStep;
     if(ix >= nData_)
       ix = nData_-1;
     if(iy >= nRows_)
