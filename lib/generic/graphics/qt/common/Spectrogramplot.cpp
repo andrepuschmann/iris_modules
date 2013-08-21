@@ -107,9 +107,9 @@ Spectrogramplot::Spectrogramplot(int numDataPoints, int numRows, QWidget *parent
   spectrogram_->setColorMap(new ColorMap());
   spectrogram_->setData(data_);
 
-  setPlotXAxisScale(0, nData_);
-  setPlotYAxisScale(0, nRows_);
-  setPlotZAxisScale(-1,1);
+  setXAxisRange(0, nData_);
+  setYAxisRange(0, nRows_);
+  setZAxisScale(-1,1);
 
   // LeftButton for the zooming
   // MidButton for the panning
@@ -146,7 +146,7 @@ void Spectrogramplot::appendData(double* data, int n)
   data_->appendData(data, n);
 }
 
-void Spectrogramplot::setPlotXAxisScale(double xMin, double xMax)
+void Spectrogramplot::setXAxisRange(double xMin, double xMax)
 {
   xMin_ = xMin;
   xMax_ = xMax;
@@ -155,7 +155,7 @@ void Spectrogramplot::setPlotXAxisScale(double xMin, double xMax)
   replot();
 }
 
-void Spectrogramplot::setPlotYAxisScale(double yMin, double yMax)
+void Spectrogramplot::setYAxisRange(double yMin, double yMax)
 {
   yMin_ = yMin;
   yMax_ = yMax;
@@ -164,7 +164,7 @@ void Spectrogramplot::setPlotYAxisScale(double yMin, double yMax)
   replot();
 }
 
-void Spectrogramplot::setPlotZAxisScale(double zMin, double zMax)
+void Spectrogramplot::setZAxisScale(double zMin, double zMax)
 {
   zMin_ = zMin;
   zMax_ = zMax;
@@ -180,4 +180,19 @@ void Spectrogramplot::setPlotZAxisScale(double zMin, double zMax)
 
   plotLayout()->setAlignCanvasToScales(true);
   replot();
+}
+
+double Spectrogramplot::min()
+{
+  return data_->min();
+}
+
+double Spectrogramplot::max()
+{
+  return data_->max();
+}
+
+void Spectrogramplot::autoscale()
+{
+  setZAxisScale(min(),max());
 }

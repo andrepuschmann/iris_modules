@@ -72,8 +72,8 @@ void RealWidget::setWidgetTitle(QString title)
 
 void RealWidget::setWidgetAxisLabels(QString xLabel, QString yLabel)
 {
-  l_->setXLabel(xLabel);
-  l_->setYLabel(yLabel);
+  l_->setAxisTitle(QwtPlot::xBottom, xLabel);
+  l_->setAxisTitle(QwtPlot::yLeft, yLabel);
 }
 
 void RealWidget::setWidgetXAxisScale(double xMin, double xMax)

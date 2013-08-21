@@ -16,10 +16,15 @@ public:
   void appendNewData(float* data, int numPoints);
   void appendNewData(double* data, int numPoints);
   void setTitle(std::string title);
+  void setPlotXLabel(std::string xLabel);
+  void setPlotYLabel(std::string yLabel);
+  void setPlotXAxisRange(double xMin, double xMax);
   void setPlotXAxisScale(double xMin, double xMax);
-  void setSpectrogramXAxisScale(double xMin, double xMax);
   void setPlotYAxisScale(double yMin, double yMax);
-  void setSpectrogramYAxisScale(double yMin, double yMax);
+  void setSpectrogramXLabel(std::string xLabel);
+  void setSpectrogramYLabel(std::string yLabel);
+  void setSpectrogramXAxisRange(double xMin, double xMax);
+  void setSpectrogramYAxisRange(double yMin, double yMax);
   void setSpectrogramZAxisScale(double zMin, double zMax);
 
 private:

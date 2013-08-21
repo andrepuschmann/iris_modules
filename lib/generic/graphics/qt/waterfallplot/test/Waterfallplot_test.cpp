@@ -54,7 +54,7 @@ void threadMain1()
   Waterfallplot plot(n,n);
   plot.setTitle("Float");
 
-  float step = 2.0*PI/n;
+  float step = 1.0*PI/n;
   float* data = new float[n*2];
   for(int i=0;i<n*2;i++)
     data[i] = sinf(step*i);

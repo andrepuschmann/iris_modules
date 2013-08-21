@@ -54,14 +54,24 @@ void WaterfallplotWrapper::createWidgetSlot(int numDataPoints, int numRows)
           this, SLOT( widgetDestroyed() ));
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
+  connect(this, SIGNAL(setWidgetPXLabel(QString)),
+          widget_, SLOT(setPlotXLabel(QString)));
+  connect(this, SIGNAL(setWidgetPYLabel(QString)),
+          widget_, SLOT(setPlotYLabel(QString)));
+  connect(this, SIGNAL(setWidgetPXAxisRange(double, double)),
+          widget_, SLOT(setPlotXAxisRange(double, double)));
   connect(this, SIGNAL(setWidgetPXAxisScale(double, double)),
           widget_, SLOT(setPlotXAxisScale(double, double)));
-  connect(this, SIGNAL(setWidgetSXAxisScale(double, double)),
-          widget_, SLOT(setSpectrogramXAxisScale(double, double)));
   connect(this, SIGNAL(setWidgetPYAxisScale(double, double)),
           widget_, SLOT(setPlotYAxisScale(double, double)));
-  connect(this, SIGNAL(setWidgetSYAxisScale(double, double)),
-          widget_, SLOT(setSpectrogramYAxisScale(double, double)));
+  connect(this, SIGNAL(setWidgetSXLabel(QString)),
+          widget_, SLOT(setSpectrogramXLabel(QString)));
+  connect(this, SIGNAL(setWidgetSYLabel(QString)),
+          widget_, SLOT(setSpectrogramYLabel(QString)));
+  connect(this, SIGNAL(setWidgetSXAxisRange(double, double)),
+          widget_, SLOT(setSpectrogramXAxisRange(double, double)));
+  connect(this, SIGNAL(setWidgetSYAxisRange(double, double)),
+          widget_, SLOT(setSpectrogramYAxisRange(double, double)));
   connect(this, SIGNAL(setWidgetSZAxisScale(double, double)),
           widget_, SLOT(setSpectrogramZAxisScale(double, double)));
 
@@ -102,18 +112,34 @@ void WaterfallplotWrapper::setTitle(std::string title)
   emit setWidgetTitle(str);
 }
 
+void WaterfallplotWrapper::setPlotXLabel(std::string xLabel)
+{
+  if(destroyed_)
+    return;
+  QString str = QString::fromUtf8(xLabel.c_str());
+  emit setWidgetPXLabel(str);
+}
+
+void WaterfallplotWrapper::setPlotYLabel(std::string yLabel)
+{
+  if(destroyed_)
+    return;
+  QString str = QString::fromUtf8(yLabel.c_str());
+  emit setWidgetPYLabel(str);
+}
+
+void WaterfallplotWrapper::setPlotXAxisRange(double xMin, double xMax)
+{
+  if(destroyed_)
+    return;
+  emit setWidgetPXAxisRange(xMin, xMax);
+}
+
 void WaterfallplotWrapper::setPlotXAxisScale(double xMin, double xMax)
 {
   if(destroyed_)
     return;
   emit setWidgetPXAxisScale(xMin, xMax);
-}
-
-void WaterfallplotWrapper::setSpectrogramXAxisScale(double xMin, double xMax)
-{
-  if(destroyed_)
-    return;
-  emit setWidgetSXAxisScale(xMin, xMax);
 }
 
 void WaterfallplotWrapper::setPlotYAxisScale(double yMin, double yMax)
@@ -123,11 +149,34 @@ void WaterfallplotWrapper::setPlotYAxisScale(double yMin, double yMax)
   emit setWidgetPYAxisScale(yMin, yMax);
 }
 
-void WaterfallplotWrapper::setSpectrogramYAxisScale(double yMin, double yMax)
+void WaterfallplotWrapper::setSpectrogramXAxisRange(double xMin, double xMax)
 {
   if(destroyed_)
     return;
-  emit setWidgetSYAxisScale(yMin, yMax);
+  emit setWidgetSXAxisRange(xMin, xMax);
+}
+
+void WaterfallplotWrapper::setSpectrogramXLabel(std::string xLabel)
+{
+  if(destroyed_)
+    return;
+  QString str = QString::fromUtf8(xLabel.c_str());
+  emit setWidgetSXLabel(str);
+}
+
+void WaterfallplotWrapper::setSpectrogramYLabel(std::string yLabel)
+{
+  if(destroyed_)
+    return;
+  QString str = QString::fromUtf8(yLabel.c_str());
+  emit setWidgetSYLabel(str);
+}
+
+void WaterfallplotWrapper::setSpectrogramYAxisRange(double yMin, double yMax)
+{
+  if(destroyed_)
+    return;
+  emit setWidgetSYAxisRange(yMin, yMax);
 }
 
 void WaterfallplotWrapper::setSpectrogramZAxisScale(double zMin, double zMax)

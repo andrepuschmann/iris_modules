@@ -53,9 +53,12 @@ class Spectrogramplot
 public:
     Spectrogramplot(int numDataPoints, int numRows, QWidget * = NULL);
     void appendData(double* data, int n);
-    void setPlotXAxisScale(double xMin, double xMax);
-    void setPlotYAxisScale(double yMin, double yMax);
-    void setPlotZAxisScale(double zMin, double zMax);
+    void setXAxisRange(double xMin, double xMax);
+    void setYAxisRange(double yMin, double yMax);
+    void setZAxisScale(double zMin, double zMax);
+    double min();
+    double max();
+    void autoscale();
 
 private:
     QwtPlotZoomer* zoomer_;

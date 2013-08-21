@@ -141,21 +141,6 @@ void Lineplot::setData(double* data, int n)
   curve_->setRawSamples(indexPoints_, dataPoints_, numPoints_);
 }
 
-void Lineplot::setTitle(QString title)
-{
-  setTitle(title);
-}
-
-void Lineplot::setXLabel(QString label)
-{
-  setAxisTitle(QwtPlot::xBottom, label);
-}
-
-void Lineplot::setYLabel(QString label)
-{
-  setAxisTitle(QwtPlot::yLeft, label);
-}
-
 void Lineplot::setXAxisRange(double xMin, double xMax)
 {
   xMin_ = xMin;

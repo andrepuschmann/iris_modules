@@ -55,9 +55,6 @@ public:
   virtual ~Lineplot();
 
   void setData(double* data, int n);
-  void setTitle(QString title);
-  void setXLabel(QString title);
-  void setYLabel(QString title);
   void setXAxisRange(double xMin, double xMax);
   void resetZoom();
 

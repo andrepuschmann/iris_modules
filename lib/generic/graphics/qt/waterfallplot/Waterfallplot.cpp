@@ -28,14 +28,24 @@ void Waterfallplot::setTitle(std::string title)
   plot_->setTitle(title);
 }
 
+void Waterfallplot::setPlotXLabel(std::string xLabel)
+{
+  plot_->setPlotXLabel(xLabel);
+}
+
+void Waterfallplot::setPlotYLabel(std::string yLabel)
+{
+  plot_->setPlotYLabel(yLabel);
+}
+
+void Waterfallplot::setPlotXAxisRange(double xMin, double xMax)
+{
+  plot_->setPlotXAxisRange(xMin, xMax);
+}
+
 void Waterfallplot::setPlotXAxisScale(double xMin, double xMax)
 {
   plot_->setPlotXAxisScale(xMin, xMax);
-}
-
-void Waterfallplot::setSpectrogramXAxisScale(double xMin, double xMax)
-{
-  plot_->setSpectrogramXAxisScale(xMin, xMax);
 }
 
 void Waterfallplot::setPlotYAxisScale(double yMin, double yMax)
@@ -43,9 +53,24 @@ void Waterfallplot::setPlotYAxisScale(double yMin, double yMax)
   plot_->setPlotYAxisScale(yMin, yMax);
 }
 
-void Waterfallplot::setSpectrogramYAxisScale(double yMin, double yMax)
+void Waterfallplot::setSpectrogramXLabel(std::string xLabel)
 {
-  plot_->setSpectrogramYAxisScale(yMin, yMax);
+  plot_->setSpectrogramXLabel(xLabel);
+}
+
+void Waterfallplot::setSpectrogramYLabel(std::string yLabel)
+{
+  plot_->setSpectrogramYLabel(yLabel);
+}
+
+void Waterfallplot::setSpectrogramXAxisRange(double xMin, double xMax)
+{
+  plot_->setSpectrogramXAxisRange(xMin, xMax);
+}
+
+void Waterfallplot::setSpectrogramYAxisRange(double yMin, double yMax)
+{
+  plot_->setSpectrogramYAxisRange(yMin, yMax);
 }
 
 void Waterfallplot::setSpectrogramZAxisScale(double zMin, double zMax)

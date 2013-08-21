@@ -1,4 +1,4 @@
-#ifndef WATERFALLWIDGET_H
+﻿#ifndef WATERFALLWIDGET_H
 #define WATERFALLWIDGET_H
 
 #include <qapplication.h>
@@ -8,6 +8,7 @@
 class RealDataEvent;
 class Lineplot;
 class Spectrogramplot;
+class QPushButton;
 
 class WaterfallWidget
   : public QWidget
@@ -21,11 +22,17 @@ public:
 public slots:
   void customEvent( QEvent * e );
   void setWidgetTitle(QString title);
+  void setPlotXLabel(QString xLabel);
+  void setPlotYLabel(QString yLabel);
+  void setPlotXAxisRange(double xMin, double xMax);
   void setPlotXAxisScale(double xMin, double xMax);
-  void setSpectrogramXAxisScale(double xMin, double xMax);
   void setPlotYAxisScale(double yMin, double yMax);
-  void setSpectrogramYAxisScale(double yMin, double yMax);
+  void setSpectrogramXLabel(QString xLabel);
+  void setSpectrogramYLabel(QString yLabel);
+  void setSpectrogramXAxisRange(double xMin, double xMax);
+  void setSpectrogramYAxisRange(double yMin, double yMax);
   void setSpectrogramZAxisScale(double zMin, double zMax);
+  void autoscale();
 
 protected:
   virtual void timerEvent(QTimerEvent *event);
@@ -34,6 +41,7 @@ private:
   void appendData(RealDataEvent* e);
   Lineplot* p_;
   Spectrogramplot* s_;
+  QPushButton* b_;
 
   double* data_;
   int numPoints_;
