@@ -27,10 +27,12 @@ public:
 public slots:
   void createWidgetSlot();
   void destroyWidgetSlot();
+  void widgetDestroyed();
 
 signals:
   void createWidgetSignal();
   void destroyWidgetSignal();
+  void destroyWidgetSignalBlocking();
   void setWidgetTitle(QString title);
   void setWidgetXAxisAutoScale(int id, bool on);
   void setWidgetYAxisAutoScale(int id, bool on);
@@ -40,6 +42,7 @@ signals:
 
 private:
   ComplexWidget* widget_;
+  bool destroyed_;
 };
 
 #endif // COMPLEXPLOTWRAPPER_H

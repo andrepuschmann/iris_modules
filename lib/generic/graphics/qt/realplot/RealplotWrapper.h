@@ -27,10 +27,12 @@ public:
 public slots:
   void createWidgetSlot();
   void destroyWidgetSlot();
+  void widgetDestroyed();
 
 signals:
   void createWidgetSignal();
   void destroyWidgetSignal();
+  void destroyWidgetSignalBlocking();
   void setWidgetTitle(QString title);
   void setWidgetAxisLabels(QString xLabel, QString yLabel);
   void setWidgetXAxisScale(double xMin, double xMax);
@@ -41,6 +43,7 @@ signals:
 
 private:
   RealWidget* widget_;
+  bool destroyed_;
 };
 
 #endif // REALPLOTWRAPPER_H

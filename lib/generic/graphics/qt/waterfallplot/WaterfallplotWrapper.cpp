@@ -9,6 +9,7 @@ using namespace std;
 
 WaterfallplotWrapper::WaterfallplotWrapper(int numDataPoints, int numRows)
     :widget_(NULL)
+    ,destroyed_(true)
 {
   if(QCoreApplication::instance() == NULL)
     return; //TODO: throw exception here in Iris
@@ -16,7 +17,10 @@ WaterfallplotWrapper::WaterfallplotWrapper(int numDataPoints, int numRows)
   {
     connect( this, SIGNAL( createWidgetSignal(int, int) ),
              this, SLOT(createWidgetSlot(int, int)) );
-    connect( this, SIGNAL( destroyWidgetSignal() ), this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignal() ),
+             this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignalBlocking() ),
+             this, SLOT(destroyWidgetSlot()) );
   }
   else
   {
@@ -24,6 +28,8 @@ WaterfallplotWrapper::WaterfallplotWrapper(int numDataPoints, int numRows)
              this, SLOT(createWidgetSlot(int, int)),
              Qt::BlockingQueuedConnection );
     connect( this, SIGNAL( destroyWidgetSignal() ),
+             this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignalBlocking() ),
              this, SLOT(destroyWidgetSlot()),
              Qt::BlockingQueuedConnection );
     moveToThread(QCoreApplication::instance()->thread());
@@ -33,12 +39,19 @@ WaterfallplotWrapper::WaterfallplotWrapper(int numDataPoints, int numRows)
 
 WaterfallplotWrapper::~WaterfallplotWrapper()
 {
-  emit destroyWidgetSignal();
+  if(destroyed_)
+    emit destroyWidgetSignal();
+  else
+    emit destroyWidgetSignalBlocking();
 }
 
 void WaterfallplotWrapper::createWidgetSlot(int numDataPoints, int numRows)
 {
   widget_ = new WaterfallWidget(numDataPoints, numRows);
+  destroyed_ = false;
+  widget_->setAttribute(Qt::WA_DeleteOnClose, true);
+  connect(widget_, SIGNAL( destroyed() ),
+          this, SLOT( widgetDestroyed() ));
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
   connect(this, SIGNAL(setWidgetPXAxisScale(double, double)),
@@ -61,24 +74,29 @@ void WaterfallplotWrapper::destroyWidgetSlot()
   delete widget_;
 }
 
+void WaterfallplotWrapper::widgetDestroyed()
+{
+  destroyed_ = true;
+}
+
 void WaterfallplotWrapper::appendNewData(float* data, int numPoints)
 {
-  if(widget_ == NULL)
-    return; //TODO: throw exception here in Iris
+  if(destroyed_)
+    return;
   qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
 void WaterfallplotWrapper::appendNewData(double* data, int numPoints)
 {
-  if(widget_ == NULL)
-    return; //TODO: throw exception here in Iris
+  if(destroyed_)
+    return;
   qApp->postEvent(widget_, new RealDataEvent(data, numPoints));
 }
 
 
 void WaterfallplotWrapper::setTitle(std::string title)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   QString str = QString::fromUtf8(title.c_str());
   emit setWidgetTitle(str);
@@ -86,35 +104,35 @@ void WaterfallplotWrapper::setTitle(std::string title)
 
 void WaterfallplotWrapper::setPlotXAxisScale(double xMin, double xMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetPXAxisScale(xMin, xMax);
 }
 
 void WaterfallplotWrapper::setSpectrogramXAxisScale(double xMin, double xMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetSXAxisScale(xMin, xMax);
 }
 
 void WaterfallplotWrapper::setPlotYAxisScale(double yMin, double yMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetPYAxisScale(yMin, yMax);
 }
 
 void WaterfallplotWrapper::setSpectrogramYAxisScale(double yMin, double yMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetSYAxisScale(yMin, yMax);
 }
 
 void WaterfallplotWrapper::setSpectrogramZAxisScale(double zMin, double zMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetSZAxisScale(zMin, zMax);
 }

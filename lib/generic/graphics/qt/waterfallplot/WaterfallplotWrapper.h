@@ -26,10 +26,12 @@ public:
 public slots:
   void createWidgetSlot(int numDataPoints, int numRows);
   void destroyWidgetSlot();
+  void widgetDestroyed();
 
 signals:
   void createWidgetSignal(int numDataPoints, int numRows);
   void destroyWidgetSignal();
+  void destroyWidgetSignalBlocking();
   void setWidgetTitle(QString title);
   void setWidgetPXAxisScale(double xMin, double xMax);
   void setWidgetSXAxisScale(double xMin, double xMax);
@@ -39,6 +41,7 @@ signals:
 
 private:
   WaterfallWidget* widget_;
+  bool destroyed_;
 };
 
 #endif // WATERFALLPLOTWRAPPER_H

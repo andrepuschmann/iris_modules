@@ -10,18 +10,29 @@ using namespace std;
 
 ComplexplotWrapper::ComplexplotWrapper()
     :widget_(NULL)
+    ,destroyed_(true)
 {
   if(QCoreApplication::instance() == NULL)
     return; //TODO: throw exception here in Iris
   if(QCoreApplication::instance()->thread() == QThread::currentThread())
   {
-    connect( this, SIGNAL( createWidgetSignal() ), this, SLOT(createWidgetSlot()) );
-    connect( this, SIGNAL( destroyWidgetSignal() ), this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( createWidgetSignal() ),
+             this, SLOT(createWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignal() ),
+             this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignalBlocking() ),
+             this, SLOT(destroyWidgetSlot()) );
   }
   else
   {
-    connect( this, SIGNAL( createWidgetSignal() ), this, SLOT(createWidgetSlot()), Qt::BlockingQueuedConnection );
-    connect( this, SIGNAL( destroyWidgetSignal() ), this, SLOT(destroyWidgetSlot()), Qt::BlockingQueuedConnection );
+    connect( this, SIGNAL( createWidgetSignal() ),
+             this, SLOT(createWidgetSlot()),
+             Qt::BlockingQueuedConnection );
+    connect( this, SIGNAL( destroyWidgetSignal() ),
+             this, SLOT(destroyWidgetSlot()) );
+    connect( this, SIGNAL( destroyWidgetSignalBlocking() ),
+             this, SLOT(destroyWidgetSlot()),
+             Qt::BlockingQueuedConnection );
     moveToThread(QCoreApplication::instance()->thread());
   }
   emit createWidgetSignal();
@@ -29,12 +40,19 @@ ComplexplotWrapper::ComplexplotWrapper()
 
 ComplexplotWrapper::~ComplexplotWrapper()
 {
-  emit destroyWidgetSignal();
+  if(destroyed_)
+    emit destroyWidgetSignal();
+  else
+    emit destroyWidgetSignalBlocking();
 }
 
 void ComplexplotWrapper::createWidgetSlot()
 {
   widget_ = new ComplexWidget;
+  destroyed_ = false;
+  widget_->setAttribute(Qt::WA_DeleteOnClose, true);
+  connect(widget_, SIGNAL( destroyed() ),
+          this, SLOT( widgetDestroyed() ));
   connect(this, SIGNAL(setWidgetTitle(QString)),
           widget_, SLOT(setWidgetTitle(QString)));
   connect(this, SIGNAL(setWidgetXAxisScale(int,double,double)),
@@ -54,26 +72,33 @@ void ComplexplotWrapper::createWidgetSlot()
 
 void ComplexplotWrapper::destroyWidgetSlot()
 {
-  delete widget_;
+  if(widget_)
+    delete widget_;
+  widget_ = NULL;
+}
+
+void ComplexplotWrapper::widgetDestroyed()
+{
+  destroyed_ = true;
 }
 
 void ComplexplotWrapper::setNewData(complex<double>* data, int numPoints)
 {
-  if(widget_ == NULL)
-    return; //TODO: throw exception here in Iris
+  if(destroyed_)
+    return;
   qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
 }
 
 void ComplexplotWrapper::setNewData(complex<float>* data, int numPoints)
 {
-  if(widget_ == NULL)
-    return; //TODO: throw exception here in Iris
+  if(destroyed_)
+    return;
   qApp->postEvent(widget_, new ComplexDataEvent(data, numPoints));
 }
 
 void ComplexplotWrapper::setTitle(std::string title)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   QString str = QString::fromUtf8(title.c_str());
   emit setWidgetTitle(str);
@@ -81,35 +106,35 @@ void ComplexplotWrapper::setTitle(std::string title)
 
 void ComplexplotWrapper::setXAxisAutoScale(int id, bool on=true)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetXAxisAutoScale(id, on);
 }
 
 void ComplexplotWrapper::setYAxisAutoScale(int id, bool on=true)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetYAxisAutoScale(id, on);
 }
 
 void ComplexplotWrapper::setXAxisScale(int id, double xMin, double xMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetXAxisScale(id, xMin, xMax);
 }
 
 void ComplexplotWrapper::setYAxisScale(int id, double yMin, double yMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetYAxisScale(id, yMin, yMax);
 }
 
 void ComplexplotWrapper::setXAxisRange(double xMin, double xMax)
 {
-  if(widget_ == NULL)
+  if(destroyed_)
     return;
   emit setWidgetXAxisRange(xMin, xMax);
 }
