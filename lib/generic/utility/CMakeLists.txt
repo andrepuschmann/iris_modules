@@ -31,6 +31,8 @@ SET(headers
     Matlab.h
     RawFileUtility.h
     StackHelper.h
+    UdpSocketReceiver.h
+    UdpSocketTransmitter.h
 )
 ADD_CUSTOM_TARGET(libgenericutilityheaders SOURCES ${headers})
 
