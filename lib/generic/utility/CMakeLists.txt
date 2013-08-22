@@ -21,6 +21,20 @@
 #
 
 ########################################################################
+# Custom target to ensure headers get picked up by IDEs
+########################################################################
+SET(headers
+    DataBufferTrivial.h
+    EndianConversion.h
+    FileUtility.h
+    FirFilter.h
+    Matlab.h
+    RawFileUtility.h
+    StackHelper.h
+)
+ADD_CUSTOM_TARGET(libgenericutilityheaders SOURCES ${headers})
+
+########################################################################
 # Build the MatlabPlotter lib
 # We build this as a shared lib so that we can add the rpath here
 # and don't have to worry about it elsewhere.
@@ -30,7 +44,7 @@ FIND_PACKAGE( MATLAB )
 
 IF (MATLAB_FOUND)
     INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
-    ADD_LIBRARY(matlabplotter STATIC MatlabPlotter.cpp)
+    ADD_LIBRARY(matlabplotter STATIC MatlabPlotter.cpp MatlabPlotter.h)
     TARGET_LINK_LIBRARIES(matlabplotter ${Boost_LIBRARIES} ${MATLAB_LIBRARIES})
     # We add an rpath to the library so matlab dependencies will be found
     # while avoiding clashes with system libraries
@@ -50,7 +64,7 @@ FIND_PACKAGE( PythonLibs )
 
 IF (PYTHONLIBS_FOUND)
     INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-    ADD_LIBRARY(pythonplotter STATIC PythonPlotter.cpp)
+    ADD_LIBRARY(pythonplotter STATIC PythonPlotter.cpp PythonPlotter.h)
     TARGET_LINK_LIBRARIES(pythonplotter ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
     SET(IRIS_HAVE_PYTHONPLOTTER ON CACHE INTERNAL "Has PythonPlotter been built?")
     IRIS_SET_PIC(pythonplotter)
