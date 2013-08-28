@@ -155,7 +155,7 @@ void OfdmDemodulatorComponent::process()
   }
   catch(IrisException& e)
   {
-    LOG(LWARNING) << e.what();
+    LOG(LDEBUG) << e.what();
     headerIndex_ = 0;
     frameIndex_ = 0;
     frameDetected_ = false;
