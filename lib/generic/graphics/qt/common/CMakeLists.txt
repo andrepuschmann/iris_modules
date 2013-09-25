@@ -19,10 +19,20 @@ IF(QT4_FOUND AND QWT_FOUND)
   ADD_LIBRARY(events Events.cpp ${eventwraps})
   TARGET_LINK_LIBRARIES(events ${QT_LIBRARIES} ${QWT_LIBRARIES})
   IRIS_SET_PIC(events)
+  INSTALL(TARGETS events
+    LIBRARY DESTINATION ${LIBRARY_DIR} # .so file
+    ARCHIVE DESTINATION ${LIBRARY_DIR} # .lib file
+    RUNTIME DESTINATION ${RUNTIME_DIR} # .dll file
+  )
   QT4_WRAP_CPP(lineplotwraps Lineplot.h)
   ADD_LIBRARY(lineplot Lineplot.cpp ${lineplotwraps})
   TARGET_LINK_LIBRARIES(lineplot ${QT_LIBRARIES} ${QWT_LIBRARIES} events)
   IRIS_SET_PIC(lineplot)
+  INSTALL(TARGETS lineplot
+    LIBRARY DESTINATION ${LIBRARY_DIR} # .so file
+    ARCHIVE DESTINATION ${LIBRARY_DIR} # .lib file
+    RUNTIME DESTINATION ${RUNTIME_DIR} # .dll file
+  )
   QT4_WRAP_CPP(pointplotwraps Pointplot.h)
   ADD_LIBRARY(pointplot Pointplot.cpp ${pointplotwraps})
   TARGET_LINK_LIBRARIES(pointplot ${QT_LIBRARIES} ${QWT_LIBRARIES} events)
