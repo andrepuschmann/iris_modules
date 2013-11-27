@@ -57,6 +57,7 @@ FileReaderComponent::FileReaderComponent(std::string name)
                    "Colman O'Sullivan & Paul Sutton",
                    "0.1")
   ,count_(0)
+  ,running_(true)
 {
   //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
   registerParameter("filename", "The file to read", "temp.bin", false, fileName_x);
@@ -64,11 +65,7 @@ FileReaderComponent::FileReaderComponent(std::string name)
   registerParameter("sendbelow", "Send data below rather than above", "true", false, sendBelow_x);
   registerParameter("delay","Delay in us between reads","100000",true, delay_x, Interval<uint32_t>(0,5000000));
   registerParameter("enabled","Dynamic parameter to pause or resume file reading.", "true", true, enabled_x);
-  registerParameter("intermittentpauselength","Number of iterations to pause reading for (0 means no intermittent pauses).","0",false,intermittentPauseLength_x,Interval<uint32_t>(0,5000));
   registerParameter("packets","How many packets to be sent","500",true,packets_x);
-
-  registerEvent("transmitbegin","Event indicating transmitter should be active",TypeInfo<int32_t>::identifier);
-  registerEvent("transmitend","Event indicating transmission has ended",TypeInfo<int32_t>::identifier);
 }
 
 //! Do any initialization required
@@ -115,17 +112,17 @@ void FileReaderComponent::stop()
 
 void FileReaderComponent::fileReadingLoop()
 {
-  int32_t x=1;
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
   try
   {
-    activateEvent("transmitbegin", x);
-    while(true)
+    while(running_)
     {
       if(enabled_x)
       {
         boost::shared_ptr<StackDataSet> readDataBuffer(new StackDataSet);
         readBlock(readDataBuffer);
+        if(++count_ == packets_x)
+          running_ = false;
 
         if(sendBelow_x)
         {
@@ -136,17 +133,12 @@ void FileReaderComponent::fileReadingLoop()
           sendUpwards(readDataBuffer);
         }
       }
-      boost::this_thread::interruption_point();
-      boost::this_thread::sleep(boost::posix_time::microseconds(delay_x));
-      if(intermittentPauseLength_x > 0 && ++counter_ % intermittentPauseLength_x == 0)
+      else
       {
-        LOG(LDEBUG) << "Toggling read loop activity for "<<intermittentPauseLength_x<<" iterations";
-        enabled_x = !enabled_x;
-        if(enabled_x)
-          activateEvent("transmitbegin", x);
-        else
-          activateEvent("transmitend", x);
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
       }
+      boost::this_thread::interruption_point();
+      boost::this_thread::sleep(boost::posix_time::milliseconds(delay_x));
     }
   }
   catch(IrisException& ex)
@@ -179,12 +171,6 @@ void FileReaderComponent::readBlock(boost::shared_ptr<StackDataSet> readDataBuff
   }
   delete[] bytebufferBackup;
   LOG(LDEBUG) << "One block read.";
-  count_++;
-  if(count_==packets_x)
-  {
-    thread_->interrupt();
-    thread_->join();
-  }
 }
 
 } // namespace stack
