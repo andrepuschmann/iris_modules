@@ -111,9 +111,11 @@ void Pointplot::setData(double* iData, double* qData, int n)
     delete[] imagPoints_;
     realPoints_ = new double[numPoints_];
     imagPoints_ = new double[numPoints_];
-    curve_->setRawSamples(realPoints_, imagPoints_, numPoints_);
   }
 
   copy(iData, iData+n, realPoints_);
   copy(qData, qData+n, imagPoints_);
+  //Need to setRawSamples again for autoscaling to work
+  curve_->setRawSamples(realPoints_, imagPoints_, numPoints_);
+  zoomer_->setZoomBase(curve_->boundingRect());
 }

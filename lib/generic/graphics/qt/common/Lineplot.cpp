@@ -139,6 +139,7 @@ void Lineplot::setData(double* data, int n)
   memcpy(dataPoints_, data, numPoints_*sizeof(double));
   //Need to setRawSamples again for autoscaling to work
   curve_->setRawSamples(indexPoints_, dataPoints_, numPoints_);
+  resetZoom();
 }
 
 void Lineplot::setXAxisRange(double xMin, double xMax)
@@ -154,7 +155,7 @@ void Lineplot::setXAxisRange(double xMin, double xMax)
 
 void Lineplot::resetZoom()
 {
-  zoomer_->setZoomBase();
+  zoomer_->setZoomBase(curve_->boundingRect());
 }
 
 void Lineplot::linkScales()
