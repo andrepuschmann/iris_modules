@@ -77,7 +77,7 @@ void threadMain1()
   {
     getPoints(data, 1024);
     plot.setNewData(data, 1024);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
   }
 }
 
@@ -90,7 +90,7 @@ void threadMain2()
   {
     getPoints(data, 1024);
     plot.setNewData(data, 1024);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
   }
 }
 
@@ -103,7 +103,7 @@ void threadMain3()
   {
     getPoints(v.begin(), v.end());
     plot.setNewData(v.begin(), v.end());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
   }
 }
 

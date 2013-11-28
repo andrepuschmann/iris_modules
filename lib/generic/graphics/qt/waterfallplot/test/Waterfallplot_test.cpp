@@ -62,7 +62,7 @@ void threadMain1()
   for(int i=0;i<n;i++)
   {
     plot.appendNewData(data+i, n);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 
@@ -80,7 +80,7 @@ void threadMain2()
   for(int i=0;i<n;i++)
   {
     plot.appendNewData(data+i, n);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 
@@ -99,7 +99,7 @@ void threadMain3()
   for(int i=0;i<n;i++)
   {
     plot.appendNewData(data.begin()+i, data.begin()+i+n);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 

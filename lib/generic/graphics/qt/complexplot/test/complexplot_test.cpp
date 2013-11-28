@@ -70,7 +70,7 @@ void threadMain1()
   {
     rotate(data, data+1, data+n);
     plot.setNewData(data, n);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 
@@ -93,7 +93,7 @@ void threadMain2()
   {
     rotate(data, data+1, data+n);
     plot.setNewData(data, n);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 
@@ -117,7 +117,7 @@ void threadMain3()
   {
     rotate(data.begin(), data.begin()+1, data.end());
     plot.setNewData(data.begin(), data.end());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   }
 }
 
