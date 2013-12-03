@@ -21,25 +21,14 @@
 #
 
 ########################################################################
-# Add includes and dependencies
+# Add the subdirectories
 ########################################################################
-INCLUDE_DIRECTORIES(..)
+# Recurse into subdirectories. This does not actually cause another cmake 
+# executable to run. The same process will walk through the project's 
+# entire directory structure.
+ADD_SUBDIRECTORY(common)
+ADD_SUBDIRECTORY(scatterplot)
+ADD_SUBDIRECTORY(realplot)
+ADD_SUBDIRECTORY(complexplot)
+ADD_SUBDIRECTORY(waterfallplot)
 
-ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-ADD_EXECUTABLE(udpsocket_test UdpSocket_test.cpp)
-TARGET_LINK_LIBRARIES(udpsocket_test ${Boost_LIBRARIES})
-ADD_TEST(udpsocket_test udpsocket_test)
-
-IF (IRIS_HAVE_MATLABPLOTTER)
-    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-    ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
-    TARGET_LINK_LIBRARIES(matlabplotter_test ${Boost_LIBRARIES} matlabplotter)
-    ADD_TEST(matlabplotter_test matlabplotter_test)
-ENDIF (IRIS_HAVE_MATLABPLOTTER)
-
-IF (IRIS_HAVE_PYTHONPLOTTER)
-    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-    ADD_EXECUTABLE(pythonplotter_test PythonPlotter_test.cpp)
-    TARGET_LINK_LIBRARIES(pythonplotter_test ${Boost_LIBRARIES} pythonplotter)
-    ADD_TEST(pythonplotter_test pythonplotter_test)
-ENDIF (IRIS_HAVE_PYTHONPLOTTER)

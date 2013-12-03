@@ -20,27 +20,31 @@
 # and at http://www.gnu.org/licenses/.
 #
 
-# - Try to find iris - the software radio framework
+# - Try to find liquiddsp - https://github.com/jgaeddert/liquid-dsp
 # Once done this will define
-#  IRIS_FOUND - System has iris
-#  IRIS_INCLUDE_DIRS - The iris include directories
-#  IRIS_DEFINITIONS - Compiler switches required for using iris
+#  LIQUIDDSP_FOUND - System has liquiddsp
+#  LIQUIDDSP_INCLUDE_DIRS - The liquiddsp include directories
+#  LIQUIDDSP_LIBRARIES - The libraries needed to use liquiddsp
 
-find_package(PkgConfig)
-pkg_check_modules(PC_IRIS QUIET iris_core)
-set(IRIS_DEFINITIONS ${PC_IRIS_CFLAGS_OTHER})
-
-find_path(IRIS_INCLUDE_DIR 
-            NAMES irisapi/Version.h
-            HINTS ${PC_IRIS_INCLUDEDIR} ${PC_IRIS_INCLUDE_DIRS} $ENV{IRIS_DIR}/include
-            PATHS /usr/local/include 
+find_path(LIQUIDDSP_INCLUDE_DIR 
+            NAMES liquid/liquid.h
+            HINTS $ENV{LIQUIDDSP_DIR}/include
+            PATHS /usr/local/include
                   /usr/include )
 
-set(IRIS_INCLUDE_DIRS ${IRIS_INCLUDE_DIR} )
+find_library(LIQUIDDSP_LIBRARY 
+            NAMES liquid
+            HINTS $ENV{LIQUIDDSP_DIR}/lib
+            PATHS /usr/local/lib
+                  /usr/lib)
+
+set(LIQUIDDSP_LIBRARIES ${LIQUIDDSP_LIBRARY} )
+set(LIQUIDDSP_INCLUDE_DIRS ${LIQUIDDSP_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set IRIS_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set LIQUIDDSP_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(IRIS DEFAULT_MSG IRIS_INCLUDE_DIR)
+find_package_handle_standard_args(liquiddsp  DEFAULT_MSG
+                                  LIQUIDDSP_LIBRARY LIQUIDDSP_INCLUDE_DIR)
 
-mark_as_advanced(IRIS_INCLUDE_DIR )
+mark_as_advanced(LIQUIDDSP_INCLUDE_DIR LIQUIDDSP_LIBRARY )

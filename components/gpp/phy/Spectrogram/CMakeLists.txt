@@ -20,26 +20,37 @@
 # and at http://www.gnu.org/licenses/.
 #
 
+MESSAGE(STATUS "  Processing spectrogram.")
+
 ########################################################################
-# Custom target to ensure headers get picked up by IDEs
+# Add includes and dependencies
 ########################################################################
-SET(headers
-    Crc.h
-    OfdmIndexGenerator.h
-    OfdmPreambleDetector.h
-    OfdmPreambleGenerator.h
-    QamDemodulator.h
-    QamModulator.h
-    ToneGenerator.h
-    Whitener.h
+FIND_PACKAGE(LIQUIDDSP REQUIRED)
+
+########################################################################
+# Build the library from source files
+########################################################################
+SET(sources
+	SpectrogramComponent.cpp
 )
-ADD_CUSTOM_TARGET(libgenericmodulationheaders SOURCES ${headers})
 
-########################################################################
-# Build any libraries
-########################################################################
+IF(LIQUIDDSP_FOUND)
+    INCLUDE_DIRECTORIES(${LIQUIDDSP_INCLUDE_DIRS})
 
-########################################################################
-# Add the test directory
-########################################################################
-ADD_SUBDIRECTORY(test)
+    # Static library to be used in tests
+    ADD_LIBRARY(comp_gpp_phy_spectrogram_static STATIC ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_phy_spectrogram_static ${LIQUIDDSP_LIBRARIES})
+
+    # Shared library to be used in radios
+    ADD_LIBRARY(comp_gpp_phy_spectrogram SHARED ${sources})
+    TARGET_LINK_LIBRARIES(comp_gpp_phy_spectrogram ${LIQUIDDSP_LIBRARIES})
+    SET_TARGET_PROPERTIES(comp_gpp_phy_spectrogram PROPERTIES OUTPUT_NAME "spectrogram")
+    IRIS_INSTALL(comp_gpp_phy_spectrogram)
+    IRIS_APPEND_INSTALL_LIST(spectrogram)
+
+    # Add the test and benchmark directories
+    ADD_SUBDIRECTORY(test)
+    #ADD_SUBDIRECTORY(benchmark)
+ELSE(LIQUIDDSP_FOUND)
+    IRIS_APPEND_NOINSTALL_LIST(spectrogram)
+ENDIF(LIQUIDDSP_FOUND)

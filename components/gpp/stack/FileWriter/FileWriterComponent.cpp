@@ -74,12 +74,10 @@ void FileWriterComponent::initialize()
     LOG(LFATAL) << "Could not open file " << fileName_x << " for writing.";
     throw ResourceNotFoundException("Could not open file " + fileName_x + " for writing.");
   }
-  LOG(LDEBUG) << "FileWriterComponent:: initialize() [sic] completed successfully.";
 }
 
 void FileWriterComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet> set)
 {
-  LOG(LDEBUG) << "FileWriter::processMessageFromAbove() called.";
   if(!fromBelow_x)
   {
     writeBlock(set);
@@ -89,7 +87,6 @@ void FileWriterComponent::processMessageFromAbove(boost::shared_ptr<StackDataSet
 
 void FileWriterComponent::processMessageFromBelow(boost::shared_ptr<StackDataSet> set)
 {
-  LOG(LDEBUG) << "FileWriter::processMessageFromBelow() called.";
   if(fromBelow_x)
   {
     writeBlock(set);

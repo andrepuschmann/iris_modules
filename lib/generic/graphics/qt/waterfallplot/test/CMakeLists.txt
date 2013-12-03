@@ -21,25 +21,12 @@
 #
 
 ########################################################################
-# Add includes and dependencies
+# Build tests
 ########################################################################
-INCLUDE_DIRECTORIES(..)
-
+#turn the test cpp file into an executable with an int main() function
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-ADD_EXECUTABLE(udpsocket_test UdpSocket_test.cpp)
-TARGET_LINK_LIBRARIES(udpsocket_test ${Boost_LIBRARIES})
-ADD_TEST(udpsocket_test udpsocket_test)
+INCLUDE_DIRECTORIES(..)
+ADD_EXECUTABLE(waterfallplot_test Waterfallplot_test.cpp)
+TARGET_LINK_LIBRARIES(waterfallplot_test ${Boost_LIBRARIES} waterfallplot)
+ADD_TEST(waterfallplot_test waterfallplot_test)
 
-IF (IRIS_HAVE_MATLABPLOTTER)
-    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-    ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
-    TARGET_LINK_LIBRARIES(matlabplotter_test ${Boost_LIBRARIES} matlabplotter)
-    ADD_TEST(matlabplotter_test matlabplotter_test)
-ENDIF (IRIS_HAVE_MATLABPLOTTER)
-
-IF (IRIS_HAVE_PYTHONPLOTTER)
-    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
-    ADD_EXECUTABLE(pythonplotter_test PythonPlotter_test.cpp)
-    TARGET_LINK_LIBRARIES(pythonplotter_test ${Boost_LIBRARIES} pythonplotter)
-    ADD_TEST(pythonplotter_test pythonplotter_test)
-ENDIF (IRIS_HAVE_PYTHONPLOTTER)
