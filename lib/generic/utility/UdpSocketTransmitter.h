@@ -83,7 +83,7 @@ public:
   template <typename Iterator>
   void write(Iterator begin, Iterator end)
   {
-    int bufSize = (end-begin)/sizeof(typename std::iterator_traits<Iterator>::value_type);
+    int bufSize = (end-begin)*sizeof(typename std::iterator_traits<Iterator>::value_type);
     //Send data to socket
     try
     {
@@ -91,7 +91,7 @@ public:
     }
     catch(boost::system::system_error &e)
     {
-        LOG(LERROR) << "Error receiving from socket: " << e.what();
+        LOG(LERROR) << "Error sending data to socket: " << e.what();
     }
   }
 

@@ -80,7 +80,7 @@ public:
   template <typename Iterator>
   int read(Iterator begin, Iterator end)
   {
-    int bufSize = (end-begin)/sizeof(typename std::iterator_traits<Iterator>::value_type);
+    int bufSize = (end-begin)*sizeof(typename std::iterator_traits<Iterator>::value_type);
 
     //Get data from socket
     std::size_t size;

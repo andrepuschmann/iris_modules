@@ -25,6 +25,11 @@
 ########################################################################
 INCLUDE_DIRECTORIES(..)
 
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
+ADD_EXECUTABLE(udpsocket_test UdpSocket_test.cpp)
+TARGET_LINK_LIBRARIES(udpsocket_test ${Boost_LIBRARIES})
+ADD_TEST(udpsocket_test udpsocket_test)
+
 IF (IRIS_HAVE_MATLABPLOTTER)
     ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
     ADD_EXECUTABLE(matlabplotter_test MatlabPlotter_test.cpp)
