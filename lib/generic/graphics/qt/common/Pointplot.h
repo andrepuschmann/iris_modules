@@ -69,7 +69,7 @@ private:
   double* realPoints_;
   double* imagPoints_;
 
-  int64_t numPoints_;
+  int numPoints_;
   int counter_;
 };
 

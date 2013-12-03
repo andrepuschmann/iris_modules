@@ -71,7 +71,7 @@ private:
   double* indexPoints_;
   double* dataPoints_;
 
-  int64_t numPoints_;
+  int numPoints_;
   int counter_;
   double xMin_;
   double xMax_;
