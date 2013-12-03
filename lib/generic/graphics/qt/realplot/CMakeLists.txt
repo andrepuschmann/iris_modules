@@ -1,12 +1,12 @@
 ########################################################################
 # Setup Qt and Qwt
 ########################################################################
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4)
 IF(QT4_FOUND)
     INCLUDE(${QT_USE_FILE})
 ENDIF(QT4_FOUND) 
 
-FIND_PACKAGE(Qwt REQUIRED)
+FIND_PACKAGE(Qwt)
 IF(QT4_FOUND AND QWT_FOUND)
     INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIRS})
 ENDIF(QT4_FOUND AND QWT_FOUND)
