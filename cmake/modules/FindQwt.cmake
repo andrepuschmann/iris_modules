@@ -104,6 +104,12 @@ else ()
   find_package_handle_standard_args( Qwt REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR _QWT_VERSION_MATCH VERSION_VAR QWT_VERSION_STRING )
 endif ()
 
+if(QWT_FOUND)
+  if(MSVC)
+    add_definitions(-DQWT_DLL)
+  endif(MSVC)
+endif(QWT_FOUND)
+
 
 mark_as_advanced (
   QWT_LIBRARY
