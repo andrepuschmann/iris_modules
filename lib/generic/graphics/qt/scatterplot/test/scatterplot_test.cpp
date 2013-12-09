@@ -63,8 +63,9 @@ void getPoints(Iterator begin, Iterator end)
 {
   for(;begin!=end;begin++)
   {
-    begin->real() = 2*((double)rand()/RAND_MAX)-1;
-    begin->imag() = 2*((double)rand()/RAND_MAX)-1;
+    float r = 2*((double)rand()/RAND_MAX)-1;
+    float i = 2*((double)rand()/RAND_MAX)-1;
+    *begin = Cplx(r,i);
   }
 }
 
