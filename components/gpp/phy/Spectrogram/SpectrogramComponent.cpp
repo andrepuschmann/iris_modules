@@ -73,7 +73,7 @@ SpectrogramComponent::SpectrogramComponent(std::string name)
 
   registerEvent(
       "psdevent",
-      "An event providing the current estimated PSD (in dBm)",
+      "An event providing the current estimated PSD (in dB)",
       TypeInfo< float >::identifier);
 }
 
@@ -169,10 +169,13 @@ void SpectrogramComponent::processWindow()
   window_.assign(temp.begin()+delay_x,temp.end());
   spec_.assign(nFft_x, Cplx(0,0));
 
-  //We've accumulated enough windows, normalize and output
+  //We've accumulated enough windows, normalize, convert to dB and output
   if(++n_ >= nWindows_x)
   {
-    transform(psd_.begin(), psd_.end(), psd_.begin(), _1/nWindows_x);
+    FloatVecIt it = psd_.begin();
+    for(;it!=psd_.end();++it)
+      *it = (10*log10(*it/nWindows_x));
+
     outputPsd();
     psd_.assign(nFft_x, 0.0);
     n_ = 0;
