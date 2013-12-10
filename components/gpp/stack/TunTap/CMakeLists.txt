@@ -33,12 +33,12 @@ SET(sources
   TunTapComponent.cpp
 )
 
-IF (UNIX)
+IF (UNIX AND NOT APPLE)
     # Targets must be globally unique for cmake 
     ADD_LIBRARY(comp_gpp_stack_tuntap SHARED ${sources})
     SET_TARGET_PROPERTIES(comp_gpp_stack_tuntap PROPERTIES OUTPUT_NAME "tuntap")
     IRIS_INSTALL(comp_gpp_stack_tuntap)
     IRIS_APPEND_INSTALL_LIST(tuntap)
-ELSE (UNIX)
+ELSE (UNIX AND NOT APPLE)
     IRIS_APPEND_NOINSTALL_LIST(tuntap)
-ENDIF (UNIX)
+ENDIF (UNIX AND NOT APPLE)
