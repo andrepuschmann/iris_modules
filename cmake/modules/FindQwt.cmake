@@ -1,125 +1,141 @@
-# Qt Widgets for Technical Applications
-# available at http://www.http://qwt.sourceforge.net/
 #
-# The module defines the following variables:
-#  QWT_FOUND - the system has Qwt
-#  QWT_INCLUDE_DIR - where to find qwt_plot.h
-#  QWT_INCLUDE_DIRS - qwt includes
-#  QWT_LIBRARY - where to find the Qwt library
-#  QWT_LIBRARIES - aditional libraries
-#  QWT_MAJOR_VERSION - major version
-#  QWT_MINOR_VERSION - minor version
-#  QWT_PATCH_VERSION - patch version
-#  QWT_VERSION_STRING - version (ex. 5.2.1)
-#  QWT_ROOT_DIR - root dir (ex. /usr/local)
-
-#=============================================================================
-# Copyright 2010-2013, Julien Schueller
-# All rights reserved.
+# Copyright 2012-2013 The Iris Project Developers. See the
+# COPYRIGHT file at the top-level directory of this distribution
+# and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
+# This file is part of the Iris Project.
 #
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
+# Iris is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Iris is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# A copy of the GNU Lesser General Public License can be found in
+# the LICENSE file in the top-level directory of this distribution
+# and at http://www.gnu.org/licenses/.
+#
 
-# The views and conclusions contained in the software and documentation are those
-# of the authors and should not be interpreted as representing official policies,
-# either expressed or implied, of the FreeBSD Project.
-#=============================================================================
+# - Try to find the Qwt includes and library
+# which defines
+#
+# QWT_FOUND - system has Qwt
+# QWT_INCLUDE_DIR - where to find qwt.h
+# QWT_INCLUDE_DIRS - the qwt include directories
+# QWT_LIBRARY - where to find the Qwt library (not for general use)
+# QWT_LIBRARIES - the libraries to link against to use Qwt
+# QWT_MAJOR_VERSION - major version
+# QWT_MINOR_VERSION - minor version
+# QWT_PATCH_VERSION - patch version
+# QWT_VERSION_STRING - version (ex. 5.2.1)
 
+SET(QWT_FOUND "NO")
 
-find_path ( QWT_INCLUDE_DIR
-  NAMES qwt_plot.h
-  HINTS ${QT_INCLUDE_DIR} $ENV{QWT_DIR}/include
-  PATH_SUFFIXES qwt qwt-qt3 qwt-qt4 qwt-qt5
+FIND_PATH(QWT_INCLUDE_DIR qwt.h
+  /usr/local/qwt/include
+  /usr/local/include
+  /usr/include/qwt
+  /usr/include/qwt-qt4
+  /usr/include/qwt5
+  /usr/include
+  /opt/local/include/qwt #macports path
+  $ENV{QWT_DIR}/include
+  $ENV{QWT_DIR}/src
+  $ENV{QWTDIR}/include
+  $ENV{QWTDIR}/src
+  $ENV{QWT_ROOT}/include
+  $ENV{QWT_ROOT}/src
+  $ENV{QWTROOT}/include
+  $ENV{QWTROOT}/src
 )
 
-set ( QWT_INCLUDE_DIRS ${QWT_INCLUDE_DIR} )
+SET(QWT_INCLUDE_DIRS ${QWT_INCLUDE_DIR})
 
 # version
-set ( _VERSION_FILE ${QWT_INCLUDE_DIR}/qwt_global.h )
-if ( EXISTS ${_VERSION_FILE} )
-  file ( STRINGS ${_VERSION_FILE} _VERSION_LINE REGEX "define[ ]+QWT_VERSION_STR" )
-  if ( _VERSION_LINE )
-    string ( REGEX REPLACE ".*define[ ]+QWT_VERSION_STR[ ]+\"(.*)\".*" "\\1" QWT_VERSION_STRING "${_VERSION_LINE}" )
-    string ( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\1" QWT_MAJOR_VERSION "${QWT_VERSION_STRING}" )
-    string ( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\2" QWT_MINOR_VERSION "${QWT_VERSION_STRING}" )
-    string ( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\3" QWT_PATCH_VERSION "${QWT_VERSION_STRING}" )
-  endif ()
-endif ()
+SET(_VERSION_FILE ${QWT_INCLUDE_DIR}/qwt_global.h)
+IF(EXISTS ${_VERSION_FILE} )
+  FILE( STRINGS ${_VERSION_FILE} _VERSION_LINE REGEX "define[ ]+QWT_VERSION_STR")
+  IF( _VERSION_LINE )
+    STRING( REGEX REPLACE ".*define[ ]+QWT_VERSION_STR[ ]+\"(.*)\".*" "\\1" QWT_VERSION_STRING "${_VERSION_LINE}" )
+    STRING( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\1" QWT_MAJOR_VERSION "${QWT_VERSION_STRING}" )
+    STRING( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\2" QWT_MINOR_VERSION "${QWT_VERSION_STRING}" )
+    STRING( REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\3" QWT_PATCH_VERSION "${QWT_VERSION_STRING}" )
+  ENDIF()
+ENDIF()
 
 
 # check version
-set ( _QWT_VERSION_MATCH TRUE )
-if ( Qwt_FIND_VERSION AND QWT_VERSION_STRING )
-  if ( Qwt_FIND_VERSION_EXACT )
-    if ( NOT Qwt_FIND_VERSION VERSION_EQUAL QWT_VERSION_STRING )
-      set ( _QWT_VERSION_MATCH FALSE )
-    endif ()
-  else ()
-    if ( QWT_VERSION_STRING VERSION_LESS Qwt_FIND_VERSION )
-      set ( _QWT_VERSION_MATCH FALSE )
-    endif ()
-  endif ()
-endif ()
+SET( _QWT_VERSION_MATCH TRUE )
+IF( Qwt_FIND_VERSION AND QWT_VERSION_STRING )
+  IF( Qwt_FIND_VERSION_EXACT )
+    IF( NOT Qwt_FIND_VERSION VERSION_EQUAL QWT_VERSION_STRING )
+      SET( _QWT_VERSION_MATCH FALSE )
+    ENDIF()
+  ELSE()
+    IF( QWT_VERSION_STRING VERSION_LESS Qwt_FIND_VERSION )
+      SET( _QWT_VERSION_MATCH FALSE )
+    ENDIF()
+  ENDIF()
+ENDIF()
 
-
-find_library ( QWT_LIBRARY
-  NAMES qwt qwt-qt3 qwt-qt4 qwt-qt5
-  HINTS ${QT_LIBRARY_DIR} $ENV{QWT_DIR}/lib
+SET(POTENTIAL_LIBRARY_PATHS /usr/local/qwt/lib /usr/local/lib /usr/lib /opt/local/lib
+              $ENV{QWT_DIR}/lib $ENV{QWTDIR}/lib $ENV{QWT_ROOT}/lib $ENV{QWTROOT}/lib)
+              
+SET(QWT_NAMES ${QWT_NAMES} qwt qwt-qt4 qwt5 )
+FIND_LIBRARY(QWT_LIBRARY
+  NAMES ${QWT_NAMES}
+  PATHS ${POTENTIAL_LIBRARY_PATHS}
 )
+MARK_AS_ADVANCED(QWT_LIBRARY)
 
-set ( QWT_LIBRARIES ${QWT_LIBRARY} )
+IF (QWT_LIBRARY)
 
+  IF(WIN32 AND NOT CYGWIN)
 
-# try to guess root dir from include dir
-if ( QWT_INCLUDE_DIR )
-  string ( REGEX REPLACE "(.*)/include.*" "\\1" QWT_ROOT_DIR ${QWT_INCLUDE_DIR} )
-# try to guess root dir from library dir
-elseif ( QWT_LIBRARY )
-  string ( REGEX REPLACE "(.*)/lib[/|32|64].*" "\\1" QWT_ROOT_DIR ${QWT_LIBRARY} )
-endif ()
+    SET(QWT_NAMES_DEBUG qwtd qwtd-qt4 qwtd5 )
+    FIND_LIBRARY(QWT_LIBRARY_DEBUG
+      NAMES ${QWT_NAMES_DEBUG}
+      PATHS ${POTENTIAL_LIBRARY_PATHS}
+    )
+    MARK_AS_ADVANCED(QWT_LIBRARY_DEBUG)
+    
+    IF(QWT_LIBRARY_DEBUG)
+      SET(QWT_LIBRARIES optimized ${QWT_LIBRARY} debug ${QWT_LIBRARY_DEBUG} CACHE DOC "QWT library files")
+    ELSE(QWT_LIBRARY_DEBUG)
+      SET(QWT_LIBRARIES ${QWT_LIBRARY} CACHE DOC "QWT library files")
+    ENDIF(QWT_LIBRARY_DEBUG)
+    
+    ADD_DEFINITIONS(-DQWT_DLL)
+    
+  ELSE(WIN32 AND NOT CYGWIN)
+  
+    SET(QWT_LIBRARIES ${QWT_LIBRARY} CACHE DOC "QWT library files")
+    
+  ENDIF(WIN32 AND NOT CYGWIN)
+  
+  SET(QWT_FOUND "YES")
 
+  IF (CYGWIN)
+    IF(BUILD_SHARED_LIBS)
+    # No need to define QWT_USE_DLL here, because it's default for Cygwin.
+    ELSE(BUILD_SHARED_LIBS)
+    SET (QWT_DEFINITIONS -DQWT_STATIC)
+    ENDIF(BUILD_SHARED_LIBS)
+  ENDIF (CYGWIN)
+
+ENDIF (QWT_LIBRARY)
 
 # handle the QUIETLY and REQUIRED arguments
-include ( FindPackageHandleStandardArgs )
-if ( CMAKE_VERSION LESS 2.8.3 )
-  find_package_handle_standard_args( Qwt DEFAULT_MSG QWT_LIBRARY QWT_INCLUDE_DIR _QWT_VERSION_MATCH )
-else ()
-  find_package_handle_standard_args( Qwt REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR _QWT_VERSION_MATCH VERSION_VAR QWT_VERSION_STRING )
-endif ()
+INCLUDE( FindPackageHandleStandardArgs )
+IF( CMAKE_VERSION LESS 2.8.3 )
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS( Qwt DEFAULT_MSG QWT_LIBRARY QWT_INCLUDE_DIR _QWT_VERSION_MATCH )
+ELSE()
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS( Qwt REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR _QWT_VERSION_MATCH VERSION_VAR QWT_VERSION_STRING )
+ENDIF()
 
-if(QWT_FOUND)
-  if(MSVC)
-    add_definitions(-DQWT_DLL)
-  endif(MSVC)
-endif(QWT_FOUND)
-
-
-mark_as_advanced (
-  QWT_LIBRARY
-  QWT_LIBRARIES
-  QWT_INCLUDE_DIR
-  QWT_INCLUDE_DIRS
-  QWT_MAJOR_VERSION
-  QWT_MINOR_VERSION
-  QWT_PATCH_VERSION
-  QWT_VERSION_STRING
-  QWT_ROOT_DIR
-)
+MARK_AS_ADVANCED(QWT_INCLUDE_DIR QWT_LIBRARY)
 
