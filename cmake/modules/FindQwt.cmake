@@ -21,7 +21,7 @@
 #
 
 # - Try to find the Qwt includes and library
-# which defines
+# - Defines the following:
 #
 # QWT_FOUND - system has Qwt
 # QWT_INCLUDE_DIR - where to find qwt.h
