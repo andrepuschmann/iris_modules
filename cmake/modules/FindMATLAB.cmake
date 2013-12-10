@@ -56,6 +56,35 @@ IF(WIN32)
     "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.4;MATLABROOT]/extern/include"
     "$ENV{MATLAB_DIR}/extern/include"
     )
+ELSEIF(APPLE)
+  SET(MATLAB_ROOT 
+    /Applications/MATLAB_R2013a.app/bin/maci64/
+    /Applications/MATLAB_R2012b.app/bin/maci64/
+    /Applications/MATLAB_R2012a.app/bin/maci64
+    )
+  FIND_LIBRARY(MATLAB_MEX_LIBRARY
+    NAMES mex
+    PATHS ${MATLAB_ROOT}
+    )
+  FIND_LIBRARY(MATLAB_MX_LIBRARY
+    NAMES mx
+    PATHS ${MATLAB_ROOT}
+    NO_DEFAULT_PATH
+    )
+  FIND_LIBRARY(MATLAB_ENG_LIBRARY
+    NAMES eng
+    PATHS ${MATLAB_ROOT}
+    )
+  FIND_PATH(MATLAB_LIB_DIR
+    NAMES libmex.dylib
+    PATHS ${MATLAB_ROOT}
+    )
+  FIND_PATH(MATLAB_INCLUDE_DIR
+    NAMES mex.h
+    PATHS /Applications/MATLAB_R2013a.app/extern/include/
+          /Applications/MATLAB_R2012b.app/extern/include/
+          /Applications/MATLAB_R2012a.app/extern/include/    
+    )
 ELSE( WIN32 )
   IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
     # Regular x86
