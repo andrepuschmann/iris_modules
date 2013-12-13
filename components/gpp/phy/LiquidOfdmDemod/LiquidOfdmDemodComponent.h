@@ -68,6 +68,7 @@ public:
         std::map<std::string, int>& outputTypes);
     virtual void registerPorts();
     virtual void initialize();
+    virtual void parameterHasChanged(std::string name);
     virtual void process();
     void callback( unsigned char *  _header,
                    int              _header_valid,

@@ -59,7 +59,6 @@ BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Parm_Test)
   BOOST_CHECK(mod.getParameterDefaultValue("fec0") == "none");
   BOOST_CHECK(mod.getParameterDefaultValue("fec1") == "h128");
   BOOST_CHECK(mod.getParameterDefaultValue("crc") == "crc32");
-  BOOST_CHECK(mod.getParameterDefaultValue("numsymbolss0") == "3");
   BOOST_CHECK(mod.getParameterDefaultValue("frameheader") == "default");
 }
 
@@ -124,7 +123,84 @@ BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Process_Test)
   BOOST_REQUIRE(out.hasData());
   DataSet< complex<float> >* oSet = NULL;
   out.getReadData(oSet);
-  BOOST_CHECK(oSet->data.size() == 9280); // FIXME: justify output length using modulation parameter
+  BOOST_CHECK(oSet->data.size() == 9280);
   out.releaseReadData(oSet);
+}
+
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Reconfigure_Test)
+{
+  LiquidOfdmModComponent mod("test");
+  mod.registerPorts();
+
+  map<string, int> iTypes,oTypes;
+  iTypes["input1"] = TypeInfo< uint8_t >::identifier;
+  mod.calculateOutputTypes(iTypes,oTypes);
+
+  DataBufferTrivial<uint8_t> in;
+  DataBufferTrivial< complex<float> > out;
+
+  DataSet<uint8_t>* iSet = NULL;
+  in.getWriteData(iSet, 32*24);
+
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  mod.setBuffers(&in,&out);
+  mod.initialize();
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  DataSet< complex<float> >* oSet = NULL;
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 9280);
+  out.releaseReadData(oSet);
+
+  mod.setValue("subcarriers", "128");
+  mod.parameterHasChanged("subcarriers");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 8496);
+  out.releaseReadData(oSet);
+
+  mod.setValue("prefixlength", "32");
+  mod.parameterHasChanged("prefixlength");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 9440);
+  out.releaseReadData(oSet);
+
+  mod.setValue("taperlength", "8");
+  mod.parameterHasChanged("taperlength");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 9440);
+  out.releaseReadData(oSet);
+
+
 }
 BOOST_AUTO_TEST_SUITE_END()

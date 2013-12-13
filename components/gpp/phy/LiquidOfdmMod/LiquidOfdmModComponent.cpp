@@ -52,7 +52,6 @@ LiquidOfdmModComponent::LiquidOfdmModComponent(string name):
   ,noSubcarriers_x(0)
   ,cyclicPrefixLength_x(0)
   ,taperLength_x(0)
-  ,numSymbolsS0_x(0)
   ,frameGenerator_(0)
 {
     //Format: registerParameter(name, description, default, dynamic?, parameter)
@@ -80,9 +79,6 @@ LiquidOfdmModComponent::LiquidOfdmModComponent(string name):
 
     registerParameter("crc", "Cyclic redundancy check (crc16, crc32, ..)",
         "crc32", true, crcScheme_x);
-
-    registerParameter("numsymbolss0", "number of S0 training symbols",
-        "3", true, numSymbolsS0_x);
 
     registerParameter("frameheader", "Header content, maximum lenght is eight characters",
         "default", true, frameHeader_x);
@@ -171,6 +167,16 @@ void LiquidOfdmModComponent::parameterHasChanged(std::string name)
         fgProps.check = check;
     }
     ofdmflexframegen_setprops(frameGenerator_, &fgProps);
+
+    if (name == "subcarriers" ||
+        name == "prefixlength" ||
+        name == "taperlength")
+    {
+      //Need to destroy and recreate the frame generator
+      if (frameGenerator_)
+        ofdmflexframegen_destroy(frameGenerator_);
+      initialize();
+    }
 }
 
 void LiquidOfdmModComponent::process()

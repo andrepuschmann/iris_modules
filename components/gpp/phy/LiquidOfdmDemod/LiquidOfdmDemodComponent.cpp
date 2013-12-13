@@ -79,7 +79,7 @@ LiquidOfdmDemodComponent::LiquidOfdmDemodComponent(string name):
 {
     //Format: registerParameter(name, description, default, dynamic?, parameter)
     registerParameter("debug", "Whether to output debug information",
-        "false", false, debug_x);
+        "false", true, debug_x);
 
     registerParameter("subcarriers", "Number of subcarriers",
         "64", true, noSubcarriers_x);
@@ -137,6 +137,19 @@ void LiquidOfdmDemodComponent::initialize()
                                                   liquidofdmdemoddetail::gCallback,
                                                   this);
     ofdmflexframesync_print(frameSyncronizer_);
+}
+
+void LiquidOfdmDemodComponent::parameterHasChanged(std::string name)
+{
+    if (name == "subcarriers" ||
+        name == "prefixlength" ||
+        name == "taperlength")
+    {
+      //Need to destroy and recreate the synchronizer object
+      if (frameSyncronizer_)
+        ofdmflexframesync_destroy(frameSyncronizer_);
+      initialize();
+    }
 }
 
 
