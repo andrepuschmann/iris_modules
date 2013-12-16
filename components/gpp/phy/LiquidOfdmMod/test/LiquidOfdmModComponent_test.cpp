@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/phy/OfdmModulator/test/OfdmModulatorComponent_test.cpp
+ * \file components/gpp/phy/LiquidOfdmMod/LiquidOfdmModComponent_test.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,42 +28,43 @@
  *
  * \section DESCRIPTION
  *
- * Main test file for OfdmModulator component.
+ * Main test file for LiquidOfdmMod component.
  */
 
-#define BOOST_TEST_MODULE OfdmModulatorComponent_Test
+#define BOOST_TEST_MODULE LiquidOfdmModComponent_test
 
 #include <boost/test/unit_test.hpp>
 
-#include "../OfdmModulatorComponent.h"
+#include "../LiquidOfdmModComponent.h"
 #include "utility/DataBufferTrivial.h"
 #include "utility/RawFileUtility.h"
 
 using namespace std;
 using namespace iris;
-using namespace iris::phy;
 
-BOOST_AUTO_TEST_SUITE (OfdmModulatorComponent_Test)
+BOOST_AUTO_TEST_SUITE (LiquidOfdmModComponent_test)
 
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Basic_Test)
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Basic_Test)
 {
-  BOOST_REQUIRE_NO_THROW(OfdmModulatorComponent mod("test"));
+  BOOST_REQUIRE_NO_THROW(LiquidOfdmModComponent mod("test"));
 }
 
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Parm_Test)
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Parm_Test)
 {
-  OfdmModulatorComponent mod("test");
-  BOOST_CHECK(mod.getParameterDefaultValue("numdatacarriers") == "192");
-  BOOST_CHECK(mod.getParameterDefaultValue("numpilotcarriers") == "8");
-  BOOST_CHECK(mod.getParameterDefaultValue("numguardcarriers") == "311");
-  BOOST_CHECK(mod.getParameterDefaultValue("modulationdepth") == "1");
-  BOOST_CHECK(mod.getParameterDefaultValue("cyclicprefixlength") == "32");
-  BOOST_CHECK(mod.getParameterDefaultValue("maxsymbolsperframe") == "32");
+  LiquidOfdmModComponent mod("test");
+  BOOST_CHECK(mod.getParameterDefaultValue("subcarriers") == "64");
+  BOOST_CHECK(mod.getParameterDefaultValue("prefixlength") == "16");
+  BOOST_CHECK(mod.getParameterDefaultValue("taperlength") == "4");
+  BOOST_CHECK(mod.getParameterDefaultValue("modulation") == "qpsk");
+  BOOST_CHECK(mod.getParameterDefaultValue("fec0") == "none");
+  BOOST_CHECK(mod.getParameterDefaultValue("fec1") == "h128");
+  BOOST_CHECK(mod.getParameterDefaultValue("crc") == "crc32");
+  BOOST_CHECK(mod.getParameterDefaultValue("frameheader") == "default");
 }
 
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Ports_Test)
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Ports_Test)
 {
-  OfdmModulatorComponent mod("test");
+  LiquidOfdmModComponent mod("test");
   BOOST_REQUIRE_NO_THROW(mod.registerPorts());
 
   vector<Port> iPorts = mod.getInputPorts();
@@ -84,9 +85,9 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Ports_Test)
   BOOST_REQUIRE(oTypes["output1"] == TypeInfo< complex<float> >::identifier);
 }
 
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Init_Test)
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Init_Test)
 {
-  OfdmModulatorComponent mod("test");
+  LiquidOfdmModComponent mod("test");
   mod.registerPorts();
 
   map<string, int> iTypes,oTypes;
@@ -96,9 +97,9 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Init_Test)
   BOOST_REQUIRE_NO_THROW(mod.initialize());
 }
 
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Process_Test)
 {
-  OfdmModulatorComponent mod("test");
+  LiquidOfdmModComponent mod("test");
   mod.registerPorts();
 
   map<string, int> iTypes,oTypes;
@@ -108,9 +109,9 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
   DataBufferTrivial<uint8_t> in;
   DataBufferTrivial< complex<float> > out;
 
-  // Create enough data for one full frame
   DataSet<uint8_t>* iSet = NULL;
-  in.getWriteData(iSet, 32*24); // #dataSymbols * #bytesPerSymbol
+  in.getWriteData(iSet, 32*24);
+
   for(int i=0;i<32*24;i++)
     iSet->data[i] = i%255;
   in.releaseWriteData(iSet);
@@ -122,19 +123,13 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Process_Test)
   BOOST_REQUIRE(out.hasData());
   DataSet< complex<float> >* oSet = NULL;
   out.getReadData(oSet);
-  BOOST_CHECK(oSet->data.size() == 35*544); // #symbols * #samplesPerSymbol
+  BOOST_CHECK(oSet->data.size() == 9280);
   out.releaseReadData(oSet);
 }
-/*
-BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
-{
-  OfdmModulatorComponent mod("test");
-  mod.setValue("numdatacarriers", 40);
-  mod.setValue("numpilotcarriers", 8);
-  mod.setValue("numguardcarriers", 15);
-  mod.setValue("cyclicprefixlength", 8);
-  mod.setValue("maxsymbolsperframe", 4);
 
+BOOST_AUTO_TEST_CASE(LiquidOfdmModComponent_Reconfigure_Test)
+{
+  LiquidOfdmModComponent mod("test");
   mod.registerPorts();
 
   map<string, int> iTypes,oTypes;
@@ -144,10 +139,10 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
   DataBufferTrivial<uint8_t> in;
   DataBufferTrivial< complex<float> > out;
 
-  // Create enough data for one full frame
   DataSet<uint8_t>* iSet = NULL;
-  in.getWriteData(iSet, 4*5); // #dataSymbols * #bytesPerSymbol
-  for(int i=0;i<4*5;i++)
+  in.getWriteData(iSet, 32*24);
+
+  for(int i=0;i<32*24;i++)
     iSet->data[i] = i%255;
   in.releaseWriteData(iSet);
 
@@ -158,9 +153,54 @@ BOOST_AUTO_TEST_CASE(OfdmModulatorComponent_Generate_Data)
   BOOST_REQUIRE(out.hasData());
   DataSet< complex<float> >* oSet = NULL;
   out.getReadData(oSet);
-  BOOST_CHECK(oSet->data.size() == 8*72); // #symbols * #samplesPerSymbol
+  BOOST_CHECK(oSet->data.size() == 9280);
+  out.releaseReadData(oSet);
 
-  RawFileUtility::write(oSet->data.begin(), oSet->data.end(), "Frame");
+  mod.setValue("subcarriers", "128");
+  mod.parameterHasChanged("subcarriers");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 8496);
+  out.releaseReadData(oSet);
+
+  mod.setValue("prefixlength", "32");
+  mod.parameterHasChanged("prefixlength");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 9440);
+  out.releaseReadData(oSet);
+
+  mod.setValue("taperlength", "8");
+  mod.parameterHasChanged("taperlength");
+
+  in.getWriteData(iSet, 32*24);
+  for(int i=0;i<32*24;i++)
+    iSet->data[i] = i%255;
+  in.releaseWriteData(iSet);
+
+  BOOST_REQUIRE_NO_THROW(mod.process());
+
+  BOOST_REQUIRE(out.hasData());
+  out.getReadData(oSet);
+  BOOST_CHECK(oSet->data.size() == 9440);
+  out.releaseReadData(oSet);
+
+
 }
-*/
 BOOST_AUTO_TEST_SUITE_END()
