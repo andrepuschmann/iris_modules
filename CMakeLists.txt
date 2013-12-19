@@ -85,6 +85,11 @@ IF(MSVC)
     ADD_DEFINITIONS(/MP) #build with multiple processors
 ENDIF(MSVC)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+   # The following is needed for weak linking to work under OS X
+   SET(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
 ########################################################################
 # Setup Boost
 ########################################################################
