@@ -65,6 +65,11 @@ SignalScalerComponent::SignalScalerComponent(string name)
   registerParameter(
     "factor", "Multiply the input with this value (0 means max is applied)",
     "0", true, factor_x, Interval<float>(0, 1e32f));
+
+  registerParameter(
+    "maxsamples", "How many samples to check for maxVal (0 means until end)",
+    "0", true, maxSamples_x);
+
 }
 
 void SignalScalerComponent::registerPorts()
@@ -116,7 +121,9 @@ void SignalScalerComponent::process()
     //     functor class with 'operator()(complex<float>)' which applies the norm<float> function to its argument.
     //     (see http://www.boost.org/doc/libs/1_40_0/doc/html/lambda/using_library.html#lambda.introductory_examples)
     // * Then, it computes the absolute value of that maximum (complex number)
-    float maxVal = abs(*max_element(readDataSet->data.begin(), readDataSet->data.end(),
+    std::vector<complex<float> >::iterator until = readDataSet->data.end();
+    if (maxSamples_x > 0) until = readDataSet->data.begin() + maxSamples_x;
+    float maxVal = abs(*max_element(readDataSet->data.begin(), until,
             bind(norm<float>, _1) < bind(norm<float>, _2) ));
 
     // this is equivalent to:

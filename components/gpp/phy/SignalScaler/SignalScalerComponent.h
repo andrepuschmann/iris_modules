@@ -60,6 +60,7 @@ class SignalScalerComponent
  private:
   float maximum_x;  ///< Maximum value to scale to (only used if x_factor = 0)
   float factor_x;   ///< Scale input with this value (0 means max is applied)
+  int maxSamples_x; ///< How many samples to check for maxVal (0 means until end)
 };
 
 } // namespace phy
