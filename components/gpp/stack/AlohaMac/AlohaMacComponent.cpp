@@ -42,10 +42,6 @@
 #endif
 
 using namespace std;
-using boost::mutex;
-using boost::condition_variable;
-using boost::shared_ptr;
-using boost::lock_guard;
 
 namespace iris
 {
@@ -141,7 +137,7 @@ void AlohaMacComponent::rxThreadFunction()
     {
       boost::this_thread::interruption_point();
 
-      shared_ptr<StackDataSet> frame = rxPktBuffer_.popDataSet();
+      boost::shared_ptr<StackDataSet> frame = rxPktBuffer_.popDataSet();
 
       AlohaPacket newPacket;
       StackHelper::deserializeAndStripDataset(frame, newPacket);
@@ -213,7 +209,7 @@ void AlohaMacComponent::txThreadFunction()
     {
       boost::this_thread::interruption_point();
 
-      shared_ptr<StackDataSet> frame = txPktBuffer_.popDataSet();
+      boost::shared_ptr<StackDataSet> frame = txPktBuffer_.popDataSet();
 
       // determine frame source and destination
       std::string source(localAddress_x);
@@ -244,7 +240,7 @@ void AlohaMacComponent::txThreadFunction()
       } else {
           bool stop_signal = false;
           int txCounter = 1;
-          while (not stop_signal) {
+          while (!stop_signal) {
             // send packet to PHY
             LOG(LINFO) << "Tx DATA  " << txSeqNo_;
             sendDownwards(frame);
@@ -292,7 +288,7 @@ void AlohaMacComponent::sendAckPacket(const string destination, uint32_t seqno)
   ackPacket.set_type(AlohaPacket::ACK);
   ackPacket.set_seqno(seqno);
 
-  shared_ptr<StackDataSet> buffer(new StackDataSet);
+  boost::shared_ptr<StackDataSet> buffer(new StackDataSet);
   StackHelper::mergeAndSerializeDataset(buffer, ackPacket);
   //StackHelper::printDataset(buffer, "ACK Tx");
 
