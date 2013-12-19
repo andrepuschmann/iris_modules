@@ -21,6 +21,21 @@
 #
 
 ########################################################################
+# Custom target to ensure headers get picked up by IDEs
+########################################################################
+SET(headers
+    Crc.h
+    OfdmIndexGenerator.h
+    OfdmPreambleDetector.h
+    OfdmPreambleGenerator.h
+    QamDemodulator.h
+    QamModulator.h
+    ToneGenerator.h
+    Whitener.h
+)
+ADD_CUSTOM_TARGET(libgenericmodulationheaders SOURCES ${headers})
+
+########################################################################
 # Build any libraries
 ########################################################################
 

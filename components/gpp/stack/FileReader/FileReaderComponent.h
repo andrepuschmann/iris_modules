@@ -72,14 +72,11 @@ private:
   std::string fileName_x;   ///< Name of file to read.
   bool sendBelow_x;         ///< Send data down?
   bool enabled_x;           ///< Is this reader enabled?
-  uint32_t delay_x;         ///< Time to wait between blocks.
-  uint32_t intermittentPauseLength_x;
+  uint32_t delay_x;         ///< Time to wait between blocks (ms).
   int packets_x;            ///< Number of packets to generate.
 
   int count_;
-
-  //\todo Remove these filthy hacks
-  uint32_t counter_;
+  bool running_;
 
   boost::scoped_ptr< boost::thread > thread_; ///< Handle for file reading thread.
   std::ifstream hInFile_; ///< The file stream.

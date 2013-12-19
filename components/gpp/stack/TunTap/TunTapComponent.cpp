@@ -154,17 +154,6 @@ void TunTapComponent::stop()
 }
 
 
-void TunTapComponent::registerPorts()
-{
-  std::vector<int> types;
-  types.push_back( int(TypeInfo< uint8_t >::identifier) );
-
-  // We just have bottom ports
-  registerInputPort("bottominputport", types);
-  registerInputPort("bottomoutputport", types);
-}
-
-
 void TunTapComponent::rxThreadFunction()
 {
   //LOG(LINFO) << "RX thread started, listening on tun/tap device " << x_tunTapDevice;
@@ -206,7 +195,7 @@ void TunTapComponent::rxThreadFunction()
           packetBuffer->data.assign(buffer, buffer + nread);
 
           // send downwards
-          sendDownwards("bottomoutputport", packetBuffer);
+          sendDownwards(packetBuffer);
         }
       }
     } // while (true)

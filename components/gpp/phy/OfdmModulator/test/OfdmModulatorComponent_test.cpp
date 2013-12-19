@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/phy/OfdmModulator/OfdmModulatorComponent_test.cpp
+ * \file components/gpp/phy/OfdmModulator/test/OfdmModulatorComponent_test.cpp
  * \version 1.0
  *
  * \section COPYRIGHT

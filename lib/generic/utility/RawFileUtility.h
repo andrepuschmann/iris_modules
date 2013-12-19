@@ -68,7 +68,7 @@ public:
 		}
 		else
 			return false;
-	};
+  }
 
 	/*! Function Description.
 	* \brief Write anything to file
@@ -99,7 +99,90 @@ public:
 			hOutFile.write(reinterpret_cast<char*>(&temp), sizeof(temp));
 		}
 		return true;
-	};
+  }
+
+  /*! Function Description.
+  * \brief Get the number of elements in a file
+  * \param filename Name of file to read data from
+  */
+  template <typename T>
+  static int getNumElements(std::string filename)
+  {
+    using namespace std;
+
+    string fileName(filename);
+    fileName += ".bin";
+
+    ifstream hInFile(fileName.c_str(), ios::binary);
+    // file will be closed during deconstruction
+
+    if(hInFile.is_open())
+    {
+      hInFile.seekg(0, hInFile.end);
+      return hInFile.tellg()/sizeof(T);
+    }
+    else
+      return -1;
+  }
+
+  /*! Function Description.
+  * \brief Read anything from file
+  * \param first An iterator to the first element
+  * \param last An iterator to the last element
+  * \param filename Name of file to read data from
+  * \param endianness   The endianness of the file
+  */
+  template <typename Iter>
+  static bool read(Iter first, Iter last, std::string filename, std::string endianness = "native")
+  {
+    using namespace std;
+
+    string fileName(filename);
+    fileName += ".bin";
+
+    ifstream hInFile(fileName.c_str(), ios::binary);
+    // file will be closed during deconstruction
+
+    if(hInFile.is_open())
+    {
+      return read(first, last, hInFile, endianness);
+    }
+    else
+      return false;
+  }
+
+  /*! Function Description.
+  * \brief Read anything from file
+  * \param first                An iterator to the first element
+  * \param last     An iterator to the last element
+  * \param hInFile      An ifstream to read from
+  * \param endianness   The endianness of the file
+  */
+  template <typename Iter>
+  static bool read(Iter first, Iter last, std::istream &hInFile, std::string endianness = "native")
+  {
+    using namespace std;
+    typedef typename iterator_traits<Iter>::value_type Type;
+
+    for(;first != last;++first)
+    {
+      if(hInFile.eof())
+        return false;
+      hInFile.read((char*)&*first, sizeof(Type));
+      if(sizeof(Type) > 1)
+      {
+        if(endianness == "big")
+        {
+          *first = big2sys(*first);
+        }
+        if(endianness == "little")
+        {
+          *first = lit2sys(*first);
+        }
+      }
+    }
+    return true;
+  }
 };
 
 #endif

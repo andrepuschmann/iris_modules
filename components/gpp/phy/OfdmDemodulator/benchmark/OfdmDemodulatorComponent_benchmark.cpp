@@ -1,5 +1,5 @@
 /**
- * \file components/gpp/phy/OfdmDemodulator/test/OfdmDemodulatorComponent_benchmark.cpp
+ * \file components/gpp/phy/OfdmDemodulator/benchmark/OfdmDemodulatorComponent_benchmark.cpp
  * \version 1.0
  *
  * \section COPYRIGHT

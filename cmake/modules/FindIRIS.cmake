@@ -27,7 +27,7 @@
 #  IRIS_DEFINITIONS - Compiler switches required for using iris
 
 find_package(PkgConfig)
-pkg_check_modules(PC_IRIS iris_core)
+pkg_check_modules(PC_IRIS QUIET iris_core)
 set(IRIS_DEFINITIONS ${PC_IRIS_CFLAGS_OTHER})
 
 find_path(IRIS_INCLUDE_DIR 
