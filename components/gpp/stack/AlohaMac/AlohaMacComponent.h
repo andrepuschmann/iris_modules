@@ -39,6 +39,8 @@
 #include <stdio.h>
 #include "alohamac.pb.h"
 
+#define BROADCAST_ADDRESS "ffffffffffff"
+
 namespace iris
 {
 namespace stack
@@ -55,15 +57,15 @@ public:
   virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set);
   virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set);
 
-  virtual void registerPorts();
-
   virtual void start();
   virtual void stop();
 
 private:
   //Exposed parameters
-  std::string localAddress_x;         ///< Address of this client
+  std::string localAddress_x;         ///< Source address of this client (may get overwritten)
   std::string destinationAddress_x;   ///< Address of destination client
+  bool isEthernetDevice_x;            ///< Whether to interpret incoming frames as Ethernet frames
+  std::string ethernetDeviceName_x;   ///< Name of the Ethernet device to use (e.g. tap0)
   int ackTimeout_x;                   ///< Time to wait for ACK packets (ms)
   int maxRetry_x;                     ///< Number of retransmissions
 
@@ -81,8 +83,6 @@ private:
   void sendAckPacket(const std::string destination, uint32_t seqno);
   void rxThreadFunction();
   void txThreadFunction();
-
-
 };
 
 } // namespace stack
