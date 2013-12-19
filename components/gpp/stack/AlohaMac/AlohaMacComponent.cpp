@@ -36,7 +36,10 @@
 #include "irisapi/Version.h"
 #include "AlohaMacComponent.h"
 #include "utility/StackHelper.h"
+
+#ifdef __unix__
 #include "utility/NetworkingHelper.h"
+#endif
 
 using namespace std;
 using boost::mutex;
@@ -66,8 +69,10 @@ AlohaMacComponent::AlohaMacComponent(std::string name)
   //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
   registerParameter("localaddress", "Address of this client", "f009e090e90e", false, localAddress_x);
   registerParameter("destinationaddress", "Address of the destination client", "00f0f0f0f0f0", false, destinationAddress_x);
+#ifdef __unix__
   registerParameter("isethdevice", "Whether to act as an Ethernet device", "false", false, isEthernetDevice_x);
   registerParameter("ethdevicename", "Name of the Ethernet device", "false", "tap0", ethernetDeviceName_x);
+#endif
   registerParameter("acktimeout", "Time to wait for ACK packets in ms", "100", false, ackTimeout_x);
   registerParameter("maxretry", "Number of retransmissions", "100", false, maxRetry_x);
 }
@@ -82,6 +87,7 @@ void AlohaMacComponent::initialize()
 {
     maxRetry_x++; // first attempt does not count as retransmission
     // set local address according to user configuration
+#ifdef __unix__
     if (isEthernetDevice_x) {
         LOG(LINFO) << "Trying to retrieve MAC address from " << ethernetDeviceName_x << ".";
         std::string backup(localAddress_x);
@@ -90,6 +96,7 @@ void AlohaMacComponent::initialize()
             localAddress_x = backup;
         }
     }
+#endif
     LOG(LINFO) << "Local address is: " << localAddress_x;
 }
 
@@ -211,9 +218,11 @@ void AlohaMacComponent::txThreadFunction()
       // determine frame source and destination
       std::string source(localAddress_x);
       std::string destination(destinationAddress_x);
+#ifdef __unix__
       if (isEthernetDevice_x) {
         NetworkingHelper::getAddressFromEthernetFrame(frame, source, destination);
       }
+#endif
       bool isBroadcast = (destination == BROADCAST_ADDRESS ? true : false);
 
       boost::unique_lock<boost::mutex> lock(seqNoMutex_);
