@@ -7,8 +7,7 @@
     <component name="tuntap0" class="tuntap">
       <parameter name="device" value="tap0"/>
       <parameter name="readfrombelow" value="false"/>
-      <port name="bottominputport" class="io"/>
-      <port name="bottomoutputport" class="io"/>
+      <port name="bottomport1" class="io"/>
     </component>
 
     <component name="alohamac0" class="alohamac">
@@ -16,10 +15,8 @@
       <parameter name="destinationaddress" value="aabbcc111111"/>     
       <parameter name="acktimeout" value="300"/>
       <parameter name="maxretry" value="3"/>
-      <port name="topinputport" class="io"/>
-      <port name="topoutputport" class="io"/>
-      <port name="bottominputport" class="io"/>
-      <port name="bottomoutputport" class="io"/>
+      <port name="topport1" class="io"/>
+      <port name="bottomport1" class="io"/>
     </component>
 
   </engine>
@@ -66,13 +63,12 @@
 
   </engine>
 
-  <link source="alohamac0.topoutputport" sink="tuntap0.bottominputport" />
-  <link source="tuntap0.bottomoutputport" sink="alohamac0.topinputport" />  
+  <link source="tuntap0.bottomport1" sink="alohamac0.topport1" /> 
 
   <link source="usrprx1.output1" sink="ofdmdemod1.input1" />
-  <link source="ofdmdemod1.output1" sink="alohamac0.bottominputport" />   
+  <link source="ofdmdemod1.output1" sink="alohamac0.bottomport1" />   
 
-  <link source="alohamac0.bottomoutputport" sink="ofdmmod1.input1" />
+  <link source="alohamac0.bottomoport1" sink="ofdmmod1.input1" />
   <link source="ofdmmod1.output1" sink="signalscaler1.input1" />
   <link source="signalscaler1.output1" sink="usrptx1.input1" />
   

@@ -47,6 +47,7 @@
 #include "irisapi/Logging.h"
 #include "math/MathDefines.h"
 #include "math/Dsp.h"
+#include "utility/RawFileUtility.h"
 
 namespace iris
 {
@@ -70,10 +71,12 @@ public:
    */
   OfdmPreambleDetector(int symbolLen = 256,
                        int cyclicPrefixLen = 16,
-                       float threshold = 0.827)
+                       float threshold = 0.827,
+                       bool debug = false)
     :sLen_(symbolLen)
     ,cpLen_(cyclicPrefixLen)
     ,thresh_(threshold*cyclicPrefixLen)
+    ,debug_(debug)
     ,symbolBuffer_(symbolLen+cyclicPrefixLen)
     ,halfBuffer_(symbolLen/2, Cplx(0,0))
     ,eBuffer_(symbolLen, Cplx(0,0))
@@ -108,14 +111,15 @@ public:
 
   /// Reset the detector (keep current parameters).
   void reset()
-  {reset(sLen_,cpLen_,thresh_/cpLen_);}
+  {reset(sLen_,cpLen_,thresh_/cpLen_, debug_);}
 
   /// Reset the detector.
-  void reset(int symbolLen, int cyclicPrefixLen, float threshold)
+  void reset(int symbolLen, int cyclicPrefixLen, float threshold, bool debug=false)
   {
     sLen_ = symbolLen;
     cpLen_ = cyclicPrefixLen;
     thresh_ = threshold*cyclicPrefixLen;
+    debug_ = debug;
     symbolBuffer_.assign(sLen_+cpLen_, Cplx(0,0));
     halfBuffer_.assign(sLen_/2, Cplx(0,0));
     eBuffer_.assign(sLen_, Cplx(0,0));
@@ -144,6 +148,7 @@ private:
   float maxVal_, maxValThresh_; ///< Used for peak detection.
   int sLen_, cpLen_;            ///< Symbol length, CP length, extension length
   float thresh_;                ///< Detection threshold.
+  bool debug_;                  ///< Is debugging on?
 
 };
 
@@ -204,6 +209,10 @@ Iterator OfdmPreambleDetector::search(Iterator inBegin,
     if(vMovingAve_ > thresh_ && vMovingAve_ < lastVma_)
     {
       detected = true;
+
+      if(debug_)
+          RawFileUtility::write(vDebugBuffer_.begin(), vDebugBuffer_.end(),
+                                "OutputData/RxFrameDetectVArray");
 
       //We've detected the peak - copy the preamble into output vector
       if((preambleEnd-preambleBegin) < sLen_+cpLen_)

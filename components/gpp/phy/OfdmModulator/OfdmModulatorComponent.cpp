@@ -190,6 +190,10 @@ void OfdmModulatorComponent::setup()
                                 numGuardCarriers_x,
                                 preamble_.begin(), preamble_.end());
 
+  if(debug_x)
+    RawFileUtility::write(preamble_.begin(), preamble_.end(),
+                          "OutputData/TxPreamble");
+
   // Set up containers
   fftBins_ = reinterpret_cast<Cplx*>(
       fftwf_malloc(sizeof(fftwf_complex) * numBins_));
@@ -204,7 +208,6 @@ void OfdmModulatorComponent::setup()
   int bytesPerSymbol = numDataCarriers_x/8;
   numHeaderSymbols_ = (int)ceil(numHeaderBytes_/(float)bytesPerSymbol);
   header_.resize(numHeaderSymbols_*bytesPerSymbol);
-  //Whitener::whiten(header_.begin(), header_.end());
   modHeader_.resize(numHeaderSymbols_*numDataCarriers_x);
 
   // Set up padding
@@ -282,7 +285,7 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
 
   // Modulate and pad
   qMod_.modulate(header_.begin(), header_.end(),
-                 modHeader_.begin(), modHeader_.end(),1);
+                 modHeader_.begin(), modHeader_.end(), BPSK);
   modData_.resize(numOfdmSymbols*numDataCarriers_x);
   CplxVecIt modIt = qMod_.modulate(begin, end,
                                    modData_.begin(), modData_.end(),
