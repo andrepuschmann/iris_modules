@@ -20,11 +20,14 @@ Required:
 * Iris_Core
 
 Optional:
-* UHD - http://code.ettus.com/redmine/ettus/projects/uhd/wiki
-* FFTW
-* Google Protocol Buffers
-* Matlab
-* Python
+* Qt 4.8 - http://qt-project.org/ (For graphical widgets)
+* Qwt 6 - http://qwt.sourceforge.net/ (For graphical widgets)
+* UHD - http://code.ettus.com/redmine/ettus/projects/uhd/wiki (For using USRP hardware)
+* FFTW - http://www.fftw.org/ (For FFT transforms)
+* Liquid-DSP - https://github.com/jgaeddert/liquid-dsp (For some PHY components)
+* Google Protocol Buffers - https://developers.google.com/protocol-buffers/ (For some Stack components)
+* Python - http://www.python.org/ (For PythonPlotter widget)
+* Matlab (For MatlabTemplate PHY component, MatlabPlotter widget)
 
 ## Where To Get Help
 
@@ -35,4 +38,9 @@ Optional:
 ## License
 
 Iris is licensed under LGPL v3. For more information see LICENSE.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/7bc7ae4f73d901c2cb1590fbe0c49cd9 "githalytics.com")](http://githalytics.com/softwareradiosystems/iris_modules)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/softwareradiosystems/iris_modules/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

@@ -37,11 +37,11 @@
 #include "AlohaMacComponent.h"
 #include "utility/StackHelper.h"
 
+#ifdef __unix__
+#include "utility/NetworkingHelper.h"
+#endif
+
 using namespace std;
-using boost::mutex;
-using boost::condition_variable;
-using boost::shared_ptr;
-using boost::lock_guard;
 
 namespace iris
 {
@@ -59,15 +59,18 @@ AlohaMacComponent::AlohaMacComponent(std::string name)
                    "0.1")
   ,txSeqNo_(1)
   ,rxSeqNo_(0)
-  ,rxPktBuffer_(100)
-  ,txPktBuffer_(100)
+  ,rxPktBuffer_(10000)
+  ,txPktBuffer_(10000)
 {
   //Format: registerParameter(name, description, default, dynamic?, parameter, allowed values);
   registerParameter("localaddress", "Address of this client", "f009e090e90e", false, localAddress_x);
   registerParameter("destinationaddress", "Address of the destination client", "00f0f0f0f0f0", false, destinationAddress_x);
+#ifdef __unix__
+  registerParameter("isethdevice", "Whether to act as an Ethernet device", "false", false, isEthernetDevice_x);
+  registerParameter("ethdevicename", "Name of the Ethernet device", "false", "tap0", ethernetDeviceName_x);
+#endif
   registerParameter("acktimeout", "Time to wait for ACK packets in ms", "100", false, ackTimeout_x);
   registerParameter("maxretry", "Number of retransmissions", "100", false, maxRetry_x);
-
 }
 
 
@@ -78,7 +81,19 @@ AlohaMacComponent::~AlohaMacComponent()
 
 void AlohaMacComponent::initialize()
 {
-  maxRetry_x++; // first attempt does not count as retransmission
+    maxRetry_x++; // first attempt does not count as retransmission
+    // set local address according to user configuration
+#ifdef __unix__
+    if (isEthernetDevice_x) {
+        LOG(LINFO) << "Trying to retrieve MAC address from " << ethernetDeviceName_x << ".";
+        std::string backup(localAddress_x);
+        if ((NetworkingHelper::getLocalAddress(ethernetDeviceName_x, localAddress_x)) == false) {
+            LOG(LERROR) << "Failed! Using local address given by user.";
+            localAddress_x = backup;
+        }
+    }
+#endif
+    LOG(LINFO) << "Local address is: " << localAddress_x;
 }
 
 
@@ -111,22 +126,6 @@ void AlohaMacComponent::stop()
   txThread_->join();
 }
 
-
-void AlohaMacComponent::registerPorts()
-{
-  std::vector<int> types;
-  types.push_back( int(TypeInfo< uint8_t >::identifier) );
-
-  //The ports on top of the component
-  registerOutputPort("topoutputport",types);
-  registerInputPort("topinputport", types);
-
-  //The ports below the component
-  registerInputPort("bottominputport", types);
-  registerOutputPort("bottomoutputport", types);
-}
-
-
 void AlohaMacComponent::rxThreadFunction()
 {
   boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -138,12 +137,19 @@ void AlohaMacComponent::rxThreadFunction()
     {
       boost::this_thread::interruption_point();
 
-      shared_ptr<StackDataSet> frame = rxPktBuffer_.popDataSet();
+      boost::shared_ptr<StackDataSet> frame = rxPktBuffer_.popDataSet();
 
       AlohaPacket newPacket;
       StackHelper::deserializeAndStripDataset(frame, newPacket);
 
-      if (localAddress_x == newPacket.destination()) {
+      // handle broadcast frames first
+      if (newPacket.type() == AlohaPacket::BROADCAST) {
+          LOG(LINFO) << "Received broadcast packet from " << newPacket.source();
+          sendUpwards(frame);
+      }
+
+      // handle DATA and ACK only if they are for us
+      if (newPacket.destination() == localAddress_x) {
         switch(newPacket.type()) {
         case AlohaPacket::DATA:
         {
@@ -153,7 +159,7 @@ void AlohaMacComponent::rxThreadFunction()
           // check if packet contains new data
           if (newPacket.seqno() > rxSeqNo_ || newPacket.seqno() == 1) {
             // send new data packet up
-            sendDownwards("topoutputport", frame);
+            sendUpwards(frame);
             rxSeqNo_ = newPacket.seqno(); // update seqno
             if (newPacket.seqno() == 1) LOG(LINFO) << "Receiver restart detected.";
           }
@@ -203,42 +209,63 @@ void AlohaMacComponent::txThreadFunction()
     {
       boost::this_thread::interruption_point();
 
-      shared_ptr<StackDataSet> frame = txPktBuffer_.popDataSet();
+      boost::shared_ptr<StackDataSet> frame = txPktBuffer_.popDataSet();
+
+      // determine frame source and destination
+      std::string source(localAddress_x);
+      std::string destination(destinationAddress_x);
+#ifdef __unix__
+      if (isEthernetDevice_x) {
+        NetworkingHelper::getAddressFromEthernetFrame(frame, source, destination);
+      }
+#endif
+      bool isBroadcast = (destination == BROADCAST_ADDRESS ? true : false);
 
       boost::unique_lock<boost::mutex> lock(seqNoMutex_);
       AlohaPacket dataPacket;
-      dataPacket.set_source(localAddress_x);
-      dataPacket.set_destination(destinationAddress_x);
-      dataPacket.set_type(AlohaPacket::DATA);
-      dataPacket.set_seqno(txSeqNo_);
+      dataPacket.set_source(source);
+      dataPacket.set_destination(destination);
+      if (isBroadcast) {
+          dataPacket.set_type(AlohaPacket::BROADCAST);
+      } else {
+          dataPacket.set_type(AlohaPacket::DATA);
+          dataPacket.set_seqno(txSeqNo_);
+      }
       StackHelper::mergeAndSerializeDataset(frame, dataPacket);
 
-      bool stop_signal = false;
-      int txCounter = 1;
-      while (not stop_signal) {
-        // send packet to PHY
-        LOG(LINFO) << "Tx DATA  " << txSeqNo_;
-        sendDownwards(frame);
+      if (isBroadcast) {
+          // send to PHY and we are done
+          LOG(LINFO) << "Tx BROADCAST";
+          sendDownwards(frame);
+      } else {
+          bool stop_signal = false;
+          int txCounter = 1;
+          while (!stop_signal) {
+            // send packet to PHY
+            LOG(LINFO) << "Tx DATA  " << txSeqNo_;
+            sendDownwards(frame);
 
-        // wait for ACK
-        if (ackArrivedCond_.timed_wait(lock, boost::posix_time::milliseconds(ackTimeout_x)) == false) {
-          // returns false if timeout was reached
-          LOG(LINFO) << "ACK time out for " << txCounter << ". transmission of " << txSeqNo_;
-          // wait random time before trying again, here between ackTimeout and 2*ackTimeout
-          int collisionTimeout = rand() % ackTimeout_x;
-          collisionTimeout = std::min(ackTimeout_x + collisionTimeout, 2 * ackTimeout_x);
-          boost::this_thread::sleep(boost::posix_time::milliseconds(collisionTimeout));
-        } else {
-          // ACK received before timeout
-          stop_signal = true;
-        }
+            // wait for ACK
+            if (ackArrivedCond_.timed_wait(lock, boost::posix_time::milliseconds(ackTimeout_x)) == false) {
+              // returns false if timeout was reached
+              LOG(LINFO) << "ACK time out for " << txCounter << ". transmission of " << txSeqNo_;
+              // wait random time before trying again, here between ackTimeout and 2*ackTimeout
+              int collisionTimeout = rand() % ackTimeout_x;
+              collisionTimeout = std::min(ackTimeout_x + collisionTimeout, 2 * ackTimeout_x);
+              boost::this_thread::sleep(boost::posix_time::milliseconds(collisionTimeout));
+            } else {
+              // ACK received before timeout
+              stop_signal = true;
+            }
 
-        if (++txCounter > maxRetry_x) stop_signal = true;
+            if (++txCounter > maxRetry_x) stop_signal = true;
+          }
+
+          // increment seqno for next data packet
+          txSeqNo_++;
+          if (txSeqNo_ == std::numeric_limits<uint32_t>::max()) txSeqNo_ = 1;
       }
 
-      // increment seqno for next data packet and release lock
-      txSeqNo_++;
-      if (txSeqNo_ == std::numeric_limits<uint32_t>::max()) txSeqNo_ = 1;
       lock.unlock();
     }
   }
@@ -261,11 +288,11 @@ void AlohaMacComponent::sendAckPacket(const string destination, uint32_t seqno)
   ackPacket.set_type(AlohaPacket::ACK);
   ackPacket.set_seqno(seqno);
 
-  shared_ptr<StackDataSet> buffer(new StackDataSet);
+  boost::shared_ptr<StackDataSet> buffer(new StackDataSet);
   StackHelper::mergeAndSerializeDataset(buffer, ackPacket);
   //StackHelper::printDataset(buffer, "ACK Tx");
 
-  sendDownwards("bottomoutputport", buffer);
+  sendDownwards(buffer);
   LOG(LINFO) << "Tx  ACK  " << seqno;
 }
 

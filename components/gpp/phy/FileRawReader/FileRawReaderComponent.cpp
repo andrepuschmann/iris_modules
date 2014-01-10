@@ -106,7 +106,7 @@ FileRawReaderComponent::FileRawReaderComponent(string name)
                     endian_x);
   registerParameter("delay",
                     "Delay in us between reads",
-                    "100000",
+                    "0",
                     true,
                     delay_x,
                     Interval<uint32_t>(0,5000000));

@@ -16,10 +16,8 @@
             <parameter name="destinationaddress" value="aabbcc111111"/>
             <parameter name="acktimeout" value="10"/>
             <parameter name="maxretry" value="3"/>
-            <port name="topinputport" class="io"/>
-            <port name="topoutputport" class="io"/>
-            <port name="bottominputport" class="io"/>
-            <port name="bottomoutputport" class="io"/>
+            <port name="topport1" class="io"/>
+            <port name="bottomport1" class="io"/>
         </component>
 
     </engine>
@@ -44,8 +42,8 @@
         
     </engine>
 
-    <link source="alohamac0.topoutputport" sink="filewriter0.input1" />
-    <link source="alohamac0.bottomoutputport" sink="clientsocketout0.input1" />
-    <link source="clientsocketin0.output1" sink="alohamac0.bottominputport" />
+    <link source="filewriter0.bottomport1" sink="alohamac0.topport1" />
+    <link source="alohamac0.bottomport1" sink="clientsocketout0.input1" />
+    <link source="clientsocketin0.output1" sink="alohamac0.bottomport1" />
     
 </softwareradio>

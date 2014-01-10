@@ -25,12 +25,12 @@ message AlohaPacket {
   enum PacketType {
     DATA = 0;
     ACK = 1;
-    UNKNOWN = 2;
+    BROADCAST = 2;
   }
 
   required string source = 1;
   required string destination = 2;
   required PacketType type = 3;
-  required uint32 seqno = 4;
+  optional uint32 seqno = 4;
   repeated bytes payload = 5;
 }
