@@ -154,7 +154,8 @@ void AlohaMacComponent::rxThreadFunction()
         case AlohaPacket::DATA:
         {
           LOG(LINFO) << "Got DATA " << newPacket.seqno() << " from " << newPacket.source();
-          sendAckPacket(newPacket.source(), newPacket.seqno());
+          if (ackTimeout_x > 0)
+            sendAckPacket(newPacket.source(), newPacket.seqno());
 
           // check if packet contains new data
           if (newPacket.seqno() > rxSeqNo_ || newPacket.seqno() == 1) {
@@ -246,7 +247,7 @@ void AlohaMacComponent::txThreadFunction()
             sendDownwards(frame);
 
             // wait for ACK
-            if (ackArrivedCond_.timed_wait(lock, boost::posix_time::milliseconds(ackTimeout_x)) == false) {
+            if (ackTimeout_x > 0 && ackArrivedCond_.timed_wait(lock, boost::posix_time::milliseconds(ackTimeout_x)) == false) {
               // returns false if timeout was reached
               LOG(LINFO) << "ACK time out for " << txCounter << ". transmission of " << txSeqNo_;
               // wait random time before trying again, here between ackTimeout and 2*ackTimeout
@@ -254,7 +255,7 @@ void AlohaMacComponent::txThreadFunction()
               collisionTimeout = std::min(ackTimeout_x + collisionTimeout, 2 * ackTimeout_x);
               boost::this_thread::sleep(boost::posix_time::milliseconds(collisionTimeout));
             } else {
-              // ACK received before timeout
+              // Running without ACK or ACK received before timeout
               stop_signal = true;
             }
 
