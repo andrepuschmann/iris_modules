@@ -277,6 +277,8 @@ void UsrpTxComponent::initialize()
                                          sensor_names.end(),
                                          "mimo_locked") != sensor_names.end()))
     {
+      // in MIMO mode, you wan't to have synced times too
+      usrp_->set_time_source("mimo");
       uhd::sensor_value_t mimo_locked = usrp_->get_mboard_sensor("mimo_locked",0);
       LOG(LINFO) << "Checking TX: " << mimo_locked.to_pp_string() << " ...";
       if(!mimo_locked.to_bool())
