@@ -175,6 +175,18 @@ MACRO(IRIS_SET_PIC)
 ENDMACRO(IRIS_SET_PIC)
 
 ########################################################################
+# Set up compiler flags for producing vectorized code if possible
+########################################################################
+IF(IRIS_EXPERIMENTAL_VECTORIZATION)
+  IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+    MESSAGE(STATUS "Using experimental compiler flags.")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -pipe -march=native -mtune=native -ffast-math -funsafe-math-optimizations -frename-registers -funroll-loops -ftree-vectorize -ftree-vectorizer-verbose=1 -Wall" )
+  ELSE()
+    MESSAGE(STATUS "Vectorization only supported on x86_64 architecture. Using default flags.")
+  ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+ENDIF()
+
+########################################################################
 # Add the subdirectories
 ########################################################################
 # Recurse into the subdirectories. This does not actually
