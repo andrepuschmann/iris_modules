@@ -176,8 +176,8 @@ void LiquidOfdmDemodComponent::callback(unsigned char * _header,
         if (_header_valid && _payload_valid) {
             DataSet< uint8_t>* out;
             getOutputDataSet("output1", out, _payload_len);
-            out->sampleRate = sampleRate_;
-            out->timeStamp = timeStamp_;
+            out->metadata.setMetadata("sampleRate", sampleRate_);
+            out->metadata.setMetadata("timeStamp", timeStamp_);
             std::copy(_payload, _payload + _payload_len, out->data.begin());
             releaseOutputDataSet("output1", out);
         }
@@ -193,8 +193,8 @@ void LiquidOfdmDemodComponent::process()
 {
     DataSet< std::complex<float> >* in = NULL;
     getInputDataSet("input1", in);
-    timeStamp_ = in->timeStamp;
-    sampleRate_ = in->sampleRate;
+    in->metadata.getMetadata("timeStamp", timeStamp_);
+    in->metadata.getMetadata("sampleRate", sampleRate_);
     ofdmflexframesync_execute(frameSyncronizer_, &in->data[0], in->data.size());
     releaseInputDataSet("input1", in);
 }

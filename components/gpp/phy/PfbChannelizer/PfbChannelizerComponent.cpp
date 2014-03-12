@@ -132,8 +132,12 @@ void PfbChannelizerComponent::process()
     ss << "output";
     ss << i;
     getOutputDataSet(ss.str(), outSets[i], numRuns);
-    outSets[i]->sampleRate = readDataSet->sampleRate/(double)nChans_x;
-    outSets[i]->timeStamp = readDataSet->timeStamp;
+
+    double tmp;
+    readDataSet->metadata.getMetadata("sampleRate", tmp);
+    outSets[i]->metadata.setMetadata("sampleRate", tmp/(double)nChans_x);
+    readDataSet->metadata.getMetadata("timeStamp", tmp);
+    outSets[i]->metadata.setMetadata("timeStamp", tmp);
   }
 
   // mix signal down

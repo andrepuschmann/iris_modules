@@ -101,8 +101,7 @@ void ExampleComponent::process()
   copy(readDataSet->data.begin(), readDataSet->data.end(), writeDataSet->data.begin());
 
   //Copy the timestamp and sample rate for the DataSets
-  writeDataSet->timeStamp = readDataSet->timeStamp;
-  writeDataSet->sampleRate = readDataSet->sampleRate;
+  writeDataSet->metadata = readDataSet->metadata;
 
   //Release the DataSets
   releaseInputDataSet("input1", readDataSet);

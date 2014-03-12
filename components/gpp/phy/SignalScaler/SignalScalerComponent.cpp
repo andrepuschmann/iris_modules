@@ -98,7 +98,9 @@ void SignalScalerComponent::process()
   size_t size = readDataSet->data.size();
   getOutputDataSet("output1", writeDataSet, size);
 
-  writeDataSet->timeStamp = readDataSet->timeStamp;
+  double tmp;
+  readDataSet->metadata.getMetadata("timeStamp", tmp);
+  writeDataSet->metadata.setMetadata("timeStamp", tmp);
 
   if (factor_x == 0)
   {

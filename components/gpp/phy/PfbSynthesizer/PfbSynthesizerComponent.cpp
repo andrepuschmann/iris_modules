@@ -130,8 +130,12 @@ void PfbSynthesizerComponent::process()
   //Get output DataSet
   DataSet< complex<float> >* writeDataSet = NULL;
   getOutputDataSet("output1", writeDataSet, curSize*nChans_x);
-  writeDataSet->sampleRate = inSets[0]->sampleRate*nChans_x;
-  writeDataSet->timeStamp = inSets[0]->timeStamp;
+
+  double tmp;
+  inSets[0]->metadata.getMetadata("sampleRate", tmp);
+  writeDataSet->metadata.setMetadata("sampleRate", tmp*nChans_x);
+  inSets[0]->metadata.getMetadata("timeStamp", tmp);
+  writeDataSet->metadata.setMetadata("timeStamp", tmp);
 
   // Execute the synthesizer
   for(int i=0;i<curSize;i++)
