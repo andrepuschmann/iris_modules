@@ -257,6 +257,14 @@ void UsrpRxComponent::initialize()
     }
     if ((ref_x == "external") and (std::find(sensor_names.begin(), sensor_names.end(), "ref_locked") != sensor_names.end()))
     {
+      usrp_->set_time_source(ref_x);
+      const uhd::time_spec_t last_pps_time = usrp_->get_time_last_pps();
+      while (last_pps_time == usrp_->get_time_last_pps()){
+        LOG(LDEBUG) << "Waiting for PPS signal ..";
+        boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      }
+      usrp_->set_time_next_pps(uhd::time_spec_t(0.0));
+      LOG(LINFO) << "Device time synchronized using external reference/PPS signal.";
       uhd::sensor_value_t ref_locked = usrp_->get_mboard_sensor("ref_locked",0);
       LOG(LINFO) << "Checking RX: " << ref_locked.to_pp_string() <<  " ...";
       if(!ref_locked.to_bool())
