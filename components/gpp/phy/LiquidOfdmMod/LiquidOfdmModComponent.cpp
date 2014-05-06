@@ -209,7 +209,7 @@ void LiquidOfdmModComponent::process()
         bytesWritten += symbolSize;
     }
 
-    out->timeStamp = in->timeStamp; // copy meta data of the frame
+    out->metadata = in->metadata; // copy meta data of the frame
 
     releaseInputDataSet("input1", in);
     releaseOutputDataSet("output1", out);

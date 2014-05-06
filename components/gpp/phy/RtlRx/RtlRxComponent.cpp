@@ -327,8 +327,8 @@ void RtlRxComponent::initialize()
   double rate = rtlsdr_get_sample_rate(rtl_dev);
   currentTimestamp_d = currentTimestamp_d + outputBlockSize_x/rate;
 
-  writeDataSet->sampleRate = rate;
-  writeDataSet->timeStamp = currentTimestamp_d;
+  writeDataSet->metadata.setMetadata("sampleRate", rate);
+  writeDataSet->metadata.setMetadata("timeStamp", currentTimestamp_d);
 
   //Release the DataSet
   releaseOutputDataSet("output1", writeDataSet);

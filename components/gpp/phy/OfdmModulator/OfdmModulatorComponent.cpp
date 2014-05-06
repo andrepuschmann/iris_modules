@@ -130,8 +130,8 @@ void OfdmModulatorComponent::process()
 {
   DataSet< uint8_t >* in = NULL;
   getInputDataSet("input1", in);
-  timeStamp_ = in->timeStamp;
-  sampleRate_ = in->sampleRate;
+  in->metadata.getMetadata("timeStamp", timeStamp_);
+  in->metadata.getMetadata("sampleRate", sampleRate_);
   int size = (int)in->data.size();
   int numSymbols = ceil(size/(float)bytesPerSymbol_);
 
@@ -298,8 +298,8 @@ void OfdmModulatorComponent::createFrame(ByteVecIt begin, ByteVecIt end)
   int frameLength = (1+numHeaderSymbols_+numOfdmSymbols+1) * (ofdmSymLength);
   DataSet< complex<float> >* out = NULL;
   getOutputDataSet("output1", out, frameLength);
-  out->sampleRate = sampleRate_;
-  out->timeStamp = timeStamp_;
+  out->metadata.setMetadata("sampleRate", sampleRate_);
+  out->metadata.setMetadata("timeStamp", timeStamp_);
   CplxVecIt it = out->data.begin();
 
   // Copy preamble

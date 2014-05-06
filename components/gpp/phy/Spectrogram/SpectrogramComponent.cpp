@@ -145,8 +145,7 @@ void SpectrogramComponent::process()
     DataSet< complex<float> >* writeDataSet = NULL;
     getOutputDataSet("output1", writeDataSet, size);
     writeDataSet->data = readDataSet->data;
-    writeDataSet->sampleRate = readDataSet->sampleRate;
-    writeDataSet->timeStamp = readDataSet->timeStamp;
+    writeDataSet->metadata = readDataSet->metadata;
     releaseOutputDataSet("output1", writeDataSet);
   }
 

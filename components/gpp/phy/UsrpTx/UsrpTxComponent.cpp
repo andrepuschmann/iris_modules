@@ -307,10 +307,13 @@ void UsrpTxComponent::process()
   }else{
     md.end_of_burst = true;
   }
-  if(readDataSet->timeStamp > 0)
+
+  double tmp;
+  readDataSet->metadata.getMetadata("timeStamp", tmp);
+  if(tmp > 0)
   {
     md.has_time_spec = true;
-    md.time_spec = uhd::time_spec_t(readDataSet->timeStamp);
+    md.time_spec = uhd::time_spec_t(tmp);
   }
 
   //Send the data

@@ -353,8 +353,8 @@ void UsrpRxComponent::process()
   {
     currentTimestamp_ = currentTimestamp_ + time_spec_t(0, num_rx_samps, rate);
   }
-  writeDataSet->sampleRate = rate;
-  writeDataSet->timeStamp = currentTimestamp_.get_real_secs();
+  writeDataSet->metadata.setMetadata("sampleRate", rate);
+  writeDataSet->metadata.setMetadata("timeStamp", currentTimestamp_.get_real_secs());
 
   gotFirstPacket_ = true;
 

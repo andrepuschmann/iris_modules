@@ -138,8 +138,8 @@ void OfdmDemodulatorComponent::initialize()
 void OfdmDemodulatorComponent::process()
 {
   getInputDataSet("input1", in_);
-  timeStamp_ = in_->timeStamp;
-  sampleRate_ = in_->sampleRate;
+  in_->metadata.getMetadata("timeStamp", timeStamp_);
+  in_->metadata.getMetadata("sampleRate", sampleRate_);
   CplxVecIt begin = in_->data.begin();
   CplxVecIt end = in_->data.end();
 
@@ -405,8 +405,8 @@ void OfdmDemodulatorComponent::demodFrame()
 
   DataSet< uint8_t>* out;
   getOutputDataSet("output1", out, rxNumBytes_);
-  out->sampleRate = sampleRate_;
-  out->timeStamp = timeStamp_;
+  out->metadata.setMetadata("sampleRate", sampleRate_);
+  out->metadata.setMetadata("timeStamp", timeStamp_);
   copy(outIt, outIt+rxNumBytes_, out->data.begin());
   releaseOutputDataSet("output1", out);
 
