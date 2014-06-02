@@ -74,6 +74,7 @@ LiquidOfdmDemodComponent::LiquidOfdmDemodComponent(string name):
     ,frameSyncronizer_(0)
     ,totalFrames_(0)
     ,errorFrames_(0)
+    ,size_(0)
     ,timeStamp_(0)
     ,sampleRate_(0)
 {
@@ -176,8 +177,11 @@ void LiquidOfdmDemodComponent::callback(unsigned char * _header,
         if (_header_valid && _payload_valid) {
             DataSet< uint8_t>* out;
             getOutputDataSet("output1", out, _payload_len);
+            // FIXME: frame start doesn't account for chunks of frames
+            unsigned int numSamples = (noSubcarriers_x + cyclicPrefixLength_x) * _stats.num_framesyms;
+            double frameStart = timeStamp_ + (size_ / sampleRate_) - (numSamples / sampleRate_);
             out->metadata.setMetadata("sampleRate", sampleRate_);
-            out->metadata.setMetadata("timeStamp", timeStamp_);
+            out->metadata.setMetadata("timeStamp", frameStart);
             std::copy(_payload, _payload + _payload_len, out->data.begin());
             releaseOutputDataSet("output1", out);
         }
@@ -195,6 +199,7 @@ void LiquidOfdmDemodComponent::process()
     getInputDataSet("input1", in);
     in->metadata.getMetadata("timeStamp", timeStamp_);
     in->metadata.getMetadata("sampleRate", sampleRate_);
+    size_ = in->data.size();
     ofdmflexframesync_execute(frameSyncronizer_, &in->data[0], in->data.size());
     releaseInputDataSet("input1", in);
 }

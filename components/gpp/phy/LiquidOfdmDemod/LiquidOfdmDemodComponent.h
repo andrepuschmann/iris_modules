@@ -57,6 +57,7 @@ private:
     ofdmflexframesync frameSyncronizer_;
     uint32_t totalFrames_;
     uint32_t errorFrames_;
+    uint32_t size_;
     double timeStamp_;
     double sampleRate_;
 
