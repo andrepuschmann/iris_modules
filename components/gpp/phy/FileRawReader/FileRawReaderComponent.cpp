@@ -54,7 +54,8 @@ FileRawReaderComponent::FileRawReaderComponent(string name)
                 "FileRawReader",
                 "A filereader",
                 "Paul Sutton",
-                "0.2")
+                "0.2"),
+    readCounter_x(0)
 {
   list<string> allowedTypes;
   allowedTypes.push_back(TypeInfo< uint8_t >::name());
@@ -272,6 +273,8 @@ void FileRawReaderComponent::readBlock()
                 writeDataSet->data.begin(), big2sys<T> );
   }
 
+  writeDataSet->metadata.setMetadata("timeStamp", readCounter_x++);
+  writeDataSet->metadata.setMetadata("sampleRate", double(1000000));
   outBuf->releaseWriteData(writeDataSet);
 }
 
