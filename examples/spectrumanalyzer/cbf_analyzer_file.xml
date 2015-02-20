@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<softwareradio name="Radio1">
+
+  <engine name="phyengine1" class="phyengine">
+
+    <component name="filerawreader1" class="filerawreader">
+      <parameter name="filename" value="testcapture.bin"/>
+      <parameter name="blocksize" value="512"/>
+      <parameter name="datatype" value="complex<float>"/>
+      <port name="output1" class="output"/>
+    </component>
+
+    <component name="energydetector1" class="energydetector">
+      <parameter name="debug" value="false"/>
+      <parameter name="isprobe" value="true"/>
+      <parameter name="issink" value="false"/>
+      <port name="input1" class="input"/>
+      <port name="output1" class="output"/>
+    </component>    
+    
+    <component name="cbfestimator1" class="cbfestimator">
+      <parameter name="isprobe" value="true"/>
+      <parameter name="issink" value="true"/>
+      <parameter name="threshold" value="-70"/>
+      <parameter name="window" value="1000"/>
+      <port name="input1" class="input"/>
+      <port name="output1" class="output"/>
+    </component>    
+
+  </engine>
+
+  <link source="filerawreader1.output1" sink="energydetector1.input1" />
+  <link source="energydetector1.output1" sink="cbfestimator1.input1" />
+
+</softwareradio>
