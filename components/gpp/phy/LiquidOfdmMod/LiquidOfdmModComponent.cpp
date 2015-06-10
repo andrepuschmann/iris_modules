@@ -196,6 +196,9 @@ void LiquidOfdmModComponent::process()
     unsigned int symbolSize = noSubcarriers_x + cyclicPrefixLength_x;
     unsigned int frameSize = symbols * symbolSize;
 
+    if (debug_x)
+        ofdmflexframegen_print(frameGenerator_);
+
     //Allocate memory for single symbol and whole frame
     DataSet< complex<float> >* out = NULL;
     getOutputDataSet("output1", out, frameSize);

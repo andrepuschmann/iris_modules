@@ -83,7 +83,7 @@ class SpectrogramComponent
   bool isProbe_x;         ///< Act as a probe? (Provide PSD estimates via events).
   bool isSink_x;          ///< Act as a sink? (Has no output).
 
-  spgram sp_;       ///< Our spectrogram struct
+  spgramcf sp_;       ///< Our spectrogram struct
   CplxVec window_;
   CplxVec spec_;
   FloatVec psd_;

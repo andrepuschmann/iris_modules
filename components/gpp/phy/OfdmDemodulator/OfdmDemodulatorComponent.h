@@ -50,6 +50,7 @@
 #define PHY_OFDMDEMODULATORCOMPONENT_H_
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "fftw3.h"
 
 #include "irisapi/PhyComponent.h"
@@ -116,7 +117,7 @@ private:
   struct opAbs{float operator()(Cplx i) const{return abs(i);};};
 
   bool debug_x;               ///< Debug flag
-  int reportRate_x;           ///< Report performance every reportRate_x frames
+  int reportRate_x;           ///< Report performance every reportRate_x seconds
   int numDataCarriers_x;      ///< Data subcarriers (default = 192)
   int numPilotCarriers_x;     ///< Pilot subcarriers (default = 8)
   int numGuardCarriers_x;     ///< Guard subcarriers (default = 55)
@@ -165,6 +166,8 @@ private:
   ToneGenerator toneGenerator_;         ///< Our tone generator.
   QamDemodulator qDemod_;               ///< Our QAM demodulator.
   OfdmPreambleGenerator preambleGen_;   ///< Our preamble generator.
+
+  boost::posix_time::ptime start_; ///< Timestamp used for frame error rate reports
 
   template <typename T, size_t N>
   static T* begin(T(&arr)[N]) { return &arr[0]; }

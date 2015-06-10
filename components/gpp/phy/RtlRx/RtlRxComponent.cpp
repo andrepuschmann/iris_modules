@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -181,6 +181,7 @@ void RtlRxComponent::initialize()
       rtlsdr_set_center_freq(rtl_dev, (uint32_t)frequency_x);
       rtlsdr_set_freq_correction( rtl_dev, (int)frequency_correction_x );
       LOG(LINFO) << "Actual RX Frequency: " << (rtlsdr_get_center_freq(rtl_dev)/1e6) << "MHz...";
+      LOG(LINFO) << "Actual RX Frequency correction: " << (rtlsdr_get_freq_correction(rtl_dev)) << "ppm...";
 
       //Set gain mode
       LOG(LINFO) << "Setting Gain mode to " << ((gain_x)? "Manual" : "Automatic" );
@@ -439,7 +440,7 @@ void RtlRxComponent::rtlsdrCallbackHelp(unsigned char *buf, uint32_t len)
   //LOG(LINFO) << "Log: Read Success";
   buf_cond_d.notify_one();
 }
-    
+
 /*! The read function that waits for the device to output samples
  *
  *	Uses a helper function
@@ -448,7 +449,7 @@ void RtlRxComponent::rtlsdrWait(RtlRxComponent *obj)
 {
   obj->rtlsdrWaitHelp();
 }
-    
+
 void RtlRxComponent::rtlsdrWaitHelp()
 {
   // Function will block until cancelled using rtlsdr_cancel_async()
@@ -459,7 +460,7 @@ void RtlRxComponent::rtlsdrWaitHelp()
   if ( ret != 0 )
     LOG(LERROR) << "RHD read asynchronous function returned with " << ret;
 }
-    
+
 /*! Function that deals with finding the valid gain ranges of the Rtl device
  *
  *	Function taken from gr-osmosdr block

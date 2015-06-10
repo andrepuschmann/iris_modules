@@ -47,6 +47,7 @@
 
 using namespace std;
 using namespace boost::lambda;
+using namespace boost::posix_time;
 
 namespace iris
 {
@@ -83,8 +84,8 @@ OfdmDemodulatorComponent::OfdmDemodulatorComponent(std::string name)
     "false", true, debug_x);
 
   registerParameter(
-    "reportrate", "Report performance stats every reportrate frames.",
-    "1000", true, reportRate_x);
+    "reportrate", "Report performance stats every reportrate seconds.",
+    "1", true, reportRate_x);
 
   registerParameter(
     "numdatacarriers", "Number of data carriers (excluding pilots)",
@@ -165,12 +166,14 @@ void OfdmDemodulatorComponent::process()
 
   releaseInputDataSet("input1", in_);
 
-  if(numRxFrames_ >= reportRate_x)
+  ptime t = microsec_clock::local_time();
+  if(t-start_ > seconds(reportRate_x))
   {
     float successRate = 1-((float)numRxFails_/numRxFrames_);
-    LOG(LINFO) << "Frame succcess rate: " << successRate*100 << "%";
+    LOG(LINFO) << numRxFrames_ << " rx frames. Succcess rate: " << successRate*100 << "%";
     numRxFrames_ = 0;
     numRxFails_ = 0;
+    start_ = t;
   }
 }
 
@@ -252,6 +255,8 @@ void OfdmDemodulatorComponent::setup()
   equalizer_.resize(numBins_);
 
   detector_.reset(numBins_,cyclicPrefixLength_x,threshold_x, debug_x);
+
+  start_ = microsec_clock::local_time();
 }
 
 void OfdmDemodulatorComponent::destroy()
