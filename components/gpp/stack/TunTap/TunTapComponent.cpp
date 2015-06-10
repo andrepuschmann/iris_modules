@@ -127,7 +127,7 @@ void TunTapComponent::start()
 
   // Connect to the device
   strcpy(tunName_, tunTapDevice_x.c_str());
-  int flags = strstr(tunName_, "tap") == NULL ? IFF_TUN : IFF_TAP | IFF_NO_PI;
+  int flags = strstr(tunName_, "tap") == NULL ? IFF_TUN | IFF_NO_PI : IFF_TAP | IFF_NO_PI;
   if ((tunFd_ = allocateTunDevice(tunName_, flags)) >= 0)
   {
     LOG(LINFO) << "Successfully attached to tun/tap device "
