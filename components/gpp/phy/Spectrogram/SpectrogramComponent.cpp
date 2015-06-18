@@ -80,7 +80,7 @@ SpectrogramComponent::SpectrogramComponent(std::string name)
 SpectrogramComponent::~SpectrogramComponent()
 {
   if(sp_)
-    spgram_destroy(sp_);
+    spgramcf_destroy(sp_);
 }
 
 void SpectrogramComponent::registerPorts()
@@ -120,7 +120,7 @@ void SpectrogramComponent::initialize()
   window_.reserve(windowLength_x);
   spec_.resize(nFft_x);
   psd_.resize(nFft_x);
-  sp_ = spgram_create_kaiser(nFft_x, windowLength_x, beta_x);
+  sp_ = spgramcf_create_kaiser(nFft_x, windowLength_x, beta_x);
 }
 
 void SpectrogramComponent::process()
@@ -156,8 +156,8 @@ void SpectrogramComponent::process()
 void SpectrogramComponent::processWindow()
 {
   //Calculate spectrogram, fftshift and accumulate
-  spgram_push(sp_, &window_[0], windowLength_x);
-  spgram_execute(sp_, &spec_[0]);
+  spgramcf_write(sp_, &window_[0], windowLength_x);
+  spgramcf_execute(sp_, &spec_[0]);
   for(int i=0;i<nFft_x;i++)
   {
     Cplx c = spec_[(i+nFft_x/2)%nFft_x];
