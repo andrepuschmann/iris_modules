@@ -52,6 +52,7 @@ private:
     unsigned int cyclicPrefixLength_x;
     unsigned int taperLength_x;
     bool debug_x;
+    bool hasScatterEvent_x;
 
     //local variables
     ofdmflexframesync frameSyncronizer_;

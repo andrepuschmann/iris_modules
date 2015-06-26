@@ -89,6 +89,12 @@ LiquidOfdmDemodComponent::LiquidOfdmDemodComponent(string name):
 
     registerParameter("taperlength", "Taper length",
         "4", true, taperLength_x);
+
+    registerParameter("hasscatterevent", "Ttrigger scatterevent after receiving a frame", "false",
+        false, hasScatterEvent_x);
+
+    registerEvent("scatterevent", "An event providing all symbols of a received frame",
+        TypeInfo< complex<float> >::identifier);
 }
 
 
@@ -170,6 +176,12 @@ void LiquidOfdmDemodComponent::callback(unsigned char * _header,
                         << " dB, cfo = " << _stats.cfo;
             LOG(LDEBUG) << "Header: " << (_header_valid ? "valid" : "INVALID")
                         << ", Payload: " << (_payload_valid ? "valid" : "INVALID");
+        }
+
+        if (hasScatterEvent_x && _stats.num_framesyms) {
+            std::vector< std::complex<float> > data(_stats.num_framesyms);
+            memcpy(&data[0], _stats.framesyms, data.size() * sizeof(std::complex<float>));
+            activateEvent("scatterevent", data);
         }
 
         // create output data set if frame was received successfully
