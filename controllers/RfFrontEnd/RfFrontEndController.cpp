@@ -64,9 +64,9 @@ RfFrontEndController::RfFrontEndController()
   registerParameter("stepbandwidth", "Bandwidth step size", "250000",
       false, stepBandwidth_x);
   registerParameter("mingain", "Minimum gain", "0",
-      false, minGain_x, Interval<double>(0,20));
+      false, minGain_x, Interval<double>(0,35));
   registerParameter("maxgain", "Maximum gain", "20",
-      false, maxGain_x, Interval<double>(0,20));
+      false, maxGain_x, Interval<double>(0,35));
   registerParameter("stepgain", "Gain step size", "1",
       false, stepGain_x);
   registerParameter("frontend", "Name of front end component",
