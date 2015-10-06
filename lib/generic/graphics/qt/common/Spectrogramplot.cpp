@@ -42,6 +42,7 @@
 #include <qwt_plot_layout.h>
 #include <qwt_plot_renderer.h>
 #include <qwt_matrix_raster_data.h>
+#include <qwt_plot_canvas.h>
 #include "Spectrogramplot.h"
 
 class MyZoomer: public QwtPlotZoomer
@@ -116,7 +117,7 @@ Spectrogramplot::Spectrogramplot(int numDataPoints, int numRows, QWidget *parent
   // RightButton: zoom out by 1
   // Ctrl+RighButton: zoom out to full size
 
-  zoomer_ = new MyZoomer(canvas());
+  zoomer_ = new MyZoomer(qobject_cast<QwtPlotCanvas*>(canvas()));
   zoomer_->setMousePattern(QwtEventPattern::MouseSelect1,
       Qt::LeftButton);
   zoomer_->setMousePattern(QwtEventPattern::MouseSelect2,
