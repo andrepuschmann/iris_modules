@@ -15,7 +15,8 @@ KnobSpin::KnobSpin(const QString &title, double min, double max, double step, QW
 
   knob_ = new QwtKnob(this);
   knob_->setFont(font);
-  knob_->setRange(min, max);
+  knob_->setScale(min, max);
+
   QwtScaleDiv scaleDiv =
       knob_->scaleEngine()->divideScale(min, max, 5, 3);
   QList<double> ticks = scaleDiv.ticks(QwtScaleDiv::MajorTick);
@@ -30,7 +31,7 @@ KnobSpin::KnobSpin(const QString &title, double min, double max, double step, QW
   knob_->setScale(scaleDiv);
 
   knob_->setKnobWidth(150);
-  knob_->setStep(step);
+  knob_->setScaleStepSize(step);
 
   spin_ = new QDoubleSpinBox(this);
   spin_->setRange(min, max);
