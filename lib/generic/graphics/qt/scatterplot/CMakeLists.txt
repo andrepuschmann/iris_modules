@@ -16,7 +16,7 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
   QT4_WRAP_CPP(MOCSrcs ScatterWidget.h ScatterplotWrapper.h)
-  ADD_LIBRARY(scatterplot ScatterWidget.cpp ScatterplotWrapper.cpp Scatterplot.cpp ${MOCSrcs})
+  ADD_LIBRARY(scatterplot STATIC ScatterWidget.cpp ScatterplotWrapper.cpp Scatterplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(scatterplot ${QT_LIBRARIES} ${QWT_LIBRARIES} pointplot)
   IRIS_SET_PIC(scatterplot)
   SET(IRIS_HAVE_SCATTERPLOT ON CACHE INTERNAL "Has Scatterplot been built?")

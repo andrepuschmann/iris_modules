@@ -16,7 +16,7 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
   QT4_WRAP_CPP(MOCSrcs RealWidget.h RealplotWrapper.h)
-  ADD_LIBRARY(realplot RealWidget.cpp RealplotWrapper.cpp Realplot.cpp ${MOCSrcs})
+  ADD_LIBRARY(realplot STATIC RealWidget.cpp RealplotWrapper.cpp Realplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(realplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)
   IRIS_SET_PIC(realplot)
   SET(IRIS_HAVE_REALPLOT ON CACHE INTERNAL "Has Realplot been built?")

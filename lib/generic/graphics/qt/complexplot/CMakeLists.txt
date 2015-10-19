@@ -16,7 +16,7 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
   QT4_WRAP_CPP(MOCSrcs ComplexWidget.h ComplexplotWrapper.h)
-  ADD_LIBRARY(complexplot ComplexWidget.cpp ComplexplotWrapper.cpp Complexplot.cpp ${MOCSrcs})
+  ADD_LIBRARY(complexplot STATIC ComplexWidget.cpp ComplexplotWrapper.cpp Complexplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(complexplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot)
   IRIS_SET_PIC(complexplot)
   SET(IRIS_HAVE_COMPLEXPLOT ON CACHE INTERNAL "Has Complexplot been built?")
