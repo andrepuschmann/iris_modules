@@ -16,7 +16,7 @@ ENDIF(QT4_FOUND AND QWT_FOUND)
 ########################################################################
 IF(QT4_FOUND AND QWT_FOUND)
   QT4_WRAP_CPP(MOCSrcs WaterfallWidget.h WaterfallplotWrapper.h)
-  ADD_LIBRARY(waterfallplot WaterfallWidget.cpp WaterfallplotWrapper.cpp Waterfallplot.cpp ${MOCSrcs})
+  ADD_LIBRARY(waterfallplot STATIC WaterfallWidget.cpp WaterfallplotWrapper.cpp Waterfallplot.cpp ${MOCSrcs})
   TARGET_LINK_LIBRARIES(waterfallplot ${QT_LIBRARIES} ${QWT_LIBRARIES} lineplot spectrogramplot)
   IRIS_SET_PIC(waterfallplot)
   SET(IRIS_HAVE_WATERFALLPLOT ON CACHE INTERNAL "Has Waterfallplot been built?")
