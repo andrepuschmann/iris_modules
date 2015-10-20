@@ -39,8 +39,11 @@
 #include "irisapi/Version.h"
 #include "LiquidOfdmModComponent.h"
 #include <algorithm>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 using namespace std;
+using namespace boost::lambda;
 
 namespace iris
 {
@@ -82,6 +85,9 @@ LiquidOfdmModComponent::LiquidOfdmModComponent(string name):
 
     registerParameter("frameheader", "Header content, maximum lenght is eight characters",
         "default", true, frameHeader_x);
+
+    registerParameter("gain", "Software gain in dB that is applied to the generated I/Q samples",
+        "-12", true, gain_x);
 }
 
 LiquidOfdmModComponent::~LiquidOfdmModComponent()
@@ -135,6 +141,8 @@ void LiquidOfdmModComponent::initialize()
     fgProps.fec1 = fec1;
     fgProps.check = check;
 
+    gain_factor_  = powf(10.0f, gain_x/20.0f);
+
     // create frame generator object
     try {
         frameGenerator_ = ofdmflexframegen_create(noSubcarriers_x, cyclicPrefixLength_x, taperLength_x, p, &fgProps);
@@ -167,6 +175,10 @@ void LiquidOfdmModComponent::parameterHasChanged(std::string name)
         fgProps.check = check;
     }
     ofdmflexframegen_setprops(frameGenerator_, &fgProps);
+
+    if (name == "gain") {
+        gain_factor_  = powf(10.0f, gain_x/20.0f);
+    }
 
     if (name == "subcarriers" ||
         name == "prefixlength" ||
@@ -208,7 +220,7 @@ void LiquidOfdmModComponent::process()
     unsigned int bytesWritten = 0;
     while (symbols--) {
         ofdmflexframegen_writesymbol(frameGenerator_, buffer);
-        std::copy(buffer, buffer + symbolSize, out->data.begin() + bytesWritten);
+        std::transform(buffer, buffer + symbolSize, out->data.begin() + bytesWritten, _1 * gain_factor_);
         bytesWritten += symbolSize;
     }
 

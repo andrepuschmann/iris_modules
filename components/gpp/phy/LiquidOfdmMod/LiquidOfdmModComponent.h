@@ -56,9 +56,11 @@ private:
     std::string crcScheme_x;
     unsigned int numSymbolsS0_x;
     std::string frameHeader_x;
+    float gain_x;
 
     //Variables
     ofdmflexframegen frameGenerator_; // frame generator object
+    float gain_factor_;
 
 public:
     LiquidOfdmModComponent(std::string name);
