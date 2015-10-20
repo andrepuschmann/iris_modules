@@ -15,7 +15,11 @@ KnobSpin::KnobSpin(const QString &title, double min, double max, double step, QW
 
   knob_ = new QwtKnob(this);
   knob_->setFont(font);
+#if QWT_VERSION < 0x060100
+  knob_->setRange(min, max);
+#else
   knob_->setScale(min, max);
+#endif
 
   QwtScaleDiv scaleDiv =
       knob_->scaleEngine()->divideScale(min, max, 5, 3);
@@ -31,7 +35,11 @@ KnobSpin::KnobSpin(const QString &title, double min, double max, double step, QW
   knob_->setScale(scaleDiv);
 
   knob_->setKnobWidth(150);
+#if QWT_VERSION < 0x060100
+  knob_->setStep(step);
+#else
   knob_->setScaleStepSize(step);
+#endif
 
   spin_ = new QDoubleSpinBox(this);
   spin_->setRange(min, max);
