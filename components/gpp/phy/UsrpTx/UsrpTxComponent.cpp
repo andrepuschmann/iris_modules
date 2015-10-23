@@ -134,6 +134,11 @@ UsrpTxComponent::UsrpTxComponent(std::string name)
                     "fc32",
                     false,
                     fmt_x);
+  registerParameter("numzerosamps",
+                    "Number of zero samples",
+                    "0",
+                    true,
+                    numZeroSamps_x);
 }
 
 /*! Destructor
@@ -187,6 +192,9 @@ void UsrpTxComponent::initialize()
 
   //Set up the input DataBuffer
   inBuf_ = castToType< complex<float> >(inputBuffers.at(0));
+
+  // initialize zero samples buffer
+  zeroSamps_.resize(numZeroSamps_x);
 
   //Set up the usrp
   try
@@ -301,7 +309,7 @@ void UsrpTxComponent::process()
   //Set up metadata
   uhd::tx_metadata_t md;
   md.start_of_burst = true;
-  if(streaming_x)
+  if(streaming_x or numZeroSamps_x > 0)
   {
     md.end_of_burst = false;
   }else{
@@ -318,12 +326,18 @@ void UsrpTxComponent::process()
 
   //Send the data
   size_t num_tx_samps = txStream_->send(
-    &readDataSet->data.front(), size, md
-  );
+    &readDataSet->data.front(), size, md);
+
+  if (numZeroSamps_x) {
+    // send a few extra samples and EOB to the device (e.g. to preserve last OFDM symbol)
+    md.start_of_burst = false;
+    md.end_of_burst   = true;
+    num_tx_samps = txStream_->send(
+      &zeroSamps_.front(), zeroSamps_.size(), md);
+  }
 
   //Release the DataSet
   inBuf_->releaseReadData(readDataSet);
-
 }
 
 //! This gets called whenever a parameter is reconfigured
@@ -355,6 +369,10 @@ void UsrpTxComponent::parameterHasChanged(std::string name)
       LOG(LINFO) << "Setting TX Gain: " << gain_x << " dB...";
       usrp_->set_tx_gain(gain_x);
       LOG(LINFO) << "Actual TX Gain: " <<  usrp_->get_tx_gain() << " dB...";
+    }
+    else if(name == "numzerosamps")
+    {
+        zeroSamps_.resize(numZeroSamps_x);
     }
   }
   catch(std::exception &e)
