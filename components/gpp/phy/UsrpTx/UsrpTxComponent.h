@@ -80,10 +80,12 @@ private:
   std::string ref_x;    //!< Reference waveform (internal, external, mimo)
   bool streaming_x;     //!< Streaming or bursty traffic?
   std::string fmt_x;    //!< Data format (fc64, fc32 or sc16)
+  uint32_t numZeroSamps_x; ///!< Number of zero samples to transmit after each burst
 
   ReadBuffer< std::complex<float> >* inBuf_; ///< Convenience pointer to input buffer.
   uhd::usrp::multi_usrp::sptr usrp_;  ///< The device.
   uhd::tx_streamer::sptr txStream_;
+  std::vector<std::complex<float> > zeroSamps_;
 };
 
 } // namespace phy
