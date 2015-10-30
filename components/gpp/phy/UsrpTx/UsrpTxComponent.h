@@ -81,6 +81,7 @@ private:
   bool streaming_x;     //!< Streaming or bursty traffic?
   std::string fmt_x;    //!< Data format (fc64, fc32 or sc16)
   uint32_t numZeroSamps_x; ///!< Number of zero samples to transmit after each burst
+  bool hasBurstAckEvent_x; //!< Whether to trigger event after finishing burst send
 
   ReadBuffer< std::complex<float> >* inBuf_; ///< Convenience pointer to input buffer.
   uhd::usrp::multi_usrp::sptr usrp_;  ///< The device.

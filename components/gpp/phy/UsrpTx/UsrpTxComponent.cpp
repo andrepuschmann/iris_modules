@@ -139,6 +139,14 @@ UsrpTxComponent::UsrpTxComponent(std::string name)
                     "0",
                     true,
                     numZeroSamps_x);
+  registerParameter("hasburstackevent",
+                    "Whether to emit event after a burst has been sent.",
+                    "false",
+                    true,
+                    hasBurstAckEvent_x);
+  registerEvent("burstack",
+                "An event to signal the end of a burst transmission",
+                TypeInfo< uint32_t >::identifier);
 }
 
 /*! Destructor
@@ -334,6 +342,49 @@ void UsrpTxComponent::process()
     md.end_of_burst   = true;
     num_tx_samps = txStream_->send(
       &zeroSamps_.front(), zeroSamps_.size(), md);
+  }
+
+  bool needBurstAck = true;
+  if (readDataSet->metadata.hasMetadata("isdata"))
+      readDataSet->metadata.getMetadata("isdata", needBurstAck); // isData is not touched if metadata is not found
+
+  if (hasBurstAckEvent_x && needBurstAck) {
+      uhd::async_metadata_t async_md;
+      if (not usrp_->get_device()->recv_async_msg(async_md)) {
+          LOG(LERROR) << "Async message recv timed out.";
+      }
+
+      switch(async_md.event_code) {
+      case uhd::async_metadata_t::EVENT_CODE_BURST_ACK:
+          // this should be the default
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_UNDERFLOW:
+          LOG(LERROR) << "Failed, received EVENT_CODE_UNDERFLOW.";
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_SEQ_ERROR:
+          // Packet loss between host and device
+          LOG(LERROR) << "Failed, received EVENT_CODE_SEQ_ERROR which means packet loss between host and device.";
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_TIME_ERROR:
+          LOG(LERROR) << "Failed, received EVENT_CODE_TIME_ERROR.";
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_UNDERFLOW_IN_PACKET:
+          LOG(LERROR) << "Failed, received EVENT_CODE_UNDERFLOW_IN_PACKET.";
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_SEQ_ERROR_IN_BURST:
+          LOG(LERROR) << "Failed, received EVENT_CODE_SEQ_ERROR_IN_BURST.";
+          break;
+      case uhd::async_metadata_t::EVENT_CODE_USER_PAYLOAD:
+          LOG(LERROR) << "Failed, received EVENT_CODE_USER_PAYLOAD.";
+          break;
+      default:
+          LOG(LERROR) << "Got unexpected event code 0x" << async_md.event_code;
+          break;
+      }
+
+      // trigger event to signal end of transmission
+      uint32_t dummyData;
+      activateEvent("burstack", dummyData);
   }
 
   //Release the DataSet
