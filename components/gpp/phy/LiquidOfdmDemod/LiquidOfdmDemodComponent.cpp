@@ -194,6 +194,7 @@ void LiquidOfdmDemodComponent::callback(unsigned char * _header,
             double frameStart = timeStamp_ + (size_ / sampleRate_) - (numSamples / sampleRate_);
             out->metadata.setMetadata("sampleRate", sampleRate_);
             out->metadata.setMetadata("timeStamp", frameStart);
+            out->metadata.setMetadata("header", std::string((const char *)_header));
             std::copy(_payload, _payload + _payload_len, out->data.begin());
             releaseOutputDataSet("output1", out);
         }
