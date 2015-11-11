@@ -191,7 +191,7 @@ void TunTapComponent::rxThreadFunction()
             << tunName_;
 
           // copy received data into new StackDataSet
-          shared_ptr<StackDataSet> packetBuffer(new StackDataSet);
+          boost::shared_ptr<StackDataSet> packetBuffer(new StackDataSet);
           packetBuffer->data.assign(buffer, buffer + nread);
 
           // send downwards
