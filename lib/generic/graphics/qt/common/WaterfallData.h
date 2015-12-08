@@ -2,13 +2,14 @@
 #define WATERFALLDATA_H
 
 #include <qwt_raster_data.h>
+#ifndef Q_MOC_RUN
 #include <boost/circular_buffer.hpp>
 #include <boost/shared_ptr.hpp>
+#endif
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include "irisapi/Exceptions.h"
-
 
 class WaterfallData
     :public QwtRasterData
