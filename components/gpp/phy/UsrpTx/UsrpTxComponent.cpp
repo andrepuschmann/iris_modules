@@ -214,7 +214,7 @@ void UsrpTxComponent::initialize()
     usrp_->set_clock_source(ref_x);
     //always select the subdevice first, the channel mapping affects the other settings
     if (subDev_x!="")
-      usrp_->set_tx_subdev_spec(subDev_x);
+      usrp_->set_tx_subdev_spec(boost::to_upper_copy(subDev_x));
     LOG(LINFO) << "Using Device: " << usrp_->get_pp_string();
 
     //Set rate
