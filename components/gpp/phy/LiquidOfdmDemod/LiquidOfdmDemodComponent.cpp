@@ -96,6 +96,10 @@ LiquidOfdmDemodComponent::LiquidOfdmDemodComponent(string name):
 
     registerEvent("scatterevent", "An event providing all symbols of a received frame",
         TypeInfo< complex<float> >::identifier);
+                
+    GateFactory &myFactory = GateFactory::getInstance();
+    gate = myFactory.createGate("PhyComponent", "event");
+    
 }
 
 
@@ -178,7 +182,11 @@ void LiquidOfdmDemodComponent::callback(unsigned char * _header,
             LOG(LDEBUG) << "Header: " << (_header_valid ? "valid" : "INVALID")
                         << ", Payload: " << (_payload_valid ? "valid" : "INVALID");
         }
-
+        
+        PhyMessage phyStats;
+        phyStats.set_evm(_stats.evm);
+        gate->sendProto(phyStats);
+        
         if (hasScatterEvent_x && _stats.num_framesyms) {
             std::vector< std::complex<float> > data(_stats.num_framesyms);
             memcpy(&data[0], _stats.framesyms, data.size() * sizeof(std::complex<float>));

@@ -41,6 +41,10 @@
 #include <boost/thread.hpp>
 #include <liquid/liquid.h>
 #include <vector>
+#include "sclhelper.hpp"
+#include "phy.pb.h"
+
+using namespace scl_phy;
 
 namespace iris
 {
@@ -61,7 +65,8 @@ private:
     uint32_t size_;
     double timeStamp_;
     double sampleRate_;
-
+    sclGate * gate;
+    
 public:
     LiquidOfdmDemodComponent(std::string name);
     virtual ~LiquidOfdmDemodComponent();
